@@ -23,6 +23,8 @@
 #include "InputManager.h"
 #include "Camera/Camera.h"
 
+#include "EVGNTime.h"
+
 /*#include "tests/TestClearColor.h"
 #include "tests/TestTexture2D.h"*/
 
@@ -31,12 +33,16 @@ void framebuffer_size_callback(GLFWwindow*, int, int);
 
 int main() {
 
+	int WIDTH = 950, HEIGHT = 540;
+	
+	EVGN::Time TIME;
+	
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(950, 540, "Path Tracer", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, 540, "Path Tracer", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -54,15 +60,13 @@ int main() {
 		return -1;
 	}
 
-	//TEST
-
 	std::cout << glGetString(GL_VERSION) << std::endl;
 	
 	float positions[] = {
-		-50.0f, -50.0f,		0.0f, 0.0f, //0
-		 50.0f, -50.0f,		1.0f, 0.0f, //1
-		 50.0f,  50.0f,		1.0f, 1.0f, //2
-		-50.0f,  50.0f,		0.0f, 1.0f  //3
+		-1.0f, -1.0f,		0.0f, 0.0f, //0
+		 1.0f, -1.0f,		1.0f, 0.0f, //1
+		 1.0f,  1.0f,		1.0f, 1.0f, //2
+		-1.0f,  1.0f,		0.0f, 1.0f  //3
 	};
 
 	unsigned int indices[] = {
@@ -84,8 +88,6 @@ int main() {
 
 	IndexBuffer ib(indices, 6);
 
-	glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
-	glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
 	Shader shader("res/shaders/sh1.vert", "res/shaders/sh1.frag");
 	shader.Bind();
@@ -107,8 +109,8 @@ int main() {
 	ImGui_ImplOpenGL3_Init(glsl_version);
 	ImGui::StyleColorsDark();
 
-	glm::vec3 translationA(200, 200, 0);
-	glm::vec3 translationB(400, 200, 0);
+	glm::vec3 translationA(0, 0, 0);
+	glm::vec3 translationB(1.5f, 0, 1.5);
 
 	//test::Test* currentTest = nullptr;
 	//test::TestMenu* testMenu = new test::TestMenu(currentTest);
@@ -134,17 +136,36 @@ int main() {
 	//процессинг инпутов методов в лупе
 	Controller(vector<вектор всех методов на обработку>);*/
 
-	Camera camera = Camera();
+
+
+	float cameraSpeed = 5;
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
+	Camera camera = Camera(CameraType::CAM_FPS, cameraPos, cameraTarget, 45, cameraSpeed);
+
+
+
+	glm::mat4 proj = glm::perspective(glm::radians(camera.GetFov()), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+	glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
 
 	InputManager inputManager(window);
 	inputManager.Push(camera.GetController());
 
+	glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 
 	while (!glfwWindowShouldClose(window))
 	{
+		TIME.UpdateTime();
 		renderer.Clear();
 
 		inputManager.ProcessInput();
+
+		camera.GetController()->SetDeltaTime(TIME.DeltaTime());
+		camera.SetSpeed(cameraSpeed);
+
+		/*Апдейт шейдеров*/
+		view = camera.GetViewMatrix();
 
 
 		ImGui_ImplOpenGL3_NewFrame();
@@ -183,8 +204,9 @@ int main() {
 		}
 
 		{ 
-			ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 960.0f);
-			ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 960.0f);
+			ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 10.f);
+			ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 10.f);
+			ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 30.f);
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		}
 
