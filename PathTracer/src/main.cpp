@@ -54,6 +54,8 @@ int main() {
 		return -1;
 	}
 
+	//TEST
+
 	std::cout << glGetString(GL_VERSION) << std::endl;
 	
 	float positions[] = {
