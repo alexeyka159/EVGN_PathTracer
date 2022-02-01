@@ -29,13 +29,13 @@ Texture::~Texture()
 	glDeleteTextures(1, &m_RendereID);
 }
 
-void Texture::bind(unsigned int slot) const
+void Texture::Bind(unsigned int slot) const
 {
 	glActiveTexture(GL_TEXTURE0 + slot);
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::unbind() const
+void Texture::Unbind() const
 {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }

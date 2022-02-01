@@ -4,9 +4,11 @@
 #include <string>
 #include <sstream>
 #include <fstream>
+
 //#include <windows.h> 
 
 #include <unordered_map>
+#include <glm/glm.hpp>
 
 #include <glad/glad.h>
 
@@ -22,24 +24,26 @@ private:
 	std::string m_FilePathVertex;
 	std::string m_FilePathFragment;
 	ShaderSource m_SourceCode;
-	std::unordered_map<std::string, int> m_UniformLocationCash; 
+	mutable std::unordered_map<std::string, int> m_UniformLocationCash; 
 
 public:
 	Shader(const std::string& filepathVertex, const std::string& filepathFragment);
 	~Shader();
 
-	void bind() const;
-	void unbind() const;
+	void Bind() const;
+	void Unbind() const;
 
 	//Set uniforms
-	void setUniform1i(const std::string& name, int v0);
-	void setUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
-	void setUniform1f(const std::string &name, float v0);
-	
+	void SetUniform1i(const std::string& name, int v0);
+	void SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3);
+	void SetUniform1f(const std::string &name, float v0);
+	void SetUniformMat4f(const std::string& name, const glm::mat4& matrix);
+
+
 private:
-	int getUniformLocation(const std::string &name);
-	unsigned int createShader();
-	ShaderSource parseShader();
-	unsigned int createSubShader(unsigned int type, const char* source);
-	bool checkCompileErrors(unsigned int shader, unsigned int type);
+	int GetUniformLocation(const std::string &name) const;
+	unsigned int CreateShader();
+	ShaderSource ParseShader();
+	unsigned int CreateSubShader(unsigned int type, const char* source);
+	bool CheckCompileErrors(unsigned int shader, unsigned int type);
 };

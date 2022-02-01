@@ -16,8 +16,18 @@
 #include "Shader.h"
 #include "Texture.h"
 
+#include "vendor/imgui/imgui.h"
+#include "vendor/imgui/imgui_impl_glfw.h"
+#include "vendor/imgui/imgui_impl_opengl3.h"
+
+#include "InputManager.h"
+#include "Camera/Camera.h"
+
+/*#include "tests/TestClearColor.h"
+#include "tests/TestTexture2D.h"*/
+
 void framebuffer_size_callback(GLFWwindow*, int, int);
-void processInput(GLFWwindow*);
+//void processInput(GLFWwindow*);
 
 int main() {
 
@@ -26,7 +36,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 600, "Path Tracer", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(950, 540, "Path Tracer", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -47,10 +57,10 @@ int main() {
 	std::cout << glGetString(GL_VERSION) << std::endl;
 	
 	float positions[] = {
-		-0.5f, -0.5f,	0.0f, 0.0f, //0
-		 0.5f, -0.5f,	1.0f, 0.0f, //1
-		 0.5f,  0.5f,	1.0f, 1.0f, //2
-		-0.5f,  0.5f,	0.0f, 1.0f  //3
+		-50.0f, -50.0f,		0.0f, 0.0f, //0
+		 50.0f, -50.0f,		1.0f, 0.0f, //1
+		 50.0f,  50.0f,		1.0f, 1.0f, //2
+		-50.0f,  50.0f,		0.0f, 1.0f  //3
 	};
 
 	unsigned int indices[] = {
@@ -72,34 +82,125 @@ int main() {
 
 	IndexBuffer ib(indices, 6);
 
+	glm::mat4 proj = glm::ortho(0.0f, 960.0f, 0.0f, 540.0f, -1.0f, 1.0f);
+	glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+
 	Shader shader("res/shaders/sh1.vert", "res/shaders/sh1.frag");
-	shader.bind();
-	shader.setUniform4f("u_Color", 0.8f, 0.3f, 0.8f, 1.0f);
+	shader.Bind();
 
 	Texture texture("res/textures/bananacover.png");
-	texture.bind();
-	shader.setUniform1i("u_Texture", 0);
+	texture.Bind();
+	shader.SetUniform1i("u_Texture", 0);
 
-	va.unbind();
-	vb.unbind();
-	ib.unbind();
-	shader.unbind();
+	va.Unbind();
+	vb.Unbind();
+	ib.Unbind();
+	shader.Unbind();
 
 	Renderer renderer;
 
+	const char* glsl_version = "#version 430";
+	ImGui::CreateContext();
+	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	ImGui_ImplOpenGL3_Init(glsl_version);
+	ImGui::StyleColorsDark();
+
+	glm::vec3 translationA(200, 200, 0);
+	glm::vec3 translationB(400, 200, 0);
+
+	//test::Test* currentTest = nullptr;
+	//test::TestMenu* testMenu = new test::TestMenu(currentTest);
+	//currentTest = testMenu;
+
+	//testMenu->RegisterTest<test::TestClearColor>("Clear Color");
+	//testMenu->RegisterTest<test::TestTexture2D>("2D Texture");
+
+
+
+
+	//Создание камеры
+	//Type - enum Camera::orbital или Camera::fps
+	/*Camera camera(type, pos, dir, fov);
+
+	//Изменение камеры в лупе по инпуту
+	//Геттер на получение матрицы. Внутри считывается инпут в CameraController
+	glm::mat4 view = camera.GetViewMatrix(window);
+	glm::mat4 mvp = proj * view * model;
+	shader.Bind();
+	shader.SetUniformMat4f("u_MVP", mvp);
+
+	//процессинг инпутов методов в лупе
+	Controller(vector<вектор всех методов на обработку>);*/
+
+	Camera camera = Camera();
+
+	InputManager inputManager(window);
+	inputManager.Push(camera.GetController());
+
+
 	while (!glfwWindowShouldClose(window))
 	{
-		renderer.clear();
-		
-		processInput(window);
+		renderer.Clear();
 
-		shader.bind();
+		inputManager.ProcessInput();
 
-		renderer.draw(va, ib, shader);
 
+		ImGui_ImplOpenGL3_NewFrame();
+		ImGui_ImplGlfw_NewFrame();
+		ImGui::NewFrame();
+
+		/*if (currentTest) {
+			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+			currentTest->OnUpdate(0.0f);
+			currentTest->OnRender();
+			ImGui::Begin("Test");
+			if (currentTest != testMenu && ImGui::Button("<-")) {
+				delete currentTest;
+				currentTest = testMenu;
+			}
+			currentTest->OnImGuiRender();
+			ImGui::End();
+		}*/
+
+		//processInput(window);
+
+		{
+			glm::mat4 model = glm::translate(glm::mat4(1), translationA);
+			glm::mat4 mvp = proj * view * model;
+			shader.Bind();
+			shader.SetUniformMat4f("u_MVP", mvp);
+
+			renderer.Draw(va, ib, shader);
+		}
+
+		{
+			glm::mat4 model = glm::translate(glm::mat4(1), translationB);
+			glm::mat4 mvp = proj * view * model;
+			shader.SetUniformMat4f("u_MVP", mvp);
+			renderer.Draw(va, ib, shader);
+		}
+
+		{ 
+			ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 960.0f);
+			ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 960.0f);
+			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		}
+
+		ImGui::Render();
+		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+		inputManager.PollEvents();
 		glfwSwapBuffers(window);
-		glfwPollEvents();
 	}
+
+	/*delete currentTest;
+	if (currentTest != testMenu)
+		delete testMenu;*/
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
+
 
 	glfwTerminate();
 	return 0;
@@ -110,8 +211,9 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 	glViewport(0, 0, width, height);
 }
 
+/*
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, true);
-}
+}*/

@@ -12,9 +12,9 @@ public:
 	Texture(const std::string& path);
 	~Texture();
 
-	void bind(unsigned int slot = 0) const;
-	void unbind() const;
+	void Bind(unsigned int slot = 0) const;
+	void Unbind() const;
 
-	inline int getWidth() const { return m_Width; }
-	inline int getHeight() const { return m_Height; }
+	inline int GetWidth() const { return m_Width; }
+	inline int GetHeight() const { return m_Height; }
 };

@@ -3,7 +3,7 @@
 Shader::Shader(const std::string& filepathVertex, const std::string& filepathFragment)
 	: m_FilePathVertex(filepathVertex), m_FilePathFragment(filepathFragment), m_RendererID(0)
 {
-	m_RendererID = createShader();
+	m_RendererID = CreateShader();
 
 	/*HANDLE  hConsole;
 	hConsole = GetStdHandle(STD_OUTPUT_HANDLE);
@@ -20,18 +20,18 @@ Shader::~Shader()
 	glDeleteProgram(m_RendererID);
 }
 
-unsigned int Shader::createShader()
+unsigned int Shader::CreateShader()
 {
-	ShaderSource source = parseShader();
+	ShaderSource source = ParseShader();
 
 	const char* vShaderCode = source.vertex.c_str();
 	const char* fShaderCode = source.fragment.c_str();
 
 	unsigned int vertexID, fragmentID;
-	vertexID = createSubShader(GL_VERTEX_SHADER, vShaderCode);
+	vertexID = CreateSubShader(GL_VERTEX_SHADER, vShaderCode);
 	if (vertexID == 0)
 		return 0;
-	fragmentID = createSubShader(GL_FRAGMENT_SHADER, fShaderCode);
+	fragmentID = CreateSubShader(GL_FRAGMENT_SHADER, fShaderCode);
 	if (fragmentID == 0)
 		return 0;
 
@@ -40,7 +40,7 @@ unsigned int Shader::createShader()
 	glAttachShader(shaderProgramID, fragmentID);
 	glLinkProgram(shaderProgramID);
 
-	if (!checkCompileErrors(shaderProgramID, 1))
+	if (!CheckCompileErrors(shaderProgramID, 1))
 		return 0;
 	
 	glDeleteShader(vertexID);
@@ -49,7 +49,7 @@ unsigned int Shader::createShader()
 	return shaderProgramID;
 }
 
-ShaderSource Shader::parseShader() {
+ShaderSource Shader::ParseShader() {
 	std::string vertexCode;
 	std::string fragmentCode;
 	std::ifstream vShaderFile;
@@ -78,18 +78,18 @@ ShaderSource Shader::parseShader() {
 	return { vertexCode, fragmentCode };
 }
 
-unsigned int Shader::createSubShader(unsigned int type, const char* source) {
+unsigned int Shader::CreateSubShader(unsigned int type, const char* source) {
 	int shaderID = glCreateShader(type);
 	glShaderSource(shaderID, 1, &source, NULL);
 	glCompileShader(shaderID);
 
-	if (!checkCompileErrors(shaderID, type))
+	if (!CheckCompileErrors(shaderID, type))
 		return 0;
 
 	return shaderID;
 }
 
-bool Shader::checkCompileErrors(unsigned int shader, unsigned int type) {
+bool Shader::CheckCompileErrors(unsigned int shader, unsigned int type) {
 	int success;
 	char infoLog[512];
 
@@ -120,32 +120,37 @@ bool Shader::checkCompileErrors(unsigned int shader, unsigned int type) {
 	return true;
 }
 
-void Shader::bind() const
+void Shader::Bind() const
 {
 	glUseProgram(m_RendererID);
 }
 
-void Shader::unbind() const
+void Shader::Unbind() const
 {
 	glUseProgram(0);
 }
 
-void Shader::setUniform1i(const std::string& name, int v0)
+void Shader::SetUniform1i(const std::string& name, int v0)
 {
-	glUniform1i(getUniformLocation(name), v0);
+	glUniform1i(GetUniformLocation(name), v0);
 }
 
-void Shader::setUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
+void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
 {
-	glUniform4f(getUniformLocation(name), v0, v1, v2, v3);
+	glUniform4f(GetUniformLocation(name), v0, v1, v2, v3);
 }
 
-void Shader::setUniform1f(const std::string& name, float v0)
+void Shader::SetUniform1f(const std::string& name, float v0)
 {
-	glUniform1f(getUniformLocation(name), v0);
+	glUniform1f(GetUniformLocation(name), v0);
 }
 
-int Shader::getUniformLocation(const std::string& name)
+void Shader::SetUniformMat4f(const std::string& name, const glm::mat4& matrix)
+{
+	glUniformMatrix4fv(GetUniformLocation(name), 1, GL_FALSE, &matrix[0][0]);
+}
+
+int Shader::GetUniformLocation(const std::string& name) const
 {
 	if (m_UniformLocationCash.find(name) != m_UniformLocationCash.end())
 		return m_UniformLocationCash[name];
