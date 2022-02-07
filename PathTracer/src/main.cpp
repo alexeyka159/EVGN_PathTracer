@@ -22,14 +22,12 @@
 
 #include "InputManager.h"
 #include "Camera/Camera.h"
+#include "Camera/CameraFPS.h"
+#include "Camera/CameraOrbit.h"
 
 #include "EVGNTime.h"
 
-/*#include "tests/TestClearColor.h"
-#include "tests/TestTexture2D.h"*/
-
 void framebuffer_size_callback(GLFWwindow*, int, int);
-//void processInput(GLFWwindow*);
 
 int main() {
 
@@ -42,7 +40,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(WIDTH, 540, "Path Tracer", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Path Tracer", NULL, NULL);
 	if (window == NULL)
 	{
 		std::cout << "Failed to create GLFW window" << std::endl;
@@ -112,16 +110,6 @@ int main() {
 	glm::vec3 translationA(0, 0, 0);
 	glm::vec3 translationB(1.5f, 0, 1.5);
 
-	//test::Test* currentTest = nullptr;
-	//test::TestMenu* testMenu = new test::TestMenu(currentTest);
-	//currentTest = testMenu;
-
-	//testMenu->RegisterTest<test::TestClearColor>("Clear Color");
-	//testMenu->RegisterTest<test::TestTexture2D>("2D Texture");
-
-
-
-
 	//Создание камеры
 	//Type - enum Camera::orbital или Camera::fps
 	/*Camera camera(type, pos, dir, fov);
@@ -137,22 +125,20 @@ int main() {
 	Controller(vector<вектор всех методов на обработку>);*/
 
 
-
 	float cameraSpeed = 5;
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
-	Camera camera = Camera(CameraType::CAM_FPS, cameraPos, cameraTarget, 45, cameraSpeed);
-
-
+	CameraOrbit camera = CameraOrbit(cameraPos, cameraTarget, glm::vec3(0.f, 1.f, 0.f), 45, cameraSpeed);
 
 	glm::mat4 proj = glm::perspective(glm::radians(camera.GetFov()), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
-	glm::mat4 view = glm::translate(glm::mat4(1.0f), glm::vec3(0, 0, 0));
+	glm::mat4 view;
 
 	InputManager inputManager(window);
 	inputManager.Push(camera.GetController());
 
 	glEnable(GL_DEPTH_TEST);
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
+	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	while (!glfwWindowShouldClose(window))
 	{
@@ -172,20 +158,22 @@ int main() {
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
-		/*if (currentTest) {
-			glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-			currentTest->OnUpdate(0.0f);
-			currentTest->OnRender();
-			ImGui::Begin("Test");
-			if (currentTest != testMenu && ImGui::Button("<-")) {
-				delete currentTest;
-				currentTest = testMenu;
+		/*{
+			ImGui::BeginMainMenuBar();
+			if (ImGui::MenuItem("File"))
+			{
 			}
-			currentTest->OnImGuiRender();
-			ImGui::End();
+			if (ImGui::MenuItem("Edit"))
+			{
+			}
+			if (ImGui::MenuItem("Add"))
+			{
+			}
+			if (ImGui::MenuItem("Selection"))
+			{
+			}
+			ImGui::EndMainMenuBar();
 		}*/
-
-		//processInput(window);
 
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1), translationA);
@@ -217,10 +205,6 @@ int main() {
 		glfwSwapBuffers(window);
 	}
 
-	/*delete currentTest;
-	if (currentTest != testMenu)
-		delete testMenu;*/
-
 	ImGui_ImplOpenGL3_Shutdown();
 	ImGui_ImplGlfw_Shutdown();
 	ImGui::DestroyContext();
@@ -234,10 +218,3 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
 	glViewport(0, 0, width, height);
 }
-
-/*
-void processInput(GLFWwindow* window)
-{
-	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		glfwSetWindowShouldClose(window, true);
-}*/

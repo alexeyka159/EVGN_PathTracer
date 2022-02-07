@@ -1,52 +1,38 @@
 #pragma once
 
-#include <iostream>
-
 #include <glm/glm.hpp>
 #include <glm/gtc/matrix_transform.hpp>
-
-#include "CameraController.h"
-#include "Presets/FPSCC.h"
-
-enum class CameraType {
-	CAM_FPS,
-	CAM_ORBITAL,
-};
 
 class CameraController;
 class Camera {
 private:
-	glm::mat4 m_View;
-	CameraType m_Type;
 	glm::vec3 m_CamPos;
 	glm::vec3 m_CamDir;
-	float m_FOV;
+	float m_CamFov;
 	float m_CamSpeed;
 
-	CameraController* m_Controller;
+	//float m_CamUpVec;
 
-	void InitFPSCamera();
 public:
-	Camera();
-	Camera(CameraType type, glm::vec3 camPos, glm::vec3 camTarget, float fov, float camSpeed = 5.5f);
 
-	CameraController* GetController();
-	//будет обращаться к камера контроллеру и помещать его в вектор контроллеров на обработку
-	glm::mat4 GetViewMatrix();
+	virtual void SetCameraView(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 camUp) = 0;
 
-	glm::vec3 CalculateUp();
-	inline void		SetFov(float fov) { m_FOV = fov; }
-	inline float	GetFov() { return m_FOV; }
+	virtual glm::mat4 GetViewMatrix() = 0;
 
-	inline void		SetSpeed(float newSpeed) { m_CamSpeed = newSpeed; }
-	inline float	GetSpeed() { return m_CamSpeed; }
+	virtual glm::vec3 UpdateUp() = 0;
+	virtual glm::vec3 GetRightVector() = 0;
 
-	inline glm::vec3 GetPosition() { return m_CamPos; }
-	inline void		 SetPosition(glm::vec3 newPos) { m_CamPos = newPos; }
+	virtual CameraController* GetController() = 0;
+	
+	virtual glm::vec3 GetPosition() = 0;
+	virtual void SetPosition(glm::vec3 newPos) = 0;
 
-	inline glm::vec3 GetDirection() { return m_CamDir; }
-	inline void		 SetDirection(glm::vec3 newDir) { m_CamDir = newDir; }
+	virtual glm::vec3 GetDirection() = 0;
+	virtual void SetDirection(glm::vec3 newDir) = 0;
 
-	inline CameraType GetType() { return m_Type; }
-	inline void		 SetType(CameraType newType) { m_Type = newType; }
+	virtual float GetSpeed() = 0;
+	virtual void SetSpeed(float newSpeed) = 0;
+
+	virtual void SetFov(float fov) = 0;
+	virtual float GetFov() = 0;
 };

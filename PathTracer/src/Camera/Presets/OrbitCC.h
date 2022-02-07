@@ -1,23 +1,23 @@
 #pragma once
 
-//FPS контроллер
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 #include "Camera/CameraController.h"
 
 class Camera;
-class FPSCameraController : public CameraController {
+class OrbitCameraController : public CameraController {
 private:
 	Camera* m_Camera = nullptr;
 
-	float m_speedMul = 2;
-	float m_speedRun = m_speedMul;
-
-	bool m_isCursorLocked = true;
-
-	float m_yaw = -90, m_pitch = 0;
+	const double m_PI = 3.1415926;
 	int m_lastX = 475, m_lastY = 270;
+	double xPos = m_lastX, yPos = m_lastY;
+
+	float m_SpeedMul = .07f;
+	float m_Magnitude;
 
 public:
-	FPSCameraController();
+	OrbitCameraController();
 
 	void BindCamera(Camera* camera) override;
 

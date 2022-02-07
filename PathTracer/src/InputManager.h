@@ -4,7 +4,6 @@
 
 //#include <functional>
 #include <vector>
-
 #include "InputController.h"
 
 class InputManager {
@@ -17,5 +16,5 @@ public:
 	
 	void ProcessInput();
 	void Push(InputController* controller);
-	inline void PollEvents() { glfwPollEvents(); };
+	void PollEvents();
 };
