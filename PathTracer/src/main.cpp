@@ -13,7 +13,9 @@
 #include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
+
 #include "Shader.h"
+
 #include "Texture.h"
 
 #include "vendor/imgui/imgui.h"
@@ -26,6 +28,8 @@
 #include "Camera/CameraOrbit.h"
 
 #include "EVGNTime.h"
+
+#include "Model/Model.h"
 
 void framebuffer_size_callback(GLFWwindow*, int, int);
 
@@ -72,25 +76,26 @@ int main() {
 		2, 3, 0
 	};
 
+	
+
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SOURCE0_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	VertexArray va;
 
-	VertexBuffer vb(positions, 4 * 4 * sizeof(float));
+	VertexBuffer vb(&positions[0], 4 * 4 * sizeof(float));
 	VertexBufferLayout layout;
 
 	layout.Push<float>(2);
 	layout.Push<float>(2);
 	va.AddBuffer(vb, layout);
 
-	IndexBuffer ib(indices, 6);
-
+	IndexBuffer ib(&indices[0], 6);
 
 	Shader shader("res/shaders/sh1.vert", "res/shaders/sh1.frag");
 	shader.Bind();
 
-	Texture texture("res/textures/bananacover.png");
+	Texture texture("res/textures/concrete.png");
 	texture.Bind();
 	shader.SetUniform1i("u_Texture", 0);
 
@@ -101,7 +106,7 @@ int main() {
 
 	Renderer renderer;
 
-	const char* glsl_version = "#version 430";
+	const char* glsl_version = "#version 330";
 	ImGui::CreateContext();
 	ImGui_ImplGlfw_InitForOpenGL(window, true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
@@ -140,6 +145,11 @@ int main() {
 	//glEnable(GL_CULL_FACE);
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
+	bool show_debug_window = true;
+	bool isWireframe = false;
+
+	glm::vec3 lightPos(3.0f, 3.0f, 3.0f);
+	Model testModel("res/models/monk_smooth.obj");
 	while (!glfwWindowShouldClose(window))
 	{
 		TIME.UpdateTime();
@@ -157,6 +167,7 @@ int main() {
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
+
 
 		/*{
 			ImGui::BeginMainMenuBar();
@@ -180,23 +191,41 @@ int main() {
 			glm::mat4 mvp = proj * view * model;
 			shader.Bind();
 			shader.SetUniformMat4f("u_MVP", mvp);
+			shader.SetUniformMat4f("u_Model", model);
 
-			renderer.Draw(va, ib, shader);
+			testModel.Draw(shader);
+
+			//renderer.Draw(va, ib, shader);
 		}
 
-		{
+		/*{
 			glm::mat4 model = glm::translate(glm::mat4(1), translationB);
 			glm::mat4 mvp = proj * view * model;
 			shader.SetUniformMat4f("u_MVP", mvp);
 			renderer.Draw(va, ib, shader);
+		}*/
+
+		{
+			shader.SetUniform3f("u_LightPos", lightPos.x, lightPos.y, lightPos.z);
 		}
 
-		{ 
+		if (show_debug_window)
+		{
+			ImGui::Begin("Debug Window", &show_debug_window);
 			ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 10.f);
-			ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 10.f);
+			//ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 10.f);
+			ImGui::SliderFloat3("Light position", &lightPos.x, -3.0f, 3.f);
 			ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 30.f);
+			ImGui::Checkbox("Wireframe mode", &isWireframe);
+			ImGui::Spacing();
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+			ImGui::End();
 		}
+
+		if (isWireframe)
+			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		else
+			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 
 		ImGui::Render();
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
