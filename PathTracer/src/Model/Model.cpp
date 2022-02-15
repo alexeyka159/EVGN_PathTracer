@@ -71,30 +71,34 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			indices.push_back(face.mIndices[j]);
 	}
 
-	/*if (mesh->mMaterialIndex >= 0)
+	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
 		std::vector<Texture> diffuseMaps =
-			LoadMaterialTextures(material, aiTextureType_DIFFUSE, "texture_diffuse");
-		textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+			LoadMaterialTextures(material, aiTextureType_DIFFUSE, Texture::TextureType::DIFFUSE);
+		if(diffuseMaps.size() > 0)
+			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 		std::vector<Texture> roughnessMaps =
-			LoadMaterialTextures(material, aiTextureType_SPECULAR, "texture_specular");
+			LoadMaterialTextures(material, aiTextureType_SPECULAR, Texture::TextureType::SPECULAR);
+		if (roughnessMaps.size() > 0)
 		textures.insert(roughnessMaps.end(), roughnessMaps.begin(), roughnessMaps.end());
 		
 		std::vector<Texture> normalMaps =
-			LoadMaterialTextures(material, aiTextureType_HEIGHT, "texture_normal");
+			LoadMaterialTextures(material, aiTextureType_HEIGHT, Texture::TextureType::NORMAL);
+		if (normalMaps.size() > 0)
 		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 
 		std::vector<Texture> heightMaps =
-			LoadMaterialTextures(material, aiTextureType_AMBIENT, "texture_height");
+			LoadMaterialTextures(material, aiTextureType_AMBIENT, Texture::TextureType::HEIGHT);
+		if (heightMaps.size() > 0)
 		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
-	}*/
+	}
 
 	return Mesh(vertices, indices, textures);
 }
 
-std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
+std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Texture::TextureType typeName)
 {
 	std::vector<Texture> textures;
 	for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
@@ -115,12 +119,11 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 
 		if (!skip)
 		{
-			Texture texture(str.C_Str(), TextureTypeConv::ConvertStrToType(typeName));
-			/*texture.Id = TextureFromFile(str.C_Str(), m_Directory);
-			texture.Type = typeName;
-			texture.Path = str.C_Str();*/
-			textures.push_back(texture);
-			m_TexturesLoaded.push_back(std::move(texture));
+			std::string filename = std::string(str.C_Str());
+			filename = m_Directory + "/" + filename;
+			//Texture texture(filename, typeName);
+			textures.push_back(Texture(filename, typeName));
+			m_TexturesLoaded.push_back(std::move(textures[textures.size()-1]));
 		}
 	}
 

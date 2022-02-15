@@ -15,7 +15,7 @@ Texture::Texture(const std::string& path, TextureType type)
 
 	if(data) {
 		glGenTextures(1, &m_RendererID);
-		glBindBuffer(GL_TEXTURE_2D, m_RendererID);
+		glBindTexture(GL_TEXTURE_2D, m_RendererID);
 
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
@@ -30,18 +30,20 @@ Texture::Texture(const std::string& path, TextureType type)
 	else {
 		std::cout << "ERROR::TEXTURE::FAILED TO LOAD TEXTURE: \"" << path << "\"" << std::endl;
 	}
+
+	std::cout << "\"" << m_FilePath << "\" - id: " << m_RendererID << std::endl;
 		
 }
 
 Texture::~Texture()
 {
-	glDeleteTextures(1, &m_RendererID);
+	//glDeleteTextures(1, &m_RendererID);
 }
 
 void Texture::Bind(unsigned int slot) const
 {
 	glActiveTexture(GL_TEXTURE0 + slot);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_2D, m_RendererID);
 }
 
 void Texture::Unbind() const

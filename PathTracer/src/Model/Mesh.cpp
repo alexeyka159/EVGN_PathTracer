@@ -68,21 +68,27 @@ void Mesh::SetupMesh()
 void Mesh::Draw(Shader* shader)
 {
     unsigned int diffuseNr = 1;
-    unsigned int roughnessNr = 1;
+    unsigned int specularNr = 1;
+    unsigned int normalNr = 1;
+    unsigned int heightNr = 1;
     for (unsigned int i = 0; i < m_Textures.size(); i++)
     {
-        m_Textures[i].Bind(i);
+        //m_Textures[i].Bind(i);
+        glActiveTexture(GL_TEXTURE0 + i); // перед связыванием активируем нужный текстурный юнит
         // Получаем номер текстуры (значение N в diffuse_textureN)
         std::string number;
-        std::string type = TextureTypeConv::ConvertTypeToStr(m_Textures[i].GetType());
+        Texture::TextureType type = m_Textures[i].GetType();
 
-        if (type == "texture_diffuse")
-            number = std::to_string(diffuseNr++);
-        else if (type == "texture_roughness")
-            number = std::to_string(roughnessNr++);
+        switch (type)
+        {
+            case Texture::TextureType::DIFFUSE:  number = std::to_string(diffuseNr++);  break;
+            case Texture::TextureType::SPECULAR: number = std::to_string(specularNr++); break;
+            case Texture::TextureType::NORMAL:   number = std::to_string(normalNr++);   break;
+            case Texture::TextureType::HEIGHT:   number = std::to_string(heightNr++);   break;
+        }
 
-        shader->SetUniform1i(("material." + type + number), i);
-        m_Textures[i].Bind(i);
+        shader->SetUniform1i(("u_material." + (TextureTypeConv::ConvertTypeToStr(type) + number)).c_str(), i);
+        glBindTexture(GL_TEXTURE_2D, m_Textures[i].m_RendererID);
     }
 
     //!!Временно. Позже меш будет отправляться рендереру и отрисовываться там

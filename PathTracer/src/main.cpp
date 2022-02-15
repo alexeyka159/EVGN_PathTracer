@@ -31,15 +31,16 @@
 
 #include "Model/Model.h"
 
-void framebuffer_size_callback(GLFWwindow*, int, int);
+//void framebuffer_size_callback(GLFWwindow*, int, int);
 
 int main() {
 
 	int WIDTH = 950, HEIGHT = 540;
+	Renderer renderer(950, 540, "Path Tracer");
 	
 	EVGN::Time TIME;
 	
-	glfwInit();
+	/*glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
@@ -62,7 +63,7 @@ int main() {
 		return -1;
 	}
 
-	std::cout << glGetString(GL_VERSION) << std::endl;
+	std::cout << glGetString(GL_VERSION) << std::endl;*/
 	
 	float positions[] = {
 		-1.0f, -1.0f,		0.0f, 0.0f, //0
@@ -95,25 +96,26 @@ int main() {
 	Shader shader("res/shaders/sh1.vert", "res/shaders/sh1.frag");
 	shader.Bind();
 
-	Texture texture("res/textures/concrete.png");
+	/*Texture texture("res/textures/concrete.png");
 	texture.Bind();
-	shader.SetUniform1i("u_Texture", 0);
+	shader.SetUniform1i("u_Texture", 0);*/
 
 	va.Unbind();
 	vb.Unbind();
 	ib.Unbind();
 	shader.Unbind();
 
-	Renderer renderer;
 
 	const char* glsl_version = "#version 330";
 	ImGui::CreateContext();
-	ImGui_ImplGlfw_InitForOpenGL(window, true);
+	if (renderer.GetWindow() == nullptr)
+		std::cout << "NULL" << std::endl;
+	ImGui_ImplGlfw_InitForOpenGL(renderer.GetWindow(), true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 	ImGui::StyleColorsDark();
 
 	glm::vec3 translationA(0, 0, 0);
-	glm::vec3 translationB(1.5f, 0, 1.5);
+	glm::vec3 translationB(-2.5f, 0, 0);
 
 	//Создание камеры
 	//Type - enum Camera::orbital или Camera::fps
@@ -131,26 +133,24 @@ int main() {
 
 
 	float cameraSpeed = 5;
-	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
+	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	CameraOrbit camera = CameraOrbit(cameraPos, cameraTarget, glm::vec3(0.f, 1.f, 0.f), 45, cameraSpeed);
 
 	glm::mat4 proj = glm::perspective(glm::radians(camera.GetFov()), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 	glm::mat4 view;
 
-	InputManager inputManager(window);
+	InputManager inputManager(renderer.GetWindow());
 	inputManager.Push(camera.GetController());
-
-	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
 	bool show_debug_window = true;
 	bool isWireframe = false;
 
-	glm::vec3 lightPos(3.0f, 3.0f, 3.0f);
-	Model testModel("res/models/monk_smooth.obj");
-	while (!glfwWindowShouldClose(window))
+	glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
+	Model testModel("res/models/sphere and cube.obj");
+	Model testModel1("res/models/monk_smooth.obj");
+
+	while (!glfwWindowShouldClose(renderer.GetWindow()))
 	{
 		TIME.UpdateTime();
 		renderer.Clear();
@@ -160,19 +160,42 @@ int main() {
 		camera.GetController()->SetDeltaTime(TIME.DeltaTime());
 		camera.SetSpeed(cameraSpeed);
 
-		/*Апдейт шейдеров*/
 		view = camera.GetViewMatrix();
-
 
 		ImGui_ImplOpenGL3_NewFrame();
 		ImGui_ImplGlfw_NewFrame();
 		ImGui::NewFrame();
 
 
-		/*{
-			ImGui::BeginMainMenuBar();
-			if (ImGui::MenuItem("File"))
-			{
+		{
+			if (ImGui::BeginMainMenuBar()) {
+				if (ImGui::BeginMenu("File"))
+				{
+					if (ImGui::MenuItem("New", "Ctrl N"))
+					{
+						//Do something
+					}
+					if (ImGui::MenuItem("Open", "Ctrl O"))
+					{
+						//Do something
+					}
+					if (ImGui::MenuItem("Save", "Ctrl S"))
+					{
+						//Do something
+					}
+					if (ImGui::MenuItem("Save As", "Ctrl Shift S"))
+					{
+						//Do something
+					}
+					if (ImGui::MenuItem("Import"))
+					{
+						//Do something
+					}
+					if (ImGui::MenuItem("Export"))
+					{
+						//Do something
+					}
+				ImGui::EndMenu();
 			}
 			if (ImGui::MenuItem("Edit"))
 			{
@@ -184,7 +207,8 @@ int main() {
 			{
 			}
 			ImGui::EndMainMenuBar();
-		}*/
+			}
+		}
 
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1), translationA);
@@ -194,16 +218,18 @@ int main() {
 			shader.SetUniformMat4f("u_Model", model);
 
 			testModel.Draw(shader);
-
 			//renderer.Draw(va, ib, shader);
 		}
 
-		/*{
+		{
 			glm::mat4 model = glm::translate(glm::mat4(1), translationB);
 			glm::mat4 mvp = proj * view * model;
 			shader.SetUniformMat4f("u_MVP", mvp);
-			renderer.Draw(va, ib, shader);
-		}*/
+			shader.SetUniformMat4f("u_Model", model);
+			testModel1.Draw(shader);
+
+			//renderer.Draw(va, ib, shader);
+		}
 
 		{
 			shader.SetUniform3f("u_LightPos", lightPos.x, lightPos.y, lightPos.z);
@@ -212,9 +238,9 @@ int main() {
 		if (show_debug_window)
 		{
 			ImGui::Begin("Debug Window", &show_debug_window);
-			ImGui::SliderFloat3("Translation A", &translationA.x, 0.0f, 10.f);
-			//ImGui::SliderFloat3("Translation B", &translationB.x, 0.0f, 10.f);
-			ImGui::SliderFloat3("Light position", &lightPos.x, -3.0f, 3.f);
+			ImGui::SliderFloat3("Primitives Translation", &translationA.x, -8.0f, 8.f, "%f");
+			ImGui::SliderFloat3("Monkey Translation", &translationB.x, -8.0f, 8.f, "%f");
+			ImGui::SliderFloat3("Light Position", &lightPos.x, -5.0f, 5.f);
 			ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 30.f);
 			ImGui::Checkbox("Wireframe mode", &isWireframe);
 			ImGui::Spacing();
@@ -231,7 +257,7 @@ int main() {
 		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 		inputManager.PollEvents();
-		glfwSwapBuffers(window);
+		glfwSwapBuffers(renderer.GetWindow());
 	}
 
 	ImGui_ImplOpenGL3_Shutdown();
@@ -243,7 +269,7 @@ int main() {
 	return 0;
 }
 
-void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-{
-	glViewport(0, 0, width, height);
-}
+//void framebuffer_size_callback(GLFWwindow* window, int width, int height)
+//{
+//	glViewport(0, 0, width, height);
+//}
