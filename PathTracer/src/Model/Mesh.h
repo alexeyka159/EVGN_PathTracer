@@ -14,8 +14,6 @@
 
 #include "Shader.h"
 
-
-
 class Mesh {
 private:
 	unsigned int m_VAO;
@@ -45,6 +43,7 @@ public:
 	std::vector<Vertex>       m_Vertices;
 	std::vector<unsigned int> m_Indices;
 	std::vector<Texture>  m_Textures;
+	//Добавить класс материалов, в котором будут храниться текстуры и шейдер
 
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
 	void Draw(Shader* shader);

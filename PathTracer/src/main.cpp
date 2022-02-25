@@ -31,7 +31,9 @@
 
 #include "Model/Model.h"
 
-//void framebuffer_size_callback(GLFWwindow*, int, int);
+#include "FrameBuffer.h"
+
+#include "Scene.h"
 
 int main() {
 
@@ -39,31 +41,6 @@ int main() {
 	Renderer renderer(950, 540, "Path Tracer");
 	
 	EVGN::Time TIME;
-	
-	/*glfwInit();
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-	GLFWwindow* window = glfwCreateWindow(WIDTH, HEIGHT, "Path Tracer", NULL, NULL);
-	if (window == NULL)
-	{
-		std::cout << "Failed to create GLFW window" << std::endl;
-		glfwTerminate();
-		std::cin.get();
-		return -1;
-	}
-	glfwMakeContextCurrent(window);
-	glfwSetFramebufferSizeCallback(window, framebuffer_size_callback);
-
-	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress)) {
-		std::cout << "Failed to initialize GLAD" << std::endl;
-		glfwTerminate();
-		std::cin.get();
-		return -1;
-	}
-
-	std::cout << glGetString(GL_VERSION) << std::endl;*/
 	
 	float positions[] = {
 		-1.0f, -1.0f,		0.0f, 0.0f, //0
@@ -93,6 +70,7 @@ int main() {
 
 	IndexBuffer ib(&indices[0], 6);
 
+	Shader screenShader("res/shaders/Framebuffer/fb1.vert", "res/shaders/Framebuffer/fb1.frag");
 	Shader shader("res/shaders/sh1.vert", "res/shaders/sh1.frag");
 	shader.Bind();
 
@@ -108,8 +86,6 @@ int main() {
 
 	const char* glsl_version = "#version 330";
 	ImGui::CreateContext();
-	if (renderer.GetWindow() == nullptr)
-		std::cout << "NULL" << std::endl;
 	ImGui_ImplGlfw_InitForOpenGL(renderer.GetWindow(), true);
 	ImGui_ImplOpenGL3_Init(glsl_version);
 	ImGui::StyleColorsDark();
@@ -117,25 +93,11 @@ int main() {
 	glm::vec3 translationA(0, 0, 0);
 	glm::vec3 translationB(-2.5f, 0, 0);
 
-	//Создание камеры
-	//Type - enum Camera::orbital или Camera::fps
-	/*Camera camera(type, pos, dir, fov);
-
-	//Изменение камеры в лупе по инпуту
-	//Геттер на получение матрицы. Внутри считывается инпут в CameraController
-	glm::mat4 view = camera.GetViewMatrix(window);
-	glm::mat4 mvp = proj * view * model;
-	shader.Bind();
-	shader.SetUniformMat4f("u_MVP", mvp);
-
-	//процессинг инпутов методов в лупе
-	Controller(vector<вектор всех методов на обработку>);*/
-
-
 	float cameraSpeed = 5;
 	glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 5.0f);
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	CameraOrbit camera = CameraOrbit(cameraPos, cameraTarget, glm::vec3(0.f, 1.f, 0.f), 45, cameraSpeed);
+	//CameraFPS camera = CameraFPS(cameraPos, cameraTarget, glm::vec3(0.f, 1.f, 0.f), 45, cameraSpeed);
 
 	glm::mat4 proj = glm::perspective(glm::radians(camera.GetFov()), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 	glm::mat4 view;
@@ -150,8 +112,17 @@ int main() {
 	Model testModel("res/models/sphere and cube.obj");
 	Model testModel1("res/models/monk_smooth.obj");
 
+	FrameBuffer fb(WIDTH, HEIGHT, "texture");
+	FrameBuffer rb(WIDTH, HEIGHT, "render");
+
+	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	rb.Bind();
 	while (!glfwWindowShouldClose(renderer.GetWindow()))
 	{
+		fb.Bind();
+		glEnable(GL_DEPTH_TEST);
+
 		TIME.UpdateTime();
 		renderer.Clear();
 
@@ -210,6 +181,7 @@ int main() {
 			}
 		}
 
+
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1), translationA);
 			glm::mat4 mvp = proj * view * model;
@@ -248,6 +220,20 @@ int main() {
 			ImGui::End();
 		}
 
+		
+
+		fb.Unbind();
+		renderer.Clear();
+		//glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
+		//glClear(GL_COLOR_BUFFER_BIT);
+		glDisable(GL_DEPTH_TEST);
+
+		{
+			screenShader.Bind();
+			fb.BindTexture();
+			renderer.Draw(va, ib, screenShader);
+		}
+
 		if (isWireframe)
 			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		else
@@ -268,8 +254,3 @@ int main() {
 	glfwTerminate();
 	return 0;
 }
-
-//void framebuffer_size_callback(GLFWwindow* window, int width, int height)
-//{
-//	glViewport(0, 0, width, height);
-//}

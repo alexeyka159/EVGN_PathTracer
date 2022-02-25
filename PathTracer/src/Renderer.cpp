@@ -31,15 +31,15 @@ Renderer::Renderer(int w, int h, std::string wndName)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
+	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_CULL_FACE);
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 void Renderer::Clear() const
 {
+	glClearColor(0.1f, 0.1, 0.1f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
 }
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const

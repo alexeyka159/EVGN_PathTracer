@@ -73,8 +73,8 @@ void Mesh::Draw(Shader* shader)
     unsigned int heightNr = 1;
     for (unsigned int i = 0; i < m_Textures.size(); i++)
     {
-        //m_Textures[i].Bind(i);
-        glActiveTexture(GL_TEXTURE0 + i); // перед связыванием активируем нужный текстурный юнит
+        m_Textures[i].Bind(i);
+        //glActiveTexture(GL_TEXTURE0 + i); // перед связыванием активируем нужный текстурный юнит
         // Получаем номер текстуры (значение N в diffuse_textureN)
         std::string number;
         Texture::TextureType type = m_Textures[i].GetType();
@@ -88,7 +88,7 @@ void Mesh::Draw(Shader* shader)
         }
 
         shader->SetUniform1i(("u_material." + (TextureTypeConv::ConvertTypeToStr(type) + number)).c_str(), i);
-        glBindTexture(GL_TEXTURE_2D, m_Textures[i].m_RendererID);
+        //glBindTexture(GL_TEXTURE_2D, m_Textures[i].m_RendererID);
     }
 
     //!!Временно. Позже меш будет отправляться рендереру и отрисовываться там

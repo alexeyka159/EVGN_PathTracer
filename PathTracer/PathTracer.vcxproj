@@ -160,6 +160,7 @@
     <ClCompile Include="src\Camera\CameraOrbit.cpp" />
     <ClCompile Include="src\Camera\Presets\FPSCC.cpp" />
     <ClCompile Include="src\Camera\Presets\OrbitCC.cpp" />
+    <ClCompile Include="src\FrameBuffer.cpp" />
     <ClCompile Include="src\InputManager.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\IndexBuffer.cpp" />
@@ -167,6 +168,7 @@
     <ClCompile Include="src\Model\Mesh.cpp" />
     <ClCompile Include="src\Model\Model.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
+    <ClCompile Include="src\Scene.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\EVGNTime.cpp" />
@@ -188,12 +190,14 @@
     <ClInclude Include="src\Camera\CameraOrbit.h" />
     <ClInclude Include="src\Camera\Presets\FPSCC.h" />
     <ClInclude Include="src\Camera\Presets\OrbitCC.h" />
+    <ClInclude Include="src\FrameBuffer.h" />
     <ClInclude Include="src\InputController.h" />
     <ClInclude Include="src\InputManager.h" />
     <ClInclude Include="src\IndexBuffer.h" />
     <ClInclude Include="src\Model\Mesh.h" />
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Renderer.h" />
+    <ClInclude Include="src\Scene.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\EVGNTime.h" />

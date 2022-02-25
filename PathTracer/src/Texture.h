@@ -7,11 +7,11 @@
 class Texture {
 	
 private:
+	unsigned int m_RendererID;
 	std::string m_FilePath;
 	int m_Width, m_Height, m_BPP;
 	
 public:
-	unsigned int m_RendererID;
 	enum class TextureType
 	{
 		DIFFUSE,
