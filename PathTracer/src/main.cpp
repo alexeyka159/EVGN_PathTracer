@@ -33,7 +33,8 @@
 
 #include "FrameBuffer.h"
 
-#include "Scene.h"
+#include "Scene/Scene.h"
+#include "Scene/Entity.h"
 
 int main() {
 
@@ -41,7 +42,7 @@ int main() {
 	Renderer renderer(950, 540, "Path Tracer");
 	
 	EVGN::Time TIME;
-	
+	//std::cout << __cplusplus << std::endl;
 	float positions[] = {
 		-1.0f, -1.0f,		0.0f, 0.0f, //0
 		 1.0f, -1.0f,		1.0f, 0.0f, //1
@@ -108,9 +109,18 @@ int main() {
 	bool show_debug_window = true;
 	bool isWireframe = false;
 
+
+
+	Scene activeScene;
+	Entity monkey = activeScene.CreateEntity("Monkey");
+	monkey.AddComponent<ModelRendererComponent>("res/models/monk_smooth.obj");
+
+
+
+
 	glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
-	Model testModel("res/models/sphere and cube.obj");
-	Model testModel1("res/models/monk_smooth.obj");
+	//Model testModel("res/models/sphere and cube.obj");
+	//Model testModel1("res/models/monk_smooth.obj");
 
 	FrameBuffer fb(WIDTH, HEIGHT, "texture");
 	FrameBuffer rb(WIDTH, HEIGHT, "render");
@@ -189,7 +199,9 @@ int main() {
 			shader.SetUniformMat4f("u_MVP", mvp);
 			shader.SetUniformMat4f("u_Model", model);
 
-			testModel.Draw(shader);
+			if(monkey)
+				monkey.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
+			//testModel.Draw(shader);
 			//renderer.Draw(va, ib, shader);
 		}
 
@@ -198,7 +210,7 @@ int main() {
 			glm::mat4 mvp = proj * view * model;
 			shader.SetUniformMat4f("u_MVP", mvp);
 			shader.SetUniformMat4f("u_Model", model);
-			testModel1.Draw(shader);
+			//testModel1.Draw(shader);
 
 			//renderer.Draw(va, ib, shader);
 		}

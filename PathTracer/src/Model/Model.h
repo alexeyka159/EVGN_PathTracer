@@ -20,6 +20,7 @@ private:
 	std::vector<Texture> LoadMaterialTextures(aiMaterial* mat, aiTextureType type, Texture::TextureType typeName);
 
 public:
+	Model(const Model&) = default;
 	inline Model(const char* path) { LoadModel(path); }
 	void Draw(Shader &shader);
 };
