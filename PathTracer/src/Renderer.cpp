@@ -36,6 +36,11 @@ Renderer::Renderer(int w, int h, std::string wndName)
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
+Renderer::~Renderer()
+{
+	glfwTerminate();
+}
+
 void Renderer::Clear() const
 {
 	glClearColor(0.1f, 0.1, 0.1f, 1.0f);

@@ -164,7 +164,9 @@
     <ClCompile Include="src\Camera\CameraOrbit.cpp" />
     <ClCompile Include="src\Camera\Presets\FPSCC.cpp" />
     <ClCompile Include="src\Camera\Presets\OrbitCC.cpp" />
-    <ClCompile Include="src\FrameBuffer.cpp" />
+    <ClCompile Include="src\Framebuffer.cpp" />
+    <ClCompile Include="src\GUI\GUI.cpp" />
+    <ClCompile Include="src\GUI\ImGuiBuild.cpp" />
     <ClCompile Include="src\InputManager.cpp" />
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\IndexBuffer.cpp" />
@@ -195,7 +197,9 @@
     <ClInclude Include="src\Camera\CameraOrbit.h" />
     <ClInclude Include="src\Camera\Presets\FPSCC.h" />
     <ClInclude Include="src\Camera\Presets\OrbitCC.h" />
-    <ClInclude Include="src\FrameBuffer.h" />
+    <ClInclude Include="src\Framebuffer.h" />
+    <ClInclude Include="src\GUI\GUI.h" />
+    <ClInclude Include="src\GUI\Panels\GUIPanel.h" />
     <ClInclude Include="src\InputController.h" />
     <ClInclude Include="src\InputManager.h" />
     <ClInclude Include="src\IndexBuffer.h" />
@@ -212,6 +216,7 @@
     <ClInclude Include="src\vendor\imgui\imgui.h" />
     <ClInclude Include="src\vendor\imgui\imgui_impl_glfw.h" />
     <ClInclude Include="src\vendor\imgui\imgui_impl_opengl3.h" />
+    <ClInclude Include="src\vendor\imgui\imgui_impl_opengl3_loader.h" />
     <ClInclude Include="src\vendor\imgui\imgui_internal.h" />
     <ClInclude Include="src\vendor\imgui\imstb_rectpack.h" />
     <ClInclude Include="src\vendor\imgui\imstb_textedit.h" />

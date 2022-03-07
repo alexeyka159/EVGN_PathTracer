@@ -19,6 +19,7 @@ private:
 
 public:
 	Renderer(int w, int h, std::string wndName);
+	~Renderer();
 
 	inline GLFWwindow* GetWindow() const { return m_Window;  }
 

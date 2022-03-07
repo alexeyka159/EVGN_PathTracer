@@ -18,9 +18,7 @@
 
 #include "Texture.h"
 
-#include "vendor/imgui/imgui.h"
-#include "vendor/imgui/imgui_impl_glfw.h"
-#include "vendor/imgui/imgui_impl_opengl3.h"
+#include "GUI/GUI.h"
 
 #include "InputManager.h"
 #include "Camera/Camera.h"
@@ -31,7 +29,7 @@
 
 #include "Model/Model.h"
 
-#include "FrameBuffer.h"
+#include "Framebuffer.h"
 
 #include "Scene/Scene.h"
 #include "Scene/Entity.h"
@@ -39,28 +37,26 @@
 int main() {
 
 	int WIDTH = 950, HEIGHT = 540;
-	Renderer renderer(950, 540, "Path Tracer");
+	Renderer renderer(WIDTH, HEIGHT, "Path Tracer");
 	
 	EVGN::Time TIME;
-	//std::cout << __cplusplus << std::endl;
-	float positions[] = {
-		-1.0f, -1.0f,		0.0f, 0.0f, //0
-		 1.0f, -1.0f,		1.0f, 0.0f, //1
-		 1.0f,  1.0f,		1.0f, 1.0f, //2
-		-1.0f,  1.0f,		0.0f, 1.0f  //3
-	};
 
-	unsigned int indices[] = {
-		0, 1, 2,
-		2, 3, 0
-	};
+	//float positions[] = {
+	//	-1.0f, -1.0f,		0.0f, 0.0f, //0
+	//	 1.0f, -1.0f,		1.0f, 0.0f, //1
+	//	 1.0f,  1.0f,		1.0f, 1.0f, //2
+	//	-1.0f,  1.0f,		0.0f, 1.0f  //3
+	//};
 
-	
+	//unsigned int indices[] = {
+	//	0, 1, 2,
+	//	2, 3, 0
+	//};
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SOURCE0_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	VertexArray va;
+	/*VertexArray va;
 
 	VertexBuffer vb(&positions[0], 4 * 4 * sizeof(float));
 	VertexBufferLayout layout;
@@ -71,7 +67,8 @@ int main() {
 
 	IndexBuffer ib(&indices[0], 6);
 
-	Shader screenShader("res/shaders/Framebuffer/fb1.vert", "res/shaders/Framebuffer/fb1.frag");
+	Shader screenShader("res/shaders/Framebuffer/fb1.vert", "res/shaders/Framebuffer/fb1.frag");*/
+
 	Shader shader("res/shaders/sh1.vert", "res/shaders/sh1.frag");
 	shader.Bind();
 
@@ -79,17 +76,20 @@ int main() {
 	texture.Bind();
 	shader.SetUniform1i("u_Texture", 0);*/
 
-	va.Unbind();
+	/*va.Unbind();
 	vb.Unbind();
 	ib.Unbind();
-	shader.Unbind();
+	shader.Unbind();*/
 
 
-	const char* glsl_version = "#version 330";
-	ImGui::CreateContext();
-	ImGui_ImplGlfw_InitForOpenGL(renderer.GetWindow(), true);
-	ImGui_ImplOpenGL3_Init(glsl_version);
-	ImGui::StyleColorsDark();
+	GUI gui(renderer.GetWindow());
+	//MainMenuBar* menuBar = new MainMenuBar();
+	//gui.Push(menuBar);
+
+	// Our state
+	bool show_demo_window = true;
+	bool show_another_window = false;
+	ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
 	glm::vec3 translationA(0, 0, 0);
 	glm::vec3 translationB(-2.5f, 0, 0);
@@ -109,28 +109,25 @@ int main() {
 	bool show_debug_window = true;
 	bool isWireframe = false;
 
-
-
 	Scene activeScene;
 	Entity monkey = activeScene.CreateEntity("Monkey");
 	monkey.AddComponent<ModelRendererComponent>("res/models/monk_smooth.obj");
-
-
-
 
 	glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
 	//Model testModel("res/models/sphere and cube.obj");
 	//Model testModel1("res/models/monk_smooth.obj");
 
-	FrameBuffer fb(WIDTH, HEIGHT, "texture");
-	FrameBuffer rb(WIDTH, HEIGHT, "render");
+	FramebufferSpecification fbSpec;
+	fbSpec.Width = WIDTH;
+	fbSpec.Height = HEIGHT;
+	Framebuffer frameBuffer(fbSpec);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	rb.Bind();
+	//rb.Bind();
 	while (!glfwWindowShouldClose(renderer.GetWindow()))
 	{
-		fb.Bind();
+		frameBuffer.Bind();
 		glEnable(GL_DEPTH_TEST);
 
 		TIME.UpdateTime();
@@ -142,55 +139,6 @@ int main() {
 		camera.SetSpeed(cameraSpeed);
 
 		view = camera.GetViewMatrix();
-
-		ImGui_ImplOpenGL3_NewFrame();
-		ImGui_ImplGlfw_NewFrame();
-		ImGui::NewFrame();
-
-
-		{
-			if (ImGui::BeginMainMenuBar()) {
-				if (ImGui::BeginMenu("File"))
-				{
-					if (ImGui::MenuItem("New", "Ctrl N"))
-					{
-						//Do something
-					}
-					if (ImGui::MenuItem("Open", "Ctrl O"))
-					{
-						//Do something
-					}
-					if (ImGui::MenuItem("Save", "Ctrl S"))
-					{
-						//Do something
-					}
-					if (ImGui::MenuItem("Save As", "Ctrl Shift S"))
-					{
-						//Do something
-					}
-					if (ImGui::MenuItem("Import"))
-					{
-						//Do something
-					}
-					if (ImGui::MenuItem("Export"))
-					{
-						//Do something
-					}
-				ImGui::EndMenu();
-			}
-			if (ImGui::MenuItem("Edit"))
-			{
-			}
-			if (ImGui::MenuItem("Add"))
-			{
-			}
-			if (ImGui::MenuItem("Selection"))
-			{
-			}
-			ImGui::EndMainMenuBar();
-			}
-		}
-
 
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1), translationA);
@@ -219,6 +167,12 @@ int main() {
 			shader.SetUniform3f("u_LightPos", lightPos.x, lightPos.y, lightPos.z);
 		}
 
+		frameBuffer.Unbind();
+
+		gui.Begin();
+		uint32_t guiTextureID = frameBuffer.GetColorAttachmentRendererId();
+		//ImGui::Image((void*)guiTextureID, ImVec2{ 320.0f, 180.0f });
+
 		if (show_debug_window)
 		{
 			ImGui::Begin("Debug Window", &show_debug_window);
@@ -231,38 +185,12 @@ int main() {
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
 		}
-
-		
-
-		fb.Unbind();
-		renderer.Clear();
-		//glClearColor(0.1f, 0.1f, 0.1f, 1.0f);
-		//glClear(GL_COLOR_BUFFER_BIT);
-		glDisable(GL_DEPTH_TEST);
-
-		{
-			screenShader.Bind();
-			fb.BindTexture();
-			renderer.Draw(va, ib, screenShader);
-		}
-
-		if (isWireframe)
-			glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
-		else
-			glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
-
-		ImGui::Render();
-		ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+		gui.Render(guiTextureID);
+		gui.End();
 
 		inputManager.PollEvents();
 		glfwSwapBuffers(renderer.GetWindow());
 	}
 
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
-
-
-	glfwTerminate();
 	return 0;
 }

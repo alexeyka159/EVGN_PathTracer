@@ -1,23 +1,30 @@
 #pragma once
+#include <cstdint>
 
-#include "Renderer.h"
+struct FramebufferSpecification
+{
+	uint32_t Width, Height;
+	//FramebufferFormat Format =  
+	uint32_t Samples = 1;
 
-class FrameBuffer {
+	bool SwapChainTarget = false;
+};
+
+class Framebuffer
+{
 private:
-	unsigned int m_RendererID;
-	unsigned int m_Buffer;
-	std::string m_Type;
-
-	unsigned int m_Width, m_Height;
-
-	void CreateFBTextureBuffer();
-	void CreateFBRenderBuffer();
+	FramebufferSpecification m_Specification;
+	uint32_t m_RendererID;
+	uint32_t m_ColorAttachment, m_DepthAttachment;
 public:
-	FrameBuffer(unsigned int width, unsigned int height, std::string type = "texture");
-	~FrameBuffer();
+	Framebuffer(const FramebufferSpecification& spec);
+	~Framebuffer();
 
-	void BindTexture();
+	void Invalidate();
 
 	void Bind();
 	void Unbind();
+
+	inline uint32_t GetColorAttachmentRendererId() const { return m_ColorAttachment; }
+	inline const FramebufferSpecification& GetSpecification() const { return m_Specification; }
 };
