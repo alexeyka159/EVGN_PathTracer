@@ -19,6 +19,8 @@
 #include "Texture.h"
 
 #include "GUI/GUI.h"
+#include "GUI/Panels/ViewportPanel.h"
+#include "GUI/Panels/SceneHierarchyPanel.h"
 
 #include "InputManager.h"
 #include "Camera/Camera.h"
@@ -109,6 +111,8 @@ int main() {
 	Scene activeScene;
 	Entity monkey = activeScene.CreateEntity("Monkey");
 	monkey.AddComponent<ModelRendererComponent>("res/models/monk_smooth.obj");
+	Entity prims = activeScene.CreateEntity("Primitives");
+	prims.AddComponent<ModelRendererComponent>("res/models/sphere and cube.obj");
 
 	glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
 	//Model testModel("res/models/sphere and cube.obj");
@@ -119,11 +123,14 @@ int main() {
 	fbSpec.Height = HEIGHT;
 	Framebuffer frameBuffer(fbSpec);
 
+
 	GUI gui(renderer.GetWindow());
-	//MainMenuBar* menuBar = new MainMenuBar();
-	//gui.Push(menuBar);
+
 	ViewportPanel* viewport = new ViewportPanel(frameBuffer, camera);
 	gui.Push(viewport);
+
+	SceneHierarchyPanel* outliner = new SceneHierarchyPanel(activeScene);
+	gui.Push(outliner);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -152,6 +159,7 @@ int main() {
 
 			if(monkey)
 				monkey.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
+			
 			//testModel.Draw(shader);
 			//renderer.Draw(va, ib, shader);
 		}
@@ -162,7 +170,8 @@ int main() {
 			shader.SetUniformMat4f("u_MVP", mvp);
 			shader.SetUniformMat4f("u_Model", model);
 			//testModel1.Draw(shader);
-
+			if (prims)
+				prims.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
 			//renderer.Draw(va, ib, shader);
 		}
 

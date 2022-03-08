@@ -10,9 +10,12 @@ private:
 	entt::registry m_Registry;
 
 	friend class Entity;
+	friend class SceneHierarchyPanel;
 public:
 	Scene();
 	~Scene();
 
 	Entity CreateEntity(const std::string& name = std::string());
+
+	Scene& operator=(const Scene&) { return *this; }
 };
