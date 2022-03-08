@@ -12,6 +12,8 @@
 class CameraOrbit : public Camera {
 private:
 	glm::mat4 m_View;
+	glm::mat4 m_Projection;
+
 	glm::vec3 m_CamPos;
 	glm::vec3 m_CamDir;
 	float m_CamFov;
@@ -33,6 +35,13 @@ public:
 	glm::mat4 GetViewMatrix() override;
 
 	glm::vec3 UpdateUp() override;
+
+	inline glm::mat4 GetProjection() override { return m_Projection; };
+	inline void SetProjection(float& width, float& height, float& fov, float& near, float& far) override {
+		m_Projection = glm::perspective(glm::radians(fov), (float)width / (float)height, near, far);
+	};
+
+	void OnResize(float& width, float& height) override;
 
 	glm::vec3 GetDirection() override;
 	glm::vec3 GetRightVector() override;

@@ -19,6 +19,10 @@ public:
 
 	virtual glm::mat4 GetViewMatrix() = 0;
 
+	virtual glm::mat4 GetProjection() = 0;
+	virtual void SetProjection(float& width, float& height, float& fov, float& near, float& far) = 0;
+	virtual void OnResize(float& width, float& height) = 0;
+
 	virtual glm::vec3 UpdateUp() = 0;
 	virtual glm::vec3 GetRightVector() = 0;
 

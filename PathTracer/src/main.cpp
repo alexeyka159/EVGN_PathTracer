@@ -82,9 +82,7 @@ int main() {
 	shader.Unbind();*/
 
 
-	GUI gui(renderer.GetWindow());
-	//MainMenuBar* menuBar = new MainMenuBar();
-	//gui.Push(menuBar);
+	
 
 	// Our state
 	bool show_demo_window = true;
@@ -99,8 +97,7 @@ int main() {
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	CameraOrbit camera = CameraOrbit(cameraPos, cameraTarget, glm::vec3(0.f, 1.f, 0.f), 45, cameraSpeed);
 	//CameraFPS camera = CameraFPS(cameraPos, cameraTarget, glm::vec3(0.f, 1.f, 0.f), 45, cameraSpeed);
-
-	glm::mat4 proj = glm::perspective(glm::radians(camera.GetFov()), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
+	//glm::mat4 proj = glm::perspective(glm::radians(camera.GetFov()), (float)WIDTH / (float)HEIGHT, 0.1f, 100.0f);
 	glm::mat4 view;
 
 	InputManager inputManager(renderer.GetWindow());
@@ -122,6 +119,12 @@ int main() {
 	fbSpec.Height = HEIGHT;
 	Framebuffer frameBuffer(fbSpec);
 
+	GUI gui(renderer.GetWindow());
+	//MainMenuBar* menuBar = new MainMenuBar();
+	//gui.Push(menuBar);
+	ViewportPanel* viewport = new ViewportPanel(frameBuffer, camera);
+	gui.Push(viewport);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	//rb.Bind();
@@ -142,7 +145,7 @@ int main() {
 
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1), translationA);
-			glm::mat4 mvp = proj * view * model;
+			glm::mat4 mvp = camera.GetProjection() * view * model;
 			shader.Bind();
 			shader.SetUniformMat4f("u_MVP", mvp);
 			shader.SetUniformMat4f("u_Model", model);
@@ -155,7 +158,7 @@ int main() {
 
 		{
 			glm::mat4 model = glm::translate(glm::mat4(1), translationB);
-			glm::mat4 mvp = proj * view * model;
+			glm::mat4 mvp = camera.GetProjection() * view * model;
 			shader.SetUniformMat4f("u_MVP", mvp);
 			shader.SetUniformMat4f("u_Model", model);
 			//testModel1.Draw(shader);
@@ -170,8 +173,6 @@ int main() {
 		frameBuffer.Unbind();
 
 		gui.Begin();
-		uint32_t guiTextureID = frameBuffer.GetColorAttachmentRendererId();
-		//ImGui::Image((void*)guiTextureID, ImVec2{ 320.0f, 180.0f });
 
 		if (show_debug_window)
 		{
@@ -185,7 +186,8 @@ int main() {
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();
 		}
-		gui.Render(guiTextureID);
+
+		gui.Render();
 		gui.End();
 
 		inputManager.PollEvents();

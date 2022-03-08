@@ -67,7 +67,7 @@ void GUI::End()
 	}
 }
 
-void GUI::Render(uint32_t guiTextureID)
+void GUI::Render()
 {
     static bool dockSpaceOpen = true;
     static bool opt_fullscreen = true;
@@ -136,9 +136,13 @@ void GUI::Render(uint32_t guiTextureID)
         ImGui::EndMenuBar();
     }
 
-    ImGui::Begin("Viewport");
-    ImGui::Image((void*)guiTextureID, ImVec2{ 950.0f, 540.0f }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-    ImGui::End();
+    //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+    //ImGui::Begin("Viewport");
+    //ImVec2 viewportPanelSize = ImGui::GetContentRegionMax();
+    ////std::cout << "x: " << viewportPanelSize.x << ", y: " << viewportPanelSize.y << std::endl;
+    //ImGui::Image((void*)guiTextureID, ImVec2{ viewportPanelSize.x, viewportPanelSize.y }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+    //ImGui::End();
+    //ImGui::PopStyleVar();
 
     ImGui::ShowDemoWindow();
 

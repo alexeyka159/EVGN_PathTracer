@@ -6,7 +6,7 @@
 class Entity
 {
 private:
-	entt::entity m_EntityHandle = (entt::entity)-1;
+	entt::entity m_EntityHandle = { entt::null };
 	Scene* m_Scene = nullptr;
 
 public:
@@ -58,5 +58,5 @@ public:
 		return m_Scene->m_Registry.any_of<T>(m_EntityHandle);
 	}
 
-	operator bool() const { return m_EntityHandle != (entt::entity)-1; }
+	operator bool() const { return m_EntityHandle != entt::null; }
 };

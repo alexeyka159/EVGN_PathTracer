@@ -6,6 +6,8 @@
 #include "vendor/imgui/imgui_impl_glfw.h"
 #include "vendor/imgui/imgui_impl_opengl3.h"
 
+#include "GUI/Panels/ViewportPanel.h"
+
 #include <vector>
 
 class GUIPanel;
@@ -15,6 +17,7 @@ private:
 	GLFWwindow* m_Window;
 
 	std::vector<GUIPanel*> m_Panels;
+
 public:
 	GUI(GLFWwindow* window);
 	~GUI();
@@ -23,5 +26,5 @@ public:
 
 	void Begin();
 	void End();
-	void Render(uint32_t guiTextureID);
+	void Render();
 };
