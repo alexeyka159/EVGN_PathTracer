@@ -111,7 +111,7 @@
     <ClCompile Include="src\GUI\Panels\ViewportPanel.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Application.cpp">
+    <ClCompile Include="src\Application.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
     <ClCompile Include="src\GUI\Panels\SceneHierarchyPanel.cpp">
@@ -227,7 +227,7 @@
     <ClInclude Include="src\GUI\Panels\ViewportPanel.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
-    <ClInclude Include="Application.h">
+    <ClInclude Include="src\Application.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="src\GUI\Panels\SceneHierarchyPanel.h">

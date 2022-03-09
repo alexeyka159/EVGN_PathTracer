@@ -159,7 +159,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Application.cpp" />
+    <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\GUI\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\Camera\CameraController.cpp" />
     <ClCompile Include="src\Camera\CameraFPS.cpp" />
@@ -194,7 +194,7 @@
     <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Application.h" />
+    <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\GUI\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="src\Camera\Camera.h" />
     <ClInclude Include="src\Camera\CameraController.h" />
