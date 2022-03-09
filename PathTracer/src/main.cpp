@@ -105,7 +105,7 @@ int main() {
 	InputManager inputManager(renderer.GetWindow());
 	inputManager.Push(camera.GetController());
 
-	bool show_debug_window = true;
+	bool show_debug_window = false;
 	bool isWireframe = false;
 
 	Scene activeScene;
@@ -151,7 +151,7 @@ int main() {
 		view = camera.GetViewMatrix();
 
 		{
-			glm::mat4 model = glm::translate(glm::mat4(1), translationA);
+			glm::mat4 model = monkey.GetComponent<TransformComponent>().Transform;
 			glm::mat4 mvp = camera.GetProjection() * view * model;
 			shader.Bind();
 			shader.SetUniformMat4f("u_MVP", mvp);
@@ -165,7 +165,7 @@ int main() {
 		}
 
 		{
-			glm::mat4 model = glm::translate(glm::mat4(1), translationB);
+			glm::mat4 model = prims.GetComponent<TransformComponent>().Transform;
 			glm::mat4 mvp = camera.GetProjection() * view * model;
 			shader.SetUniformMat4f("u_MVP", mvp);
 			shader.SetUniformMat4f("u_Model", model);

@@ -12,6 +12,7 @@ private:
     Entity m_SelectionContext;
 
     void DrawEntityNode(Entity entity);
+    void DrawComponents(Entity entity);
 public:
     SceneHierarchyPanel() = default;
     SceneHierarchyPanel(Scene& context);
