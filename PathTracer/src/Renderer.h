@@ -7,6 +7,8 @@
 #include "IndexBuffer.h"
 #include "Shader.h"
 
+class Scene;
+class Camera;
 namespace RendererCallback {
 	void framebuffer_size_callback(GLFWwindow*, int, int);
 }
@@ -24,5 +26,6 @@ public:
 	inline GLFWwindow* GetWindow() const { return m_Window;  }
 
 	void Clear() const;
-	void Draw(const VertexArray& va, const IndexBuffer&  ib, const Shader& shader) const;
+	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
+	void Draw(Scene& scene, Camera& camera, Shader& shader) const;
 };

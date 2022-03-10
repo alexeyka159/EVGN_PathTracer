@@ -1,5 +1,8 @@
 #include "Renderer.h"
 
+#include "Scene/Entity.h"
+#include "Camera/Camera.h"
+
 Renderer::Renderer(int w, int h, std::string wndName)
 	: m_Width(w)
 	, m_Height(h)
@@ -55,6 +58,24 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 
 	glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
 	
+}
+
+void Renderer::Draw(Scene& scene, Camera& camera, Shader& shader) const
+{
+	// TODO: Сделать CameraComponent и получать камеру оттуда
+	scene.m_Registry.each([&](auto entityID) {
+		Entity entity{ entityID, &scene };
+		if (entity)
+		{
+			glm::mat4 model = entity.GetComponent<TransformComponent>().Transform;
+			glm::mat4 mvp = camera.GetProjection() * camera.GetViewMatrix() * model;
+			shader.Bind();
+			shader.SetUniformMat4f("u_MVP", mvp);
+			shader.SetUniformMat4f("u_Model", model);
+
+			entity.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
+		}
+	});
 }
 
 void RendererCallback::framebuffer_size_callback(GLFWwindow* window, int width, int height)
