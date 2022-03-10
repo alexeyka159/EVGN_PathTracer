@@ -109,31 +109,7 @@ int main() {
 		renderer.Draw(activeScene, camera, shader);
 
 		{
-			glm::mat4 model = monkey.GetComponent<TransformComponent>().Transform;
-			glm::mat4 mvp = camera.GetProjection() * view * model;
 			shader.Bind();
-			shader.SetUniformMat4f("u_MVP", mvp);
-			shader.SetUniformMat4f("u_Model", model);
-
-			if(monkey)
-				monkey.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
-			
-			//testModel.Draw(shader);
-			//renderer.Draw(va, ib, shader);
-		}
-
-		{
-			glm::mat4 model = prims.GetComponent<TransformComponent>().Transform;
-			glm::mat4 mvp = camera.GetProjection() * view * model;
-			shader.SetUniformMat4f("u_MVP", mvp);
-			shader.SetUniformMat4f("u_Model", model);
-			//testModel1.Draw(shader);
-			if (prims)
-				prims.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
-			//renderer.Draw(va, ib, shader);
-		}
-
-		{
 			shader.SetUniform3f("u_LightPos", lightPos.x, lightPos.y, lightPos.z);
 		}
 
@@ -141,18 +117,18 @@ int main() {
 
 		gui.Begin();
 
-		if (show_debug_window)
-		{
-			ImGui::Begin("Debug Window", &show_debug_window);
-			//ImGui::SliderFloat3("Primitives Translation", &translationA.x, -8.0f, 8.f, "%f");
-			//ImGui::SliderFloat3("Monkey Translation", &translationB.x, -8.0f, 8.f, "%f");
-			ImGui::SliderFloat3("Light Position", &lightPos.x, -5.0f, 5.f);
-			ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 30.f);
-			ImGui::Checkbox("Wireframe mode", &isWireframe);
-			ImGui::Spacing();
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			ImGui::End();
-		}
+		//if (show_debug_window)
+		//{
+		//	ImGui::Begin("Debug Window", &show_debug_window);
+		//	//ImGui::SliderFloat3("Primitives Translation", &translationA.x, -8.0f, 8.f, "%f");
+		//	//ImGui::SliderFloat3("Monkey Translation", &translationB.x, -8.0f, 8.f, "%f");
+		//	ImGui::SliderFloat3("Light Position", &lightPos.x, -5.0f, 5.f);
+		//	ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 30.f);
+		//	ImGui::Checkbox("Wireframe mode", &isWireframe);
+		//	ImGui::Spacing();
+		//	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
+		//	ImGui::End();
+		//}
 
 		gui.Render();
 		gui.End();
