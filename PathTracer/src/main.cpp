@@ -39,7 +39,7 @@
 int main() {
 
 	int WIDTH = 950, HEIGHT = 540;
-	Renderer renderer(WIDTH, HEIGHT, "Path Tracer");
+	Renderer renderer(WIDTH, HEIGHT, "Gravity Simulation");
 	
 	EVGN::Time TIME;
 
@@ -108,11 +108,18 @@ int main() {
 	bool show_debug_window = false;
 	bool isWireframe = false;
 
+
 	Scene activeScene;
-	Entity monkey = activeScene.CreateEntity("Monkey");
-	monkey.AddComponent<ModelRendererComponent>("res/models/monk_smooth.obj");
-	Entity prims = activeScene.CreateEntity("Primitives");
-	prims.AddComponent<ModelRendererComponent>("res/models/sphere and cube.obj");
+
+	Model asteroidModel("res/models/Asteroid.obj");
+
+	Entity asteroid1 = activeScene.CreateEntity("Asteroid1");
+	asteroid1.AddComponent<ModelRendererComponent>(asteroidModel);
+
+	Entity asteroid2 = activeScene.CreateEntity("Asteroid2");
+	asteroid2.AddComponent<ModelRendererComponent>(asteroidModel);
+	asteroid2.GetComponent<TransformComponent>().Transform = glm::translate(asteroid2.GetComponent<TransformComponent>().Transform, glm::vec3(2.0f, 0.0f, 0.0f));
+
 
 	glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
 	//Model testModel("res/models/sphere and cube.obj");
@@ -150,30 +157,40 @@ int main() {
 
 		view = camera.GetViewMatrix();
 
+		// TODO: ƒобавить в ветвь мастер в рендерер возможность рендерить всю сцену целиком
 		{
-			glm::mat4 model = monkey.GetComponent<TransformComponent>().Transform;
+			glm::mat4 model = asteroid1.GetComponent<TransformComponent>().Transform;
 			glm::mat4 mvp = camera.GetProjection() * view * model;
 			shader.Bind();
 			shader.SetUniformMat4f("u_MVP", mvp);
 			shader.SetUniformMat4f("u_Model", model);
 
-			if(monkey)
-				monkey.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
+			if(asteroid1)
+				asteroid1.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
+
+			model = asteroid2.GetComponent<TransformComponent>().Transform;
+			mvp = camera.GetProjection() * view * model;
+			shader.Bind();
+			shader.SetUniformMat4f("u_MVP", mvp);
+			shader.SetUniformMat4f("u_Model", model);
+
+			if (asteroid2)
+				asteroid2.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
 			
 			//testModel.Draw(shader);
 			//renderer.Draw(va, ib, shader);
 		}
 
-		{
-			glm::mat4 model = prims.GetComponent<TransformComponent>().Transform;
-			glm::mat4 mvp = camera.GetProjection() * view * model;
-			shader.SetUniformMat4f("u_MVP", mvp);
-			shader.SetUniformMat4f("u_Model", model);
-			//testModel1.Draw(shader);
-			if (prims)
-				prims.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
-			//renderer.Draw(va, ib, shader);
-		}
+		//{
+		//	glm::mat4 model = prims.GetComponent<TransformComponent>().Transform;
+		//	glm::mat4 mvp = camera.GetProjection() * view * model;
+		//	shader.SetUniformMat4f("u_MVP", mvp);
+		//	shader.SetUniformMat4f("u_Model", model);
+		//	//testModel1.Draw(shader);
+		//	if (prims)
+		//		prims.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
+		//	//renderer.Draw(va, ib, shader);
+		//}
 
 		{
 			shader.SetUniform3f("u_LightPos", lightPos.x, lightPos.y, lightPos.z);

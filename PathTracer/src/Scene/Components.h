@@ -40,3 +40,19 @@ struct ModelRendererComponent
 	operator Model& () { return ModelObj; }
 	operator const Model& () const { return ModelObj; }
 };
+
+struct GravityComponent
+{
+	float Mass;
+	float Radius;
+	glm::vec3 InitialVelocity;
+	glm::vec3 CurrentVelocity { 0 };
+
+	GravityComponent() = default;
+	GravityComponent(const GravityComponent&) = default;
+	GravityComponent(const float& mass, const float& radius, const glm::vec3& initialVelocity)
+		: Mass(mass)
+		, Radius(radius)
+		, InitialVelocity(initialVelocity)
+	{}
+};
