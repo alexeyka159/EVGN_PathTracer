@@ -34,8 +34,8 @@ struct ModelRendererComponent
 	ModelRendererComponent(const ModelRendererComponent&) = default;
 	ModelRendererComponent(const Model& model)
 		: ModelObj(model) {}
-	ModelRendererComponent(const char* path)
-		: ModelObj(path) {}
+	ModelRendererComponent(const char* path, Shader& shader)
+		: ModelObj(path, shader) {}
 
 	operator Model& () { return ModelObj; }
 	operator const Model& () const { return ModelObj; }
@@ -43,16 +43,18 @@ struct ModelRendererComponent
 
 struct GravityComponent
 {
-	float Mass;
-	float Radius;
-	glm::vec3 InitialVelocity;
+	float Mass = 1;
+	float Radius = 1;
+	glm::vec3 InitialVelocity { 1 };
 	glm::vec3 CurrentVelocity { 0 };
 
-	GravityComponent() = default;
+	GravityComponent() { CurrentVelocity = InitialVelocity; };
 	GravityComponent(const GravityComponent&) = default;
 	GravityComponent(const float& mass, const float& radius, const glm::vec3& initialVelocity)
 		: Mass(mass)
 		, Radius(radius)
 		, InitialVelocity(initialVelocity)
-	{}
+	{
+		CurrentVelocity = InitialVelocity; 
+	}
 };

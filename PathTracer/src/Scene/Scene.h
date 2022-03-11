@@ -12,11 +12,19 @@ private:
 	friend class Entity;
 	friend class SceneHierarchyPanel;
 	friend class Renderer;
+	friend class Gravity;
 public:
 	Scene();
 	~Scene();
 
 	Entity CreateEntity(const std::string& name = std::string());
+	
+	//template<typename T>
+	//entt::basic_view GetView() const
+	//{
+	//	auto view = m_Registry.view<T>();
+	//	return *view;
+	//}
 
 	Scene& operator=(const Scene&) { return *this; }
 };

@@ -26,6 +26,6 @@ public:
 	inline GLFWwindow* GetWindow() const { return m_Window;  }
 
 	void Clear() const;
-	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
-	void Draw(Scene& scene, Camera& camera, Shader& shader) const;
+	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, Camera& camera) const;
+	void Draw(Scene& scene, Camera& camera) const;
 };

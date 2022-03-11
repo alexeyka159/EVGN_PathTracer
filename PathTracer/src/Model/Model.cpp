@@ -130,10 +130,10 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 	return textures;
 }
 
-void Model::Draw(Shader& shader)
+void Model::Draw()
 {
 	for (Mesh& mesh : m_Meshes)
 	{
-		mesh.Draw(&shader);
+		mesh.Draw(m_Shader);
 	}
 }

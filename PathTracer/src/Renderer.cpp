@@ -50,8 +50,10 @@ void Renderer::Clear() const
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 }
 
-void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const
+void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, Camera& camera) const
 {
+	glm::mat4 mvp = camera.GetProjection() * camera.GetViewMatrix() * model;
+
 	shader.Bind();
 	va.Bind();
 	ib.Bind();
@@ -60,20 +62,23 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 	
 }
 
-void Renderer::Draw(Scene& scene, Camera& camera, Shader& shader) const
+void Renderer::Draw(Scene& scene, Camera& camera) const
 {
 	// TODO: Сделать CameraComponent и получать камеру оттуда
+	// TODO: Итерировать по вью и искать там энтити с МоделРендерерКомпонент
 	scene.m_Registry.each([&](auto entityID) {
 		Entity entity{ entityID, &scene };
-		if (entity)
+		if (entity.HasComponent<ModelRendererComponent>())
 		{
 			glm::mat4 model = entity.GetComponent<TransformComponent>().Transform;
 			glm::mat4 mvp = camera.GetProjection() * camera.GetViewMatrix() * model;
+			Model& renderModel = entity.GetComponent<ModelRendererComponent>().ModelObj;
+			Shader& shader = renderModel.GetShader();
 			shader.Bind();
 			shader.SetUniformMat4f("u_MVP", mvp);
 			shader.SetUniformMat4f("u_Model", model);
 
-			entity.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
+			renderModel.Draw();
 		}
 	});
 }

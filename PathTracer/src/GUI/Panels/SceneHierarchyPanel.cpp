@@ -87,4 +87,20 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			ImGui::TreePop();
 		}		
 	}
+
+	if (entity.HasComponent<GravityComponent>())
+	{
+		if (ImGui::TreeNodeEx((void*)typeid(GravityComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Physics"))
+		{
+			auto& mass = entity.GetComponent<GravityComponent>().Mass;
+			auto& radius = entity.GetComponent<GravityComponent>().Radius;
+			auto& velocity = entity.GetComponent<GravityComponent>().CurrentVelocity;
+
+			ImGui::DragFloat("Mass", &mass, 0.1f, 0.1f);
+			ImGui::DragFloat("Radius", &radius, 0.1f);
+			ImGui::DragFloat3("Velocity", &velocity[0], 0.1f);
+
+			ImGui::TreePop();
+		}
+	}
 }

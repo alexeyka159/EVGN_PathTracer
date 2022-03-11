@@ -5,12 +5,14 @@
 #include <assimp/postprocess.h>
 
 #include "Mesh.h"
+#include "Shader.h"
 
 class Model
 {
 private:
 	std::vector<Mesh> m_Meshes;
 	std::string m_Directory;
+	Shader* m_Shader;
 
 	std::vector<Texture> m_TexturesLoaded;
 
@@ -21,6 +23,8 @@ private:
 
 public:
 	Model(const Model&) = default;
-	inline Model(const char* path) { LoadModel(path); }
-	void Draw(Shader &shader);
+	inline Model(const char* path, Shader& shader) : m_Shader(&shader) { LoadModel(path); }
+	void Draw();
+
+	inline Shader& GetShader() { return *m_Shader; }
 };
