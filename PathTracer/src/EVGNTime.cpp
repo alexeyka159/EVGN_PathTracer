@@ -7,7 +7,7 @@ EVGN::Time::Time()
 
 void EVGN::Time::UpdateTime()
 {
-	float currentFrame = glfwGetTime();
-	m_deltaTime = currentFrame - m_lastFrame;
-	m_lastFrame = currentFrame;
+	m_totalTime = glfwGetTime();
+	m_deltaTime = m_totalTime - m_lastFrame;
+	m_lastFrame = m_totalTime;
 }

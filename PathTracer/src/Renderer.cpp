@@ -34,6 +34,8 @@ Renderer::Renderer(int w, int h, std::string wndName)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	//glEnable(GL_DEPTH_TEST);
 	glEnable(GL_CULL_FACE);
 	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
@@ -52,7 +54,7 @@ void Renderer::Clear() const
 
 void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader, Camera& camera) const
 {
-	glm::mat4 mvp = camera.GetProjection() * camera.GetViewMatrix() * model;
+	//glm::mat4 mvp = camera.GetProjection() * camera.GetViewMatrix() * model;
 
 	shader.Bind();
 	va.Bind();
@@ -62,7 +64,7 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 	
 }
 
-void Renderer::Draw(Scene& scene, Camera& camera) const
+void Renderer::Draw(Scene& scene, Camera& camera, float timeStep = 0.0f) const
 {
 	// TODO: Сделать CameraComponent и получать камеру оттуда
 	// TODO: Итерировать по вью и искать там энтити с МоделРендерерКомпонент
@@ -79,6 +81,44 @@ void Renderer::Draw(Scene& scene, Camera& camera) const
 			shader.SetUniformMat4f("u_Model", model);
 
 			renderModel.Draw();
+
+			/*Рендер путей*/
+			if (entity.HasComponent<TrailComponent>())
+			{
+				glDisable(GL_CULL_FACE);
+				auto& trailComponent = entity.GetComponent<TrailComponent>();
+				//float timer = trailComponent.Timer;
+				std::vector<glm::vec3> pos = trailComponent.Positions;
+				if (pos.size())
+				{
+					VertexArray va;
+
+					std::vector <glm::vec4> vData;
+					for (int i = 0; i < pos.size(); i++)
+						vData.push_back(glm::vec4(pos[i], (float)i));
+					VertexBuffer vb(&vData[0], vData.size() * 4 * sizeof(float));
+					VertexBufferLayout layout;
+
+					layout.Push<float>(4);
+					va.AddBuffer(vb, layout);
+
+					trailComponent.TrailShader->Bind();
+					trailComponent.TrailShader->SetUniformMat4f("u_VP", (camera.GetProjection() * camera.GetViewMatrix()));
+					trailComponent.TrailShader->SetUniform1f("u_Size", (float)pos.size());
+					glm::vec3 color = trailComponent.Color;
+					trailComponent.TrailShader->SetUniform3f("u_Color", color.r, color.g, color.b);
+					trailComponent.TrailShader->SetUniform1f("u_DotSize", 7);
+
+					glDrawArrays(GL_POINTS, 0, pos.size());
+					trailComponent.TrailShader->Unbind();
+
+					va.Unbind();
+					vb.Unbind();
+				}
+				glEnable(GL_CULL_FACE);
+				//entity.GetComponent<TrailComponent>().Timer = timer;
+			}
+
 		}
 	});
 }

@@ -18,7 +18,7 @@ public:
 	~Scene();
 
 	Entity CreateEntity(const std::string& name = std::string());
-	
+
 	//template<typename T>
 	//entt::basic_view GetView() const
 	//{

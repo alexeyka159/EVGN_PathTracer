@@ -61,7 +61,6 @@ int main() {
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	CameraOrbit camera = CameraOrbit(cameraPos, cameraTarget, glm::vec3(0.f, 1.f, 0.f), 45, cameraSpeed);
 	//CameraFPS camera = CameraFPS(cameraPos, cameraTarget, glm::vec3(0.f, 1.f, 0.f), 45, cameraSpeed);
-	glm::mat4 view;
 
 	InputManager inputManager(renderer.GetWindow());
 	inputManager.Push(camera.GetController());
@@ -73,33 +72,39 @@ int main() {
 	
 	Shader sunShader("res/shaders/sun.vert", "res/shaders/sun.frag");
 	Shader asteroidShader("res/shaders/sh1.vert", "res/shaders/sh1.frag");
+	Shader trailShader("res/shaders/trail.vert", "res/shaders/trail.frag", "res/shaders/trail.geom");
 	
 		Model asteroidModel("res/models/Asteroid.obj", asteroidShader);
 
 		Entity sun = activeScene.CreateEntity("Sun");
 		sun.AddComponent<ModelRendererComponent>(Model("res/models/Sun.obj", sunShader));
 		sun.AddComponent<GravityComponent>(100, 50, glm::vec3(0.0f, 0.0f, 0.0f));
+		sun.AddComponent<TrailComponent>(&trailShader);
 
 		Entity asteroid1 = activeScene.CreateEntity("Asteroid1");
 		asteroid1.AddComponent<ModelRendererComponent>(asteroidModel);
 		asteroid1.GetComponent<TransformComponent>().Transform = glm::translate(asteroid1.GetComponent<TransformComponent>().Transform,
 			glm::vec3(15.0f, 0.0f, 0.0f));
 		asteroid1.AddComponent<GravityComponent>(2, 5, glm::vec3(0, 0.0f, 2.1f));
+		asteroid1.AddComponent<TrailComponent>(&trailShader);
 
 		Entity asteroid2 = activeScene.CreateEntity("Asteroid2");
 		asteroid2.AddComponent<ModelRendererComponent>(asteroidModel);
 		asteroid2.GetComponent<TransformComponent>().Transform = glm::translate(asteroid2.GetComponent<TransformComponent>().Transform,
 			glm::vec3(26.0f, 0.0f, 0.0f));
 		asteroid2.AddComponent<GravityComponent>(10.f, 5, glm::vec3(0, 0.0f, -1.85f));
+		asteroid2.AddComponent<TrailComponent>(&trailShader);
 
 		Entity asteroid3 = activeScene.CreateEntity("Asteroid3");
 		asteroid3.AddComponent<ModelRendererComponent>(asteroidModel);
 		asteroid3.GetComponent<TransformComponent>().Transform = glm::translate(asteroid3.GetComponent<TransformComponent>().Transform,
 			glm::vec3(30.0f, 0.0f, 0.0f));
 		asteroid3.AddComponent<GravityComponent>(1.f, .1f, glm::vec3(0, 0.0f, -0.3f));
+		asteroid3.AddComponent<TrailComponent>(&trailShader);
 	
 
 	Gravity gravity;
+	std::vector<glm::vec3> celestialBodyPath;
 
 	glm::vec3 lightPos(0.0f, .0f, .0f);
 
@@ -114,11 +119,11 @@ int main() {
 	ViewportPanel* viewport = new ViewportPanel(frameBuffer, camera);
 	gui.Push(viewport);
 
-	SceneHierarchyPanel* outliner = new SceneHierarchyPanel(activeScene);
+	SceneHierarchyPanel* outliner = new SceneHierarchyPanel(activeScene, camera);
 	gui.Push(outliner);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
+	
 	while (!glfwWindowShouldClose(renderer.GetWindow()))
 	{
 		frameBuffer.Bind();
@@ -129,10 +134,7 @@ int main() {
 
 		glfwSetKeyCallback(renderer.GetWindow(), key_callback);
 
-		lightPos = {
-			sun.GetComponent<TransformComponent>().Transform[0][0],
-			sun.GetComponent<TransformComponent>().Transform[1][1],
-			sun.GetComponent<TransformComponent>().Transform[2][2] };
+		lightPos = sun.GetComponent<TransformComponent>().Transform * glm::vec4(1);
 
 		if(is_update)
 			gravity.Update(activeScene, TIME.DeltaTime());
@@ -142,7 +144,8 @@ int main() {
 		camera.GetController()->SetDeltaTime(TIME.DeltaTime());
 		camera.SetSpeed(cameraSpeed);
 
-		renderer.Draw(activeScene, camera);
+		renderer.Draw(activeScene, camera, TIME.DeltaTime());
+
 
 		{
 			asteroidShader.Bind();

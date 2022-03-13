@@ -28,7 +28,7 @@ CameraOrbit::CameraOrbit(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 upVec,
 	  m_Projection(glm::mat4(1))
 {
 	float w = 1280, h = 720;
-	float n = 0.1f, f = 100.f;
+	float n = 0.05f, f = 10000.f;
 	SetProjection(w, h, m_CamFov, n, f);
 	GetViewMatrix();
 	m_Controller = new OrbitCameraController();

@@ -10,12 +10,14 @@ class SceneHierarchyPanel : public GUIPanel
 private:
     Scene* m_Context;
     Entity m_SelectionContext;
+    Entity m_FollowedByContext;
+    Camera* m_Camera;
 
     void DrawEntityNode(Entity entity);
     void DrawComponents(Entity entity);
 public:
     SceneHierarchyPanel() = default;
-    SceneHierarchyPanel(Scene& context);
+    SceneHierarchyPanel(Scene& context, Camera& camera);
     inline ~SceneHierarchyPanel() { delete this; };
 
     void SetContex(const Scene& context);

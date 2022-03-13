@@ -16,6 +16,7 @@ struct ShaderSource
 {
 	const std::string vertex;
 	const std::string fragment;
+	const std::string geometry;
 };
 
 class Shader {
@@ -23,11 +24,13 @@ private:
 	unsigned int m_RendererID;
 	std::string m_FilePathVertex;
 	std::string m_FilePathFragment;
+	std::string m_FilePathGeometry;
 	ShaderSource m_SourceCode;
 	mutable std::unordered_map<std::string, int> m_UniformLocationCash; 
 
 public:
 	Shader(const std::string& filepathVertex, const std::string& filepathFragment);
+	Shader(const std::string& filepathVertex, const std::string& filepathFragment, const std::string& filepathGeometry);
 	~Shader();
 
 	void Bind() const;

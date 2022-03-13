@@ -4,8 +4,11 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-SceneHierarchyPanel::SceneHierarchyPanel(Scene& context)
+#include "Camera/Camera.h"
+
+SceneHierarchyPanel::SceneHierarchyPanel(Scene& context, Camera& camera)
 	: m_Context(&context)
+	, m_Camera(&camera)
 {
 	SetContex(context);
 }
@@ -45,6 +48,11 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 {
 	auto& tag = entity.GetComponent<TagComponent>().Tag;
 
+	if (m_FollowedByContext) {
+		const glm::vec3 lookAt = m_FollowedByContext.GetComponent<TransformComponent>().Transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+		m_Camera->SetCameraView( (lookAt - m_Camera->GetPosition()), lookAt, glm::vec3(0, 1, 0));
+	}
+
 	ImGuiTreeNodeFlags flags = ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
 	bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
 	if (ImGui::IsItemClicked())
@@ -55,9 +63,6 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	if (opened)
 	{
 		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
-		bool opened = ImGui::TreeNodeEx((void*)86461, flags, tag.c_str());
-		if(opened)
-			ImGui::TreePop();
 		ImGui::TreePop();
 	}
 }
@@ -77,8 +82,15 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		}
 	}
 
+	
+
 	if (entity.HasComponent<TransformComponent>())
 	{
+		if (ImGui::Button("Focus on"))
+			m_FollowedByContext = m_SelectionContext;
+		ImGui::SameLine();
+		if (ImGui::Button("Stop focusing"))
+			m_FollowedByContext = { };
 		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
 		{
 			auto& transform = entity.GetComponent<TransformComponent>().Transform;
@@ -86,6 +98,11 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			ImGui::DragFloat3("Position", glm::value_ptr(transform[3]), 0.1f);
 			ImGui::TreePop();
 		}		
+	}
+
+	if (entity.HasComponent<ModelRendererComponent>())
+	{
+		
 	}
 
 	if (entity.HasComponent<GravityComponent>())
@@ -100,7 +117,21 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			ImGui::DragFloat("Radius", &radius, 0.1f);
 			ImGui::DragFloat3("Velocity", &velocity[0], 0.1f);
 
+			if (entity.HasComponent<TrailComponent>())
+			{
+				if (ImGui::TreeNodeEx((void*)typeid(TrailComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Trail"))
+				{
+					auto& color = entity.GetComponent<TrailComponent>().Color;
+
+					ImGui::ColorPicker4("##picker", (float*)&color);
+
+					ImGui::TreePop();
+				}
+			}
+
 			ImGui::TreePop();
 		}
+
+		
 	}
 }

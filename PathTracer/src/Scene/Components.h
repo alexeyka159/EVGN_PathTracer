@@ -2,6 +2,8 @@
 
 #include "glm/glm.hpp"
 #include "Model/Model.h"
+#include "Shader.h"
+#include <vector>
 
 struct TagComponent
 {
@@ -26,6 +28,7 @@ struct TransformComponent
 	operator const glm::mat4& () const { return Transform; }
 };
 
+//TODO: Добавить свойство bool rendereble, чтобы была возможность отключать отображение модели во вьюпорте
 struct ModelRendererComponent
 {
 	Model ModelObj;
@@ -45,7 +48,7 @@ struct GravityComponent
 {
 	float Mass = 1;
 	float Radius = 1;
-	glm::vec3 InitialVelocity { 1 };
+	glm::vec3 InitialVelocity { 0 };
 	glm::vec3 CurrentVelocity { 0 };
 
 	GravityComponent() { CurrentVelocity = InitialVelocity; };
@@ -57,4 +60,30 @@ struct GravityComponent
 	{
 		CurrentVelocity = InitialVelocity; 
 	}
+};
+
+
+struct TrailComponent
+{
+	std::vector<glm::vec3> Positions;
+	Shader* TrailShader;
+	float Timer = 0;
+	glm::vec3 Color;
+
+	//TrailComponent() = default;
+	TrailComponent(const TrailComponent&) = default;
+	/*TrailComponent(const std::vector<glm::vec3>& coords, Shader shader)
+		: Positions(coords)
+		, TrailShader(shader){};*/
+	TrailComponent(Shader* shader, glm::vec3& color)
+		: TrailShader(shader)
+		, Color(color) {}
+	TrailComponent(Shader* shader)
+		: TrailShader(shader)
+	{
+		float r = .5f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(1-.5f)));
+		float g = .5f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(1-.5f)));
+		float b = .5f + static_cast <float> (rand()) /( static_cast <float> (RAND_MAX/(1-.5f)));
+		Color = { r, g, b };
+	};
 };
