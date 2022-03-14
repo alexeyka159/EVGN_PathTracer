@@ -16,21 +16,26 @@ void main()
 
 	g_Color = v_Color[0];
 	
+	vec4 center = u_VP * pos;
+	vec2 dir = vec2(u_DotSize * .015f);
 
 	g_UV = vec2(0, 0) * 2 - 1;
-	gl_Position = u_VP * (pos + vec4(-0.01f * u_DotSize, 0.0f, -0.01f * u_DotSize, 0.f));
+	gl_Position = vec4( center.x+dir.x, center.y+dir.y, center.z, center.w );
 	EmitVertex();
 
+	
 	g_UV = vec2(1, 0) * 2 - 1;
-	gl_Position = u_VP * (pos + vec4(0.01f * u_DotSize, 0.0f, -0.01f * u_DotSize, 0.f));
+	gl_Position = vec4( center.x-dir.x, center.y+dir.y, center.z, center.w );
 	EmitVertex();
 
+	
 	g_UV = vec2(0, 1) * 2 - 1;
-	gl_Position = u_VP * (pos + vec4(-0.01f * u_DotSize, 0.0f, 0.01f * u_DotSize, 0.f));
+	gl_Position = vec4( center.x+dir.x, center.y-dir.y, center.z, center.w );
 	EmitVertex();
 
+	
 	g_UV = vec2(1, 1) * 2 - 1;
-	gl_Position = u_VP * (pos + vec4(0.01f * u_DotSize, 0.0f, 0.01f * u_DotSize, 0.f));
+	gl_Position = vec4( center.x-dir.x, center.y-dir.y, center.z, center.w );
 	EmitVertex();
 
 	EndPrimitive();
