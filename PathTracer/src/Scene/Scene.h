@@ -18,6 +18,7 @@ public:
 	~Scene();
 
 	Entity CreateEntity(const std::string& name = std::string());
+	void RemoveEntity(Entity& entity);
 
 	//template<typename T>
 	//entt::basic_view GetView() const

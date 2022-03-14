@@ -14,7 +14,6 @@ private:
 	//float m_CamUpVec;
 
 public:
-
 	virtual void SetCameraView(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 camUp) = 0;
 
 	virtual glm::mat4 GetViewMatrix() = 0;

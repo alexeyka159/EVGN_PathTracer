@@ -6,9 +6,10 @@
 
 #include "Camera/Camera.h"
 
-SceneHierarchyPanel::SceneHierarchyPanel(Scene& context, Camera& camera)
+SceneHierarchyPanel::SceneHierarchyPanel(Scene& context, Camera& camera, float& simulatinSpeed)
 	: m_Context(&context)
 	, m_Camera(&camera)
+	, m_SimulationSpeed(&simulatinSpeed)
 {
 	SetContex(context);
 }
@@ -21,6 +22,17 @@ void SceneHierarchyPanel::SetContex(const Scene& context)
 void SceneHierarchyPanel::Draw()
 {
 	ImGui::Begin("Outliner");
+
+	if (ImGui::Button("Add Entity"))
+	{
+		Entity newEntity = m_Context->CreateEntity();
+	}
+	ImGui::SameLine();
+	if (ImGui::Button("Remove Entity") && m_SelectionContext)
+	{
+		m_Context->RemoveEntity(m_SelectionContext);
+		m_SelectionContext = {};
+	}
 
 	m_Context->m_Registry.each([&](auto entityID)
 	{
@@ -49,8 +61,8 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	auto& tag = entity.GetComponent<TagComponent>().Tag;
 
 	if (m_FollowedByContext) {
-		const glm::vec3 lookAt = m_FollowedByContext.GetComponent<TransformComponent>().Transform * glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-		m_Camera->SetCameraView( (lookAt - m_Camera->GetPosition()), lookAt, glm::vec3(0, 1, 0));
+		const glm::vec3 lookAt = m_FollowedByContext.GetComponent<TransformComponent>().Translation;
+		m_Camera->SetCameraView((lookAt - m_Camera->GetPosition()), lookAt, m_Camera->UpdateUp());
 	}
 
 	ImGuiTreeNodeFlags flags = ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
@@ -69,6 +81,8 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
+	ImGui::DragFloat("Simulatin speed", m_SimulationSpeed, 0.05f, 10, 0);
+
 	if (entity.HasComponent<TagComponent>())
 	{
 		auto& tag = entity.GetComponent<TagComponent>().Tag;
@@ -91,11 +105,16 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		ImGui::SameLine();
 		if (ImGui::Button("Stop focusing"))
 			m_FollowedByContext = { };
+
 		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
 		{
-			auto& transform = entity.GetComponent<TransformComponent>().Transform;
+			auto& translation = entity.GetComponent<TransformComponent>().Translation;
+			auto& scale = entity.GetComponent<TransformComponent>().Scale;
+			auto& rotation = entity.GetComponent<TransformComponent>().Rotation;
 
-			ImGui::DragFloat3("Position", glm::value_ptr(transform[3]), 0.1f);
+			ImGui::DragFloat3("Position", &translation[0], 0.1f);
+			ImGui::DragFloat3("Scale", &scale[0], 0.1f);
+			ImGui::DragFloat3("Rotation", &rotation[0], 0.1f);
 			ImGui::TreePop();
 		}		
 	}
@@ -114,8 +133,11 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			auto& velocity = entity.GetComponent<GravityComponent>().CurrentVelocity;
 
 			ImGui::DragFloat("Mass", &mass, 0.1f, 0.1f);
-			ImGui::DragFloat("Radius", &radius, 0.1f);
+			if (ImGui::DragFloat("Radius", &radius, 0.1f))
+				entity.GetComponent<TransformComponent>().Scale = glm::vec3(radius / 2);
 			ImGui::DragFloat3("Velocity", &velocity[0], 0.1f);
+
+			auto& scale = entity.GetComponent<TransformComponent>().Scale;
 
 			if (entity.HasComponent<TrailComponent>())
 			{

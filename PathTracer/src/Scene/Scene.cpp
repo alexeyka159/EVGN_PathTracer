@@ -23,3 +23,8 @@ Entity Scene::CreateEntity(const std::string& name)
 
 	return entity;
 }
+
+void Scene::RemoveEntity(Entity& entity)
+{
+	m_Registry.destroy(entity.m_EntityHandle);
+}

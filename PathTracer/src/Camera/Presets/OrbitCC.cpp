@@ -22,7 +22,7 @@ void OrbitCameraController::InputProcessor(GLFWwindow* window)
 
 		float offsetSpeed = 0.05f;
 		float mouseOffset = m_lastY - yPos;
-
+		
 		glm::vec3 viewDir = m_Camera->GetDirection() - m_Camera->GetPosition();
 		m_Magnitude = glm::max(glm::tan(glm::min(glm::radians(glm::length(viewDir+.5f)), 0.4f)), 0.00001f);
 

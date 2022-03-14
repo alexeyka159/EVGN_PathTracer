@@ -28,8 +28,8 @@ CameraOrbit::CameraOrbit(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 upVec,
 	  m_Projection(glm::mat4(1))
 {
 	float w = 1280, h = 720;
-	float n = 0.05f, f = 10000.f;
-	SetProjection(w, h, m_CamFov, n, f);
+	m_Near = 0.05f, m_Far = 1000.f;
+	SetProjection(w, h, m_CamFov, m_Near, m_Far);
 	GetViewMatrix();
 	m_Controller = new OrbitCameraController();
 	m_Controller->BindCamera(this);
@@ -58,10 +58,6 @@ CameraController* CameraOrbit::GetController() { return m_Controller; }
 
 glm::vec3 CameraOrbit::UpdateUp()
 {
-	//glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
-	//glm::vec3 cameraRight = glm::normalize(glm::cross(up, m_CamDir));
-	//return glm::cross(m_CamDir, cameraRight);
-	//std::cout << m_CamUpVec.x << " " << m_CamUpVec.y << " " << m_CamUpVec.z << std::endl;
 	return m_CamUpVec;
 }
 
@@ -70,8 +66,7 @@ void CameraOrbit::SetPosition(glm::vec3 newPos) { m_CamPos = newPos; }
 
 void CameraOrbit::OnResize(float& width, float& height)
 {
-	float n = 0.1f, f = 100.f;
-	SetProjection(width, height, m_CamFov, n, f);
+	SetProjection(width, height, m_CamFov, m_Near, m_Far);
 }
 
 glm::vec3 CameraOrbit::GetDirection() { return m_CamDir; }

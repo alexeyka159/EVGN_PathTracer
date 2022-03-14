@@ -72,7 +72,7 @@ void Renderer::Draw(Scene& scene, Camera& camera, float timeStep = 0.0f) const
 		Entity entity{ entityID, &scene };
 		if (entity.HasComponent<ModelRendererComponent>())
 		{
-			glm::mat4 model = entity.GetComponent<TransformComponent>().Transform;
+			glm::mat4 model = entity.GetComponent<TransformComponent>().GetTransform();
 			glm::mat4 mvp = camera.GetProjection() * camera.GetViewMatrix() * model;
 			Model& renderModel = entity.GetComponent<ModelRendererComponent>().ModelObj;
 			Shader& shader = renderModel.GetShader();
