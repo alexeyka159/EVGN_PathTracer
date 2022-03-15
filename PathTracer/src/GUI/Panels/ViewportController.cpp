@@ -21,7 +21,7 @@ void ViewportController::CreateBody()
     Entity entity = m_Context->CreateEntity("Asteroid");
     entity.GetComponent<TransformComponent>().Translation = m_SpawnPos;
     entity.AddComponent<ModelRendererComponent>(*m_DefaultModel);
-    entity.AddComponent<GravityComponent>(10.f, 1, velocity);
+    entity.AddComponent<GravityComponent>(5.f, .5f, velocity);
     entity.GetComponent<TransformComponent>().Scale = glm::vec3(entity.GetComponent<GravityComponent>().Radius/2);
     entity.AddComponent<TrailComponent>(m_TrailShader);
 }

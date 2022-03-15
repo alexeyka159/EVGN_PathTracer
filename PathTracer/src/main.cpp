@@ -76,6 +76,8 @@ int main() {
 	
 		Model asteroidModel("res/models/Asteroid.obj", asteroidShader);
 
+		Entity fixEnt = activeScene.CreateEntity();
+
 		Entity skybox = activeScene.CreateEntity("Skybox");
 		skybox.AddComponent<ModelRendererComponent>(Model("res/models/Skybox.obj", sunShader));
 		skybox.GetComponent<TransformComponent>().Scale = glm::vec3(100);
