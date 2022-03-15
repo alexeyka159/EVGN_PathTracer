@@ -48,7 +48,7 @@ void key_callback(GLFWwindow* window, int key, int scancode, int action, int mod
 
 int main() {
 
-	int WIDTH = 950, HEIGHT = 540;
+	int WIDTH = 1280, HEIGHT = 720;
 	Renderer renderer(WIDTH, HEIGHT, "Gravity Simulation");
 	
 	EVGN::Time TIME;
@@ -164,7 +164,7 @@ int main() {
 	GUI gui(renderer.GetWindow());
 
 	ViewportController vpController(activeScene, camera, asteroidModel, trailShader);
-	ViewportPanel* viewport = new ViewportPanel(frameBuffer, camera, vpController/*, activeScene, asteroidModel, trailShader, renderer.GetWindow()*/);
+	ViewportPanel* viewport = new ViewportPanel(frameBuffer, camera, vpController);
 	gui.Push(viewport);
 	inputManager.Push(viewport->GetController());
 
@@ -206,20 +206,6 @@ int main() {
 		frameBuffer.Unbind();
 
 		gui.Begin();
-
-		//if (show_debug_window)
-		//{
-		//	ImGui::Begin("Debug Window", &show_debug_window);
-		//	//ImGui::SliderFloat3("Primitives Translation", &translationA.x, -8.0f, 8.f, "%f");
-		//	//ImGui::SliderFloat3("Monkey Translation", &translationB.x, -8.0f, 8.f, "%f");
-		//	ImGui::SliderFloat3("Light Position", &lightPos.x, -5.0f, 5.f);
-		//	ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 30.f);
-		//	ImGui::Checkbox("Wireframe mode", &isWireframe);
-		//	ImGui::Spacing();
-		//	ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-		//	ImGui::End();
-		//}
-
 		gui.Render();
 		gui.End();
 
