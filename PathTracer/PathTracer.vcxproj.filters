@@ -120,6 +120,9 @@
     <ClCompile Include="src\Physics\Gravity.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="src\GUI\Panels\ViewportController.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\vendor\stb_image\stb_image.h">
@@ -237,6 +240,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="src\Physics\Gravity.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\GUI\Panels\ViewportController.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

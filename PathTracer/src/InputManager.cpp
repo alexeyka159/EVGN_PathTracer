@@ -1,5 +1,5 @@
 #include "InputManager.h"
-
+#include "GLFW/glfw3.h"
 
 InputManager::InputManager(GLFWwindow* window)
 	: m_Window(window)

@@ -144,7 +144,7 @@ void GUI::Render()
     //ImGui::End();
     //ImGui::PopStyleVar();
 
-    ImGui::ShowDemoWindow();
+    //ImGui::ShowDemoWindow();
 
     for (auto& panel : m_Panels)
     {

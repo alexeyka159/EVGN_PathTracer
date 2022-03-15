@@ -1,6 +1,8 @@
 #include "FPSCC.h"
 #include "Camera/CameraFPS.h"
 
+#include "GLFW/glfw3.h"
+
 FPSCameraController::FPSCameraController() { }
 
 void FPSCameraController::BindCamera(Camera* camera)

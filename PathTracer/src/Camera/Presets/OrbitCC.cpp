@@ -3,6 +3,8 @@
 
 #include <iostream>
 
+#include "GLFW/glfw3.h"
+
 OrbitCameraController::OrbitCameraController() { }
 
 void OrbitCameraController::BindCamera(Camera* camera)

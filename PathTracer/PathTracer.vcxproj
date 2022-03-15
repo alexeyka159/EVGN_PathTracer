@@ -175,6 +175,7 @@
     <ClCompile Include="src\Framebuffer.cpp" />
     <ClCompile Include="src\GUI\GUI.cpp" />
     <ClCompile Include="src\GUI\ImGuiBuild.cpp" />
+    <ClCompile Include="src\GUI\Panels\ViewportController.cpp" />
     <ClCompile Include="src\GUI\Panels\ViewportPanel.cpp" />
     <ClCompile Include="src\InputManager.cpp" />
     <ClCompile Include="src\glad.c" />
@@ -212,6 +213,7 @@
     <ClInclude Include="src\Framebuffer.h" />
     <ClInclude Include="src\GUI\GUI.h" />
     <ClInclude Include="src\GUI\Panels\GUIPanel.h" />
+    <ClInclude Include="src\GUI\Panels\ViewportController.h" />
     <ClInclude Include="src\GUI\Panels\ViewportPanel.h" />
     <ClInclude Include="src\InputController.h" />
     <ClInclude Include="src\InputManager.h" />

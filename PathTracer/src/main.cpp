@@ -21,6 +21,7 @@
 #include "GUI/GUI.h"
 #include "GUI/Panels/ViewportPanel.h"
 #include "GUI/Panels/SceneHierarchyPanel.h"
+#include "GUI/Panels/ViewportController.h"
 
 #include "InputManager.h"
 #include "Camera/Camera.h"
@@ -57,7 +58,7 @@ int main() {
 
 
 	float cameraSpeed = 5;
-	glm::vec3 cameraPos = glm::vec3(0.0f, 20.0f, 25.0f);
+	glm::vec3 cameraPos = glm::vec3(0.0f, 40.0f, 45.0f);
 	glm::vec3 cameraTarget = glm::vec3(0.0f, 0.0f, 0.0f);
 	CameraOrbit camera = CameraOrbit(cameraPos, cameraTarget, glm::vec3(0.f, 1.f, 0.f), 45, cameraSpeed);
 
@@ -75,6 +76,9 @@ int main() {
 	
 		Model asteroidModel("res/models/Asteroid.obj", asteroidShader);
 
+		Entity skybox = activeScene.CreateEntity("Skybox");
+		skybox.AddComponent<ModelRendererComponent>(Model("res/models/Skybox.obj", sunShader));
+		skybox.GetComponent<TransformComponent>().Scale = glm::vec3(100);
 
 		Entity sun = activeScene.CreateEntity("Sun");
 		sun.AddComponent<ModelRendererComponent>(Model("res/models/Sun.obj", sunShader));
@@ -82,6 +86,77 @@ int main() {
 		sun.AddComponent<GravityComponent>(100, 5, glm::vec3(0.0f, 0.0f, 0.0f));
 		sun.GetComponent<TransformComponent>().Scale = glm::vec3(sun.GetComponent<GravityComponent>().Radius / 2);
 		sun.AddComponent<TrailComponent>(&trailShader);
+
+		Entity mercury = activeScene.CreateEntity("Mercury");
+		mercury.AddComponent<ModelRendererComponent>("res/models/Mercury.obj", asteroidShader);
+		mercury.GetComponent<TransformComponent>().Translation += glm::vec3(18, 0.0f, 0.0f);
+		mercury.AddComponent<GravityComponent>(.1f, .2f, glm::vec3(0, 0.0f, -2.22f));
+		mercury.GetComponent<TransformComponent>().Scale = glm::vec3(mercury.GetComponent<GravityComponent>().Radius / 2);
+		mercury.AddComponent<TrailComponent>(&trailShader);
+
+		Entity venus = activeScene.CreateEntity("Venus");
+		venus.AddComponent<ModelRendererComponent>("res/models/Venus.obj", asteroidShader);
+		venus.GetComponent<TransformComponent>().Translation += glm::vec3(22, -1.2f, 0.0f);
+		venus.AddComponent<GravityComponent>(.22f, .3f, glm::vec3(0, 0.0f, -1.9f));
+		venus.GetComponent<TransformComponent>().Scale = glm::vec3(venus.GetComponent<GravityComponent>().Radius / 2);
+		venus.AddComponent<TrailComponent>(&trailShader);
+
+		Entity earth = activeScene.CreateEntity("Earth");
+		earth.AddComponent<ModelRendererComponent>("res/models/earth.obj", asteroidShader);
+		earth.GetComponent<TransformComponent>().Translation += glm::vec3(35.f, 1.2f, 0.0f);
+		earth.AddComponent<GravityComponent>(1.2f, .9, glm::vec3(0, 0.0f, -1.6f));
+		earth.GetComponent<TransformComponent>().Scale = glm::vec3(earth.GetComponent<GravityComponent>().Radius / 2);
+		earth.AddComponent<TrailComponent>(&trailShader);
+
+		Entity moon = activeScene.CreateEntity("Moon");
+		moon.AddComponent<ModelRendererComponent>(asteroidModel);
+		moon.GetComponent<TransformComponent>().Translation += glm::vec3(37.5f, 1.2f, 0.0f);
+		moon.AddComponent<GravityComponent>(.1f, .2f, glm::vec3(0, 0.0f, -1.f));
+		moon.GetComponent<TransformComponent>().Scale = glm::vec3(moon.GetComponent<GravityComponent>().Radius / 2);
+		moon.AddComponent<TrailComponent>(&trailShader);
+
+
+		Entity mars = activeScene.CreateEntity("Mars");
+		mars.AddComponent<ModelRendererComponent>("res/models/Mars.obj", asteroidShader);
+		mars.GetComponent<TransformComponent>().Translation += glm::vec3(50.f, 0.f, 0.0f);
+		mars.AddComponent<GravityComponent>(.6f, .8, glm::vec3(0, 0.0f, -1.3f));
+		mars.GetComponent<TransformComponent>().Scale = glm::vec3(mars.GetComponent<GravityComponent>().Radius / 2);
+		mars.AddComponent<TrailComponent>(&trailShader);
+
+		Entity jupiter = activeScene.CreateEntity("Jupiter");
+		jupiter.AddComponent<ModelRendererComponent>("res/models/Jupiter.obj", asteroidShader);
+		jupiter.GetComponent<TransformComponent>().Translation += glm::vec3(70.f, 0.f, 0.0f);
+		jupiter.AddComponent<GravityComponent>(2.f, 2.2f, glm::vec3(0, 0.0f, -1.1f));
+		jupiter.GetComponent<TransformComponent>().Scale = glm::vec3(jupiter.GetComponent<GravityComponent>().Radius / 2);
+		jupiter.AddComponent<TrailComponent>(&trailShader);
+
+		Entity saturn = activeScene.CreateEntity("Saturn");
+		saturn.AddComponent<ModelRendererComponent>("res/models/Saturn.obj", asteroidShader);
+		saturn.GetComponent<TransformComponent>().Translation += glm::vec3(-90.f, 0.f, 0.0f);
+		saturn.AddComponent<GravityComponent>(1.2f, 2.f, glm::vec3(0, 0.0f, 1.f));
+		saturn.GetComponent<TransformComponent>().Scale = glm::vec3(saturn.GetComponent<GravityComponent>().Radius / 2);
+		saturn.AddComponent<TrailComponent>(&trailShader);
+
+		Entity uranus = activeScene.CreateEntity("Uranus");
+		uranus.AddComponent<ModelRendererComponent>("res/models/Uranus.obj", asteroidShader);
+		uranus.GetComponent<TransformComponent>().Translation += glm::vec3(95.f, 0.f, 0.0f);
+		uranus.AddComponent<GravityComponent>(1.3f, 1.1f, glm::vec3(0, 0.0f, -0.7f));
+		uranus.GetComponent<TransformComponent>().Scale = glm::vec3(uranus.GetComponent<GravityComponent>().Radius / 2);
+		uranus.AddComponent<TrailComponent>(&trailShader);
+
+		Entity neptune = activeScene.CreateEntity("Neptune");
+		neptune.AddComponent<ModelRendererComponent>("res/models/Neptune.obj", asteroidShader);
+		neptune.GetComponent<TransformComponent>().Translation += glm::vec3(115.f, 3.f, 0.0f);
+		neptune.AddComponent<GravityComponent>(1.3f, 1.1f, glm::vec3(0, 0.0f, -1.f));
+		neptune.GetComponent<TransformComponent>().Scale = glm::vec3(neptune.GetComponent<GravityComponent>().Radius / 2);
+		neptune.AddComponent<TrailComponent>(&trailShader);
+
+		/*Entity mercury = activeScene.CreateEntity("Mercury");
+		mercury.AddComponent<ModelRendererComponent>("res/models/Neptune.obj", asteroidShader);
+		mercury.GetComponent<TransformComponent>().Translation += glm::vec3(10.f, 0.0f, 0.0f);
+		mercury.AddComponent<GravityComponent>(10.f, .5f, glm::vec3(0, 0.0f, -1.85f));
+		mercury.GetComponent<TransformComponent>().Scale = glm::vec3(mercury.GetComponent<GravityComponent>().Radius / 2);
+		mercury.AddComponent<TrailComponent>(&trailShader);
 
 		Entity earth = activeScene.CreateEntity("Earth");
 		earth.AddComponent<ModelRendererComponent>("res/models/earth.obj", asteroidShader);
@@ -95,19 +170,21 @@ int main() {
 		moon.GetComponent<TransformComponent>().Translation += glm::vec3(30.0f, 0.0f, 0.0f);
 		moon.AddComponent<GravityComponent>(1.f, .3f, glm::vec3(0, 0.0f, -.3f));
 		moon.GetComponent<TransformComponent>().Scale = glm::vec3(moon.GetComponent<GravityComponent>().Radius / 2);
-		moon.AddComponent<TrailComponent>(&trailShader);
+		moon.AddComponent<TrailComponent>(&trailShader);*/
+
+		
 
 		/*Entity asteroid4 = activeScene.CreateEntity("Asteroid4");
 		asteroid4.AddComponent<ModelRendererComponent>(asteroidModel);
 		asteroid4.GetComponent<TransformComponent>().Translation += glm::vec3(35.0f, 0.0f, 0.0f);
-		asteroid4.AddComponent<GravityComponent>(5, 5, glm::vec3(0, 0.0f, 1.8f));
+		asteroid4.AddComponent<GravityComponent>(5, 1, glm::vec3(0, 0.0f, 1.8f));
 		asteroid4.GetComponent<TransformComponent>().Scale = glm::vec3(asteroid4.GetComponent<GravityComponent>().Radius / 2);
 		asteroid4.AddComponent<TrailComponent>(&trailShader);
 
 		Entity asteroid5 = activeScene.CreateEntity("Asteroid5");
 		asteroid5.AddComponent<ModelRendererComponent>(asteroidModel);
 		asteroid5.GetComponent<TransformComponent>().Translation += glm::vec3(39.0f, 0.0f, 0.0f);
-		asteroid5.AddComponent<GravityComponent>(.1f, 5, glm::vec3(0, 0.0f, 0.5f));
+		asteroid5.AddComponent<GravityComponent>(.1f, 1, glm::vec3(0, 0.0f, 0.5f));
 		asteroid5.GetComponent<TransformComponent>().Scale = glm::vec3(asteroid5.GetComponent<GravityComponent>().Radius / 2);
 		asteroid5.AddComponent<TrailComponent>(&trailShader);
 
@@ -132,8 +209,10 @@ int main() {
 
 	GUI gui(renderer.GetWindow());
 
-	ViewportPanel* viewport = new ViewportPanel(frameBuffer, camera/*, activeScene, asteroidModel, trailShader, renderer.GetWindow()*/);
+	ViewportController vpController(activeScene, camera, asteroidModel, trailShader);
+	ViewportPanel* viewport = new ViewportPanel(frameBuffer, camera, vpController/*, activeScene, asteroidModel, trailShader, renderer.GetWindow()*/);
 	gui.Push(viewport);
+	inputManager.Push(viewport->GetController());
 
 	SceneHierarchyPanel* outliner = new SceneHierarchyPanel(activeScene, camera, gravity.simulationSpeed);
 	gui.Push(outliner);
