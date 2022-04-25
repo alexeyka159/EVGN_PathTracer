@@ -60,8 +60,8 @@ void OrbitCameraController::MouseProcessor(GLFWwindow* window)
 		//Угол вращения на сфере = ((сдвиг курсора) * время между этим и предыдущим кадрами * чувствительность камеры *
 		//							 скорость вращения камеры * размер сферы вращения * фикс разрещения окна) *
 		//							(1/магнитуда расстояния до точки вращения)
-		float xAngle = ((m_lastX - xPos) * m_DeltaTime * m_Camera->GetSpeed() * m_SpeedMul * deltaAngleX * 150)* ((20 / ((double)m_Magnitude * .3f)) * .0005f);
-		float yAngle = ((m_lastY - yPos) * m_DeltaTime * m_Camera->GetSpeed() * m_SpeedMul * deltaAngleY * 170)* ((20 / ((double)m_Magnitude * .3f)) * .0005f);
+		float xAngle = ((m_lastX - xPos) * m_DeltaTime * m_Camera->GetSpeed() * m_SpeedMul * deltaAngleX * 150) * ((1 / ((double)m_Magnitude)) / 10.f);
+		float yAngle = ((m_lastY - yPos) * m_DeltaTime * m_Camera->GetSpeed() * m_SpeedMul * deltaAngleY * 170) * ((1 / ((double)m_Magnitude)) / 10.f);
 
 		glm::mat4 iV = glm::inverse(m_Camera->GetViewMatrix());
 		glm::vec3 horizontalAxis = iV * glm::vec4(1, 0, 0, 0);

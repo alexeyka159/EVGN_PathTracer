@@ -17,6 +17,7 @@ public:
 	~Scene();
 
 	Entity CreateEntity(const std::string& name = std::string());
+	void RemoveEntity(Entity& entity);
 
 	Scene& operator=(const Scene&) { return *this; }
 };

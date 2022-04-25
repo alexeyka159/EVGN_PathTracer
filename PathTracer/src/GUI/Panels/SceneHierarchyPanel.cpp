@@ -81,9 +81,13 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 	{
 		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
 		{
-			auto& transform = entity.GetComponent<TransformComponent>().Transform;
+			auto& translation = entity.GetComponent<TransformComponent>().Translation;
+			auto& scale = entity.GetComponent<TransformComponent>().Scale;
+			auto& rotation = entity.GetComponent<TransformComponent>().Rotation;
 
-			ImGui::DragFloat3("Position", glm::value_ptr(transform[3]), 0.1f);
+			ImGui::DragFloat3("Position", &translation[0], 0.1f);
+			ImGui::DragFloat3("Scale", &scale[0], 0.1f);
+			ImGui::DragFloat3("Rotation", &rotation[0], 0.1f);
 			ImGui::TreePop();
 		}		
 	}

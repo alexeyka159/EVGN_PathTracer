@@ -34,9 +34,9 @@ Renderer::Renderer(int w, int h, std::string wndName)
 
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	//glEnable(GL_DEPTH_TEST);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_CULL_FACE);
-	//glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 }
 
 Renderer::~Renderer()
@@ -67,7 +67,7 @@ void Renderer::Draw(Scene& scene, Camera& camera, Shader& shader) const
 		Entity entity{ entityID, &scene };
 		if (entity)
 		{
-			glm::mat4 model = entity.GetComponent<TransformComponent>().Transform;
+			glm::mat4 model = entity.GetComponent<TransformComponent>().GetTransform();
 			glm::mat4 mvp = camera.GetProjection() * camera.GetViewMatrix() * model;
 			shader.Bind();
 			shader.SetUniformMat4f("u_MVP", mvp);
