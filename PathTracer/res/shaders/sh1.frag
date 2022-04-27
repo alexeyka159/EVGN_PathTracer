@@ -1,5 +1,9 @@
-#version 330 core
-out vec4 FragColor;
+#version 460 core
+
+layout (location = 0) out vec4 FragColor;
+layout (location = 1) out vec4 color;
+
+//out vec4 FragColor;
 
 struct Material {
 	sampler2D texture_diffuse1;
@@ -25,4 +29,6 @@ void main()
 
 	vec3 result = vec3(texColor) * (vec3(0.2f, 0.2f, 0.2f) + diffuse) * vec3(1.0f, 1.0f, 1.0f);
 	FragColor = vec4(result, 1.0);
+
+	color = vec4(0.9, 0.2, 0.3, 1.0);
 }

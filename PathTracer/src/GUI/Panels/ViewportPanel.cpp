@@ -11,7 +11,7 @@ ViewportPanel::ViewportPanel(Framebuffer& framebuffer, Camera& camera)
 
 void ViewportPanel::Draw()
 {
-    m_GuiTextureID = m_Framebuffer->GetColorAttachmentRendererId();
+    m_GuiTextureID = m_Framebuffer->GetColorAttachmentRendererId(0);
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
     ImGui::Begin("Viewport");

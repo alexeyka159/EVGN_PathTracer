@@ -43,8 +43,8 @@ int main() {
 	
 	EVGN::Time TIME;
 
-	glEnable(GL_BLEND);
-	glBlendFunc(GL_SOURCE0_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	//glEnable(GL_BLEND);
+	//glBlendFunc(GL_SOURCE0_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
 	Shader shader("res/shaders/sh1.vert", "res/shaders/sh1.frag");
 	shader.Bind();
@@ -65,12 +65,14 @@ int main() {
 	Scene activeScene;
 	Entity monkey = activeScene.CreateEntity("Monkey");
 	monkey.AddComponent<ModelRendererComponent>("res/models/monk_smooth.obj");
+	monkey.GetComponent<TransformComponent>().Translation = glm::vec3(-2.4, 0, 0);
 	Entity prims = activeScene.CreateEntity("Primitives");
 	prims.AddComponent<ModelRendererComponent>("res/models/sphere and cube.obj");
 
 	glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
 
 	FramebufferSpecification fbSpec;
+	fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
 	fbSpec.Width = WIDTH;
 	fbSpec.Height = HEIGHT;
 	Framebuffer frameBuffer(fbSpec);
