@@ -1,9 +1,7 @@
 #version 460 core
 
 layout (location = 0) out vec4 FragColor;
-layout (location = 1) out vec4 color;
-
-//out vec4 FragColor;
+layout (location = 1) out int entityID;
 
 struct Material {
 	sampler2D texture_diffuse1;
@@ -14,6 +12,7 @@ uniform vec4 u_Color;
 uniform sampler2D u_Texture;
 uniform vec3 u_LightPos;
 uniform Material u_material;
+uniform int u_EntityID;
 
 in vec2 v_TexCoord;
 in vec3 v_Normal;
@@ -30,5 +29,5 @@ void main()
 	vec3 result = vec3(texColor) * (vec3(0.2f, 0.2f, 0.2f) + diffuse) * vec3(1.0f, 1.0f, 1.0f);
 	FragColor = vec4(result, 1.0);
 
-	color = vec4(0.9, 0.2, 0.3, 1.0);
+	entityID = u_EntityID;
 }

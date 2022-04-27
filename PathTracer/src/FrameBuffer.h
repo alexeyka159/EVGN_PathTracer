@@ -7,6 +7,7 @@ enum class FramebufferTextureFormat {
 
 	//Color
 	RGBA8,
+	RED_INTEGER,
 
 	//Depth/stencil
 	DEPTH24STENCIL8,
@@ -65,6 +66,9 @@ public:
 	void Unbind();
 
 	void Resize(uint32_t width, uint32_t height);
+	int ReadPixel(uint32_t attachmentIndex, int x, int y);
+
+	void ClearAttachment(uint32_t attachmentIndex, int value);
 
 	inline uint32_t GetColorAttachmentRendererId(uint32_t index = 0) const { return m_ColorAttachments[index]; }
 	inline const FramebufferSpecification& GetSpecification() const { return m_Specification; }

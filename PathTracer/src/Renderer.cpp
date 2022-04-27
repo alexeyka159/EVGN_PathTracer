@@ -73,6 +73,7 @@ void Renderer::Draw(Scene& scene, Camera& camera, Shader& shader) const
 			shader.Bind();
 			shader.SetUniformMat4f("u_MVP", mvp);
 			shader.SetUniformMat4f("u_Model", model);
+			shader.SetUniform1i("u_EntityID", (int)entityID);
 
 			entity.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
 		}

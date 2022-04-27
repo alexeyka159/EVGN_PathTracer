@@ -15,6 +15,12 @@ void SceneHierarchyPanel::SetContex(const Scene& context)
 	*m_Context = context;
 }
 
+void SceneHierarchyPanel::SetSelection(const int& entityID)
+{
+	Entity entity = { (entt::entity)entityID, m_Context };
+	m_SelectionContext = entity;
+}
+
 void SceneHierarchyPanel::Draw()
 {
 	ImGui::Begin("Outliner");
@@ -49,15 +55,15 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
 	if (ImGui::IsItemClicked())
 	{
-		m_SelectionContext = entity;
+		SetSelection(entity);
 	}
 
 	if (opened)
 	{
-		ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+		/*ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
 		bool opened = ImGui::TreeNodeEx((void*)86461, flags, tag.c_str());
 		if(opened)
-			ImGui::TreePop();
+			ImGui::TreePop();*/
 		ImGui::TreePop();
 	}
 }

@@ -72,7 +72,7 @@ int main() {
 	glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
 
 	FramebufferSpecification fbSpec;
-	fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+	fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::Depth };
 	fbSpec.Width = WIDTH;
 	fbSpec.Height = HEIGHT;
 	Framebuffer frameBuffer(fbSpec);
@@ -80,11 +80,13 @@ int main() {
 
 	GUI gui(renderer.GetWindow());
 
-	ViewportPanel* viewport = new ViewportPanel(frameBuffer, camera);
-	gui.Push(viewport);
-
 	SceneHierarchyPanel* outliner = new SceneHierarchyPanel(activeScene);
 	gui.Push(outliner);
+
+	ViewportPanel* viewport = new ViewportPanel(frameBuffer, *renderer.GetWindow(), *outliner, camera);
+	gui.Push(viewport);
+
+	//inputManager.Push(viewport->GetController());
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
@@ -95,6 +97,8 @@ int main() {
 
 		TIME.UpdateTime();
 		renderer.Clear();
+		frameBuffer.ClearAttachment(1, -1);
+
 
 		inputManager.ProcessInput();
 

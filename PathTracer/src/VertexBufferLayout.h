@@ -29,7 +29,8 @@ public:
 
 	template<typename T>
 	void Push(unsigned int count) {
-		static_assert(false);
+		//Дунно вот дат щит ис дуин хир(Сменил Набор инструментов на 2022)
+		//static_assert(false);
 	}
 
 	template<>
