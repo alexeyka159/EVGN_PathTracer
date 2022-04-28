@@ -72,13 +72,13 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>D:\OpenGL\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\OpenGL\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Program Files\OpenGL\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Program Files\OpenGL\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>D:\OpenGL\Include;$(IncludePath)</IncludePath>
-    <LibraryPath>D:\OpenGL\Lib;$(LibraryPath)</LibraryPath>
+    <IncludePath>D:\Program Files\OpenGL\Include;$(IncludePath)</IncludePath>
+    <LibraryPath>D:\Program Files\OpenGL\Lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
@@ -96,13 +96,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLFW_INCLUDE_NONE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;D:\Program Files\OpenGL\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;D:\Program Files\OpenGL\Include;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\imgui;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\ImGuizmo</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;OpenGL32.Lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\imgui;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\ImGuizmo;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -113,7 +114,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions);GLFW_INCLUDE_NONE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;D:\Program Files\OpenGL\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;D:\Program Files\OpenGL\Include;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\imgui;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\ImGuizmo</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -122,6 +123,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;OpenGL32.Lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\imgui;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\ImGuizmo;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -130,13 +132,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);GLFW_INCLUDE_NONE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;D:\Program Files\OpenGL\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;D:\Program Files\OpenGL\Include;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\imgui;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\ImGuizmo</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;OpenGL32.Lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\imgui;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\ImGuizmo;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -147,7 +150,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);GLFW_INCLUDE_NONE</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>src;D:\Program Files\OpenGL\Include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>src;D:\Program Files\OpenGL\Include;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\imgui;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\ImGuizmo</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpp17</LanguageStandard>
     </ClCompile>
     <Link>
@@ -156,6 +159,7 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>glfw3.lib;OpenGL32.Lib;assimp-vc142-mtd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\imgui;C:\Users\Evergreen\Desktop\PathTracer\PathTracer\src\vendor\ImGuizmo;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
@@ -175,6 +179,7 @@
     <ClCompile Include="src\glad.c" />
     <ClCompile Include="src\IndexBuffer.cpp" />
     <ClCompile Include="src\main.cpp" />
+    <ClCompile Include="src\Math\Math.cpp" />
     <ClCompile Include="src\Model\Mesh.cpp" />
     <ClCompile Include="src\Model\Model.cpp" />
     <ClCompile Include="src\Renderer.cpp" />
@@ -183,6 +188,11 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\EVGNTime.cpp" />
+    <ClCompile Include="src\vendor\ImGuizmo\GraphEditor.cpp" />
+    <ClCompile Include="src\vendor\ImGuizmo\ImCurveEdit.cpp" />
+    <ClCompile Include="src\vendor\ImGuizmo\ImGradient.cpp" />
+    <ClCompile Include="src\vendor\ImGuizmo\ImGuizmo.cpp" />
+    <ClCompile Include="src\vendor\ImGuizmo\ImSequencer.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui_demo.cpp" />
     <ClCompile Include="src\vendor\imgui\imgui_draw.cpp" />
@@ -211,6 +221,7 @@
     <ClInclude Include="src\InputController.h" />
     <ClInclude Include="src\InputManager.h" />
     <ClInclude Include="src\IndexBuffer.h" />
+    <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Model\Mesh.h" />
     <ClInclude Include="src\Model\Model.h" />
     <ClInclude Include="src\Renderer.h" />
@@ -220,6 +231,12 @@
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\EVGNTime.h" />
+    <ClInclude Include="src\vendor\ImGuizmo\GraphEditor.h" />
+    <ClInclude Include="src\vendor\ImGuizmo\ImCurveEdit.h" />
+    <ClInclude Include="src\vendor\ImGuizmo\ImGradient.h" />
+    <ClInclude Include="src\vendor\ImGuizmo\ImGuizmo.h" />
+    <ClInclude Include="src\vendor\ImGuizmo\ImSequencer.h" />
+    <ClInclude Include="src\vendor\ImGuizmo\ImZoomSlider.h" />
     <ClInclude Include="src\vendor\imgui\imconfig.h" />
     <ClInclude Include="src\vendor\imgui\imgui.h" />
     <ClInclude Include="src\vendor\imgui\imgui_impl_glfw.h" />
@@ -237,6 +254,9 @@
   <ItemGroup>
     <Image Include="res\textures\bananacover.jpg" />
     <Image Include="res\textures\bananacover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="src\vendor\ImGuizmo\.editorconfig" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

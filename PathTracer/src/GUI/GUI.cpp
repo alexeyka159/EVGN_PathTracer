@@ -1,6 +1,7 @@
 #include "GUI.h"
 
 #include "GUI/Panels/GUIPanel.h"
+#include <ImGuizmo.h>
 
 GUI::GUI(GLFWwindow* window)
 	: m_Window(window)
@@ -46,6 +47,7 @@ void GUI::Begin()
 	ImGui_ImplOpenGL3_NewFrame();
 	ImGui_ImplGlfw_NewFrame();
 	ImGui::NewFrame();
+    ImGuizmo::BeginFrame();
 }
 
 void GUI::End()
