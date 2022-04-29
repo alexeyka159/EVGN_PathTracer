@@ -39,7 +39,7 @@
 int main() {
 
 	int WIDTH = 950, HEIGHT = 540;
-	Renderer renderer(WIDTH, HEIGHT, "Path Tracer");
+	Renderer renderer(WIDTH, HEIGHT, "Evergreen Engene");
 	
 	EVGN::Time TIME;
 

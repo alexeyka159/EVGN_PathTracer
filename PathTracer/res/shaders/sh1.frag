@@ -10,23 +10,39 @@ struct Material {
 
 uniform vec4 u_Color;
 uniform sampler2D u_Texture;
-uniform vec3 u_LightPos;
 uniform Material u_material;
 uniform int u_EntityID;
+uniform vec3 u_ViewPos;
 
 in vec2 v_TexCoord;
 in vec3 v_Normal;
 in vec3 v_FragPos;
+in vec3 v_LightDir;
 
 void main()
 {
-	vec3 lightDir = normalize(u_LightPos - v_FragPos);  
-	float diff = max(dot(v_Normal, lightDir), 0.0);
+	vec3 lightColor = vec3(1.0f, 1.0f, 1.0f);
+
+	//Эмбиент
+	float ambientStrength = 0.3;
+    vec3 ambient = ambientStrength * lightColor;
+
+    //Диффуз
+	float diff = max(dot(v_Normal, v_LightDir), 0.0);
 	vec3 diffuse = diff * vec3(1.5f, 1.5f, 1.5f);
 
+	//Спекулар
+	float specularStrength = 1;
+	vec3 viewDir = normalize(u_ViewPos - v_FragPos);
+	vec3 reflectDir = reflect(-v_LightDir, v_Normal);
+	float spec = pow(max(dot(viewDir, reflectDir), 0.0), 32);
+	vec3 specular = specularStrength * spec * lightColor;  
+
+	//Обджект колор
 	vec4 texColor = texture(u_material.texture_diffuse1, v_TexCoord);
 
-	vec3 result = vec3(texColor) * (vec3(0.2f, 0.2f, 0.2f) + diffuse) * vec3(1.0f, 1.0f, 1.0f);
+	//Рузультат
+	vec3 result = (ambient + diffuse + specular) * vec3(texColor);
 	FragColor = vec4(result, 1.0);
 
 	entityID = u_EntityID;

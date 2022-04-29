@@ -109,14 +109,15 @@ void ViewportPanel::Draw()
 
         if (ImGuizmo::IsUsing())
         {
-            glm::vec3 translation, rotation, scale;
+            glm::vec3 translation, scale, rotation, skew;
+            glm::vec4 perspective;
+            glm::quat rotationQuaternion;
+
             Math::DecomposeTransform(transform, translation, rotation, scale);
 
-            glm::vec3 deltaRotation = rotation - tc.Rotation;
             tc.Translation = translation;
-            tc.Rotation += deltaRotation;
+            tc.Rotation = rotation;
             tc.Scale = scale;
-
         }
     }
 

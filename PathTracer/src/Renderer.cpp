@@ -74,6 +74,8 @@ void Renderer::Draw(Scene& scene, Camera& camera, Shader& shader) const
 			shader.SetUniformMat4f("u_MVP", mvp);
 			shader.SetUniformMat4f("u_Model", model);
 			shader.SetUniform1i("u_EntityID", (int)entityID);
+			glm::vec3 viewPos = camera.GetPosition();
+			shader.SetUniform3f("u_ViewPos", viewPos.x, viewPos.y, viewPos.z);
 
 			entity.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
 		}

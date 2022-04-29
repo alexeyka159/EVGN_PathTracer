@@ -17,7 +17,7 @@ private:
     glm::vec2 m_ViewportBounds[2];
     SceneHierarchyPanel* m_SceneHierarchyPanel;
 
-    int m_GizmoType = -1;
+    int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
 public:
     ViewportPanel(Framebuffer& framebuffer, GLFWwindow& window, SceneHierarchyPanel& sceneHierarchyPanel, Camera& camera);
