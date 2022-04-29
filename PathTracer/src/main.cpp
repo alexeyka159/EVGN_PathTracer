@@ -39,7 +39,7 @@
 int main() {
 
 	int WIDTH = 950, HEIGHT = 540;
-	Renderer renderer(WIDTH, HEIGHT, "Evergreen Engene");
+	Renderer renderer(WIDTH, HEIGHT, "Evergreen Engine");
 	
 	EVGN::Time TIME;
 
