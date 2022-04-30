@@ -12,6 +12,8 @@ private:
 	friend class Entity;
 	friend class SceneHierarchyPanel;
 	friend class Renderer;
+	friend class SceneSerializer;
+
 public:
 	Scene();
 	~Scene();

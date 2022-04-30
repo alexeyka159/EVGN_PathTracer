@@ -35,6 +35,7 @@
 
 #include "Scene/Scene.h"
 #include "Scene/Entity.h"
+#include "Scene/SceneSerializer.h"
 
 int main() {
 
@@ -89,6 +90,9 @@ int main() {
 	//inputManager.Push(viewport->GetController());
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
+	SceneSerializer serializer(activeScene);
+	serializer.Serialize("res/assets/scene/test.evgn");
 
 	while (!glfwWindowShouldClose(renderer.GetWindow()))
 	{

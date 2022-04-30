@@ -5,6 +5,8 @@
 
 #include "Math/Math.h"
 
+#include "Scene/SceneSerializer.h"
+
 ViewportPanel::ViewportPanel(Framebuffer& framebuffer, GLFWwindow& window, SceneHierarchyPanel& sceneHierarchyPanel, Camera& camera)
     : m_Framebuffer(&framebuffer)
     , m_GuiTextureID(0)
