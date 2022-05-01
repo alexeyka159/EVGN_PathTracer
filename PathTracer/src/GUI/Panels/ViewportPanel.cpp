@@ -7,6 +7,8 @@
 
 #include "Scene/SceneSerializer.h"
 
+#include "Utils/WindowsPlatformUtils.h"
+
 ViewportPanel::ViewportPanel(Framebuffer& framebuffer, GLFWwindow& window, SceneHierarchyPanel& sceneHierarchyPanel, Camera& camera)
     : m_Framebuffer(&framebuffer)
     , m_GuiTextureID(0)
@@ -19,6 +21,54 @@ ViewportPanel::ViewportPanel(Framebuffer& framebuffer, GLFWwindow& window, Scene
 void ViewportPanel::Draw()
 {
     m_Framebuffer->Bind();
+
+    if (ImGui::BeginMenuBar())
+    {
+        if (ImGui::BeginMenu("File"))
+        {
+            if (ImGui::MenuItem("New", "ctrl+n"))
+            {
+                Scene* newScene = new Scene;
+                m_SceneHierarchyPanel->SetContex(*newScene);
+            }
+            if (ImGui::MenuItem("Open...", "ctrl+o"))
+            {
+                std::string filepath = FileDialogs::OpenFile("Evergreen Scene (*.evgn)\0*.evgn\0", m_Window);
+            
+                if (!filepath.empty())
+                {
+                    Scene* newScene = new Scene;
+                    m_SceneHierarchyPanel->SetContex(*newScene);
+
+                    SceneSerializer serializer(*newScene);
+                    serializer.Deserialize(filepath);
+                }
+            }
+            if(ImGui::MenuItem("Save", "ctrl+s"))
+            {
+
+            }
+            if(ImGui::MenuItem("Save as...", "ctrl+shift+s"))
+            {
+                std::string filepath = FileDialogs::SaveFile("Evergreen Scene (*.evgn)\0*.evgn\0", m_Window);
+
+                if (!filepath.empty())
+                {
+                    SceneSerializer serializer(*m_SceneHierarchyPanel->GetContex());
+                    serializer.Serialize(filepath);
+                }
+            }
+
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Edit"))
+        {
+            ImGui::MenuItem("Add", "ctrl+shift+a");
+            ImGui::EndMenu();
+        }
+        ImGui::EndMenuBar();
+    }
 
     auto[mx, my] = ImGui::GetMousePos();
     mx -= m_ViewportBounds[0].x;

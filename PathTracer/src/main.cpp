@@ -39,7 +39,7 @@
 
 int main() {
 
-	int WIDTH = 950, HEIGHT = 540;
+	int WIDTH = 1280, HEIGHT = 720;
 	Renderer renderer(WIDTH, HEIGHT, "Evergreen Engine");
 	
 	EVGN::Time TIME;
@@ -94,9 +94,9 @@ int main() {
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	SceneSerializer serializer(activeScene);
+	//SceneSerializer serializer(activeScene);
 	//serializer.Serialize("res/assets/scene/test.evgn");
-	serializer.Deserialize("res/assets/scene/test.evgn");
+	//serializer.Deserialize("res/assets/scene/test.evgn");
 
 	while (!glfwWindowShouldClose(renderer.GetWindow()))
 	{

@@ -122,21 +122,8 @@ void GUI::Render()
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     }
 
-    if (ImGui::BeginMenuBar())
-    {
-        if (ImGui::BeginMenu("File"))
-        {
-            ImGui::MenuItem("New", "ctrl+n");
-            ImGui::MenuItem("Open", "ctrl+o");
-            ImGui::EndMenu();
-        }
-        if (ImGui::BeginMenu("Edit"))
-        {
-            ImGui::MenuItem("Add", "ctrl+shift+a");
-            ImGui::EndMenu();
-        }
-        ImGui::EndMenuBar();
-    }
+
+
 
     //ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
     //ImGui::Begin("Viewport");

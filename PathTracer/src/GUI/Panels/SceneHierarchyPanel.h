@@ -13,12 +13,15 @@ private:
 
     void DrawEntityNode(Entity entity);
     void DrawComponents(Entity entity);
+
 public:
     SceneHierarchyPanel() = default;
     SceneHierarchyPanel(Scene& context);
     inline ~SceneHierarchyPanel() { delete this; }
 
+    inline Scene* GetContex() { return m_Context; }
     void SetContex(const Scene& context);
+    
     inline void SetSelection(const Entity& entity) { m_SelectionContext = entity; }
 
     void SetSelection(const int& entityID);

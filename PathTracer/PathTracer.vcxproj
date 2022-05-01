@@ -189,6 +189,7 @@
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\EVGNTime.cpp" />
+    <ClCompile Include="src\Utils\WindowsPlatformUtils.cpp" />
     <ClCompile Include="src\vendor\ImGuizmo\GraphEditor.cpp" />
     <ClCompile Include="src\vendor\ImGuizmo\ImCurveEdit.cpp" />
     <ClCompile Include="src\vendor\ImGuizmo\ImGradient.cpp" />
@@ -233,6 +234,7 @@
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\EVGNTime.h" />
+    <ClInclude Include="src\Utils\WindowsPlatformUtils.h" />
     <ClInclude Include="src\vendor\ImGuizmo\GraphEditor.h" />
     <ClInclude Include="src\vendor\ImGuizmo\ImCurveEdit.h" />
     <ClInclude Include="src\vendor\ImGuizmo\ImGradient.h" />

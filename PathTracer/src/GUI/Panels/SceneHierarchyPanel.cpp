@@ -13,6 +13,7 @@ SceneHierarchyPanel::SceneHierarchyPanel(Scene& context)
 void SceneHierarchyPanel::SetContex(const Scene& context)
 {
 	*m_Context = context;
+	m_SelectionContext = {};
 }
 
 void SceneHierarchyPanel::SetSelection(const int& entityID)
