@@ -31,7 +31,7 @@ Texture::Texture(const std::string& path, TextureType type)
 		std::cout << "ERROR::TEXTURE::FAILED TO LOAD TEXTURE: \"" << path << "\"" << std::endl;
 	}
 
-	std::cout << "\"" << m_FilePath << "\" - id: " << m_RendererID << std::endl;
+	std::cout << "    - Loaded texture: \"" << m_FilePath << "\"" << std::endl;
 		
 }
 

@@ -77,7 +77,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		char buffer[256];
 		memset(buffer, 0, sizeof(buffer));
 		strcpy_s(buffer, sizeof(buffer), tag.c_str());
-		if (ImGui::InputText("Tag", buffer, sizeof(buffer)))
+		if (ImGui::InputText("Name", buffer, sizeof(buffer)))
 		{
 			tag = std::string(buffer);
 		}
@@ -100,5 +100,32 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 
 			rotation = glm::radians(rotation);
 		}		
+	}
+
+	if (entity.HasComponent<CameraComponent>())
+	{
+		if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera"))
+		{
+			auto& camComponent = entity.GetComponent<CameraComponent>();
+			auto fov = camComponent.RenderCamera->GetFov();
+			auto speed = camComponent.RenderCamera->GetSpeed();
+			auto& primaty = camComponent.Primary;
+			auto near = camComponent.RenderCamera->GetNear();
+			auto far = camComponent.RenderCamera->GetFar();
+
+			ImGui::Checkbox("Primary camera", &primaty);
+			ImGui::NewLine();
+			if(ImGui::DragFloat("Near", &near, 0.1f, 0.01f))
+				camComponent.RenderCamera->SetNear(near);
+			if(ImGui::DragFloat("Far", &far, 0.1f))
+				camComponent.RenderCamera->SetFar(far);
+			ImGui::NewLine();
+			if(ImGui::DragFloat("FOV", &fov, 0.1f))
+				camComponent.RenderCamera->SetFov(fov);
+			if(ImGui::DragFloat("Speed", &speed, 0.1f))
+				camComponent.RenderCamera->SetSpeed(speed);
+
+			ImGui::TreePop();
+		}
 	}
 }

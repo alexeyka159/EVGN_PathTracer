@@ -27,5 +27,5 @@ public:
 
 	void Clear() const;
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
-	void Draw(Scene& scene, Camera& camera, Shader& shader) const;
+	void Draw(Scene& scene, Shader& shader, Camera* camera, float ts) const;
 };

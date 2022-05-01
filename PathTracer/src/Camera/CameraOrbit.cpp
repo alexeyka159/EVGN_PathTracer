@@ -28,8 +28,26 @@ CameraOrbit::CameraOrbit(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 upVec,
 	  m_Projection(glm::mat4(1))
 {
 	float w = 1280, h = 720;
-	float n = 0.1f, f = 100.f;
-	SetProjection(w, h, m_CamFov, n, f);
+	//float n = 0.1f, f = 100.f;
+	SetProjection(w, h, m_CamFov, m_Near, m_Far);
+	GetViewMatrix();
+	m_Controller = new OrbitCameraController();
+	m_Controller->BindCamera(this);
+}
+
+CameraOrbit::CameraOrbit(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 upVec, float fov, float near, float far, float camSpeed)
+	: m_CamPos(camPos),
+	m_CamDir(camTarget),
+	m_CamFov(fov),
+	m_CamUpVec(upVec),
+	m_CamSpeed(camSpeed),
+	m_View(glm::mat4(1)),
+	m_Projection(glm::mat4(1)),
+	m_Near(near),
+	m_Far(far)
+{
+	float w = 1280, h = 720;
+	SetProjection(w, h, m_CamFov, m_Near, m_Far);
 	GetViewMatrix();
 	m_Controller = new OrbitCameraController();
 	m_Controller->BindCamera(this);
@@ -70,8 +88,8 @@ void CameraOrbit::SetPosition(glm::vec3 newPos) { m_CamPos = newPos; }
 
 void CameraOrbit::OnResize(float& width, float& height)
 {
-	float n = 0.1f, f = 100.f;
-	SetProjection(width, height, m_CamFov, n, f);
+	//float n = 0.1f, f = 100.f;
+	SetProjection(width, height, m_CamFov, m_Near, m_Far);
 }
 
 glm::vec3 CameraOrbit::GetDirection() { return m_CamDir; }
@@ -84,3 +102,13 @@ void CameraOrbit::SetSpeed(float newSpeed) { m_CamSpeed = newSpeed; }
 
 void CameraOrbit::SetFov(float fov) { m_CamFov = fov; }
 float CameraOrbit::GetFov() { return m_CamFov; }
+
+void CameraOrbit::SetNear(float near) {
+	m_Near = near;
+	//float w = 1280. h = 720;
+	//SetProjection(w, h, m_CamFov, m_Near);
+}
+float CameraOrbit::GetNear() { return m_Near; }
+
+void CameraOrbit::SetFar(float far) { m_Far = far; }
+float CameraOrbit::GetFar() { return m_Far; }

@@ -3,6 +3,8 @@
 #include "glm/glm.hpp"
 #include "Model/Model.h"
 #include <glm/gtx/quaternion.hpp>
+#include "Camera/CameraOrbit.h"
+
 struct TagComponent
 {
 	std::string Tag;
@@ -46,4 +48,17 @@ struct ModelRendererComponent
 
 	operator Model& () { return ModelObj; }
 	operator const Model& () const { return ModelObj; }
+};
+
+struct CameraComponent
+{
+	CameraOrbit* RenderCamera = nullptr;
+	bool Primary; //Текущая камера в редакторе
+	//bool Render; //Камера для финального рендера
+
+	CameraComponent() = default;
+	CameraComponent(const CameraComponent&) = default;
+	CameraComponent(CameraOrbit& camera, bool isPrimary = false)
+		: RenderCamera(&camera)
+		, Primary(isPrimary) {}
 };

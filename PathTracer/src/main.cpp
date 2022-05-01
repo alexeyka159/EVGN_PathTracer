@@ -64,11 +64,14 @@ int main() {
 	bool isWireframe = false;
 
 	Scene activeScene;
-	Entity monkey = activeScene.CreateEntity("Monkey");
+	/*Entity monkey = activeScene.CreateEntity("Monkey");
 	monkey.AddComponent<ModelRendererComponent>("res/models/monk_smooth.obj");
 	monkey.GetComponent<TransformComponent>().Translation = glm::vec3(-2.4, 0, 0);
 	Entity prims = activeScene.CreateEntity("Primitives");
 	prims.AddComponent<ModelRendererComponent>("res/models/sphere and cube.obj");
+	Entity cameraEntity = activeScene.CreateEntity("Camera");
+	cameraEntity.AddComponent<CameraComponent>(camera, true);
+	*/
 
 	glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
 
@@ -92,7 +95,8 @@ int main() {
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
 	SceneSerializer serializer(activeScene);
-	serializer.Serialize("res/assets/scene/test.evgn");
+	//serializer.Serialize("res/assets/scene/test.evgn");
+	serializer.Deserialize("res/assets/scene/test.evgn");
 
 	while (!glfwWindowShouldClose(renderer.GetWindow()))
 	{
@@ -107,9 +111,8 @@ int main() {
 		inputManager.ProcessInput();
 
 		camera.GetController()->SetDeltaTime(TIME.DeltaTime());
-		camera.SetSpeed(cameraSpeed);
 
-		renderer.Draw(activeScene, camera, shader);
+		renderer.Draw(activeScene, shader, &camera, TIME.DeltaTime());
 
 		{
 			shader.Bind();

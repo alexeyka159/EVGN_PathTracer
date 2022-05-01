@@ -11,6 +11,7 @@ class Model
 private:
 	std::vector<Mesh> m_Meshes;
 	std::string m_Directory;
+	std::string m_Path;
 
 	std::vector<Texture> m_TexturesLoaded;
 
@@ -21,6 +22,8 @@ private:
 
 public:
 	Model(const Model&) = default;
-	inline Model(const char* path) { LoadModel(path); }
+	inline Model(const char* path) : m_Path(path) { LoadModel(path); }
 	void Draw(Shader &shader);
+
+	inline std::string GetPath() { return m_Path; }
 };

@@ -2,11 +2,28 @@ Scene: Untitled
 Entities:
   - Entity: 123123123
     TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    CameraComponent:
+      Primary: true
+      Position: [0, 0, 5]
+      Fov: 45
+      Far: 100
+      Near: 0.100000001
+      Direction: [0, 0, 0]
+      Speed: 5
+  - Entity: 123123123
+    TagComponent:
       Tag: Primitives
     TransformComponent:
       Translation: [0, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+    ModelRendererComponent:
+      Path: res/models/sphere and cube.obj
   - Entity: 123123123
     TagComponent:
       Tag: Monkey
@@ -14,3 +31,5 @@ Entities:
       Translation: [-2.4000001, 0, 0]
       Rotation: [0, 0, 0]
       Scale: [1, 1, 1]
+    ModelRendererComponent:
+      Path: res/models/monk_smooth.obj

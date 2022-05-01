@@ -19,6 +19,7 @@ private:
 	float m_CamFov;
 	float m_CamSpeed;
 	glm::vec3 m_CamUpVec;
+	float m_Near = 0.1f, m_Far = 100.f;
 
 	CameraController* m_Controller;
 
@@ -26,6 +27,7 @@ private:
 public:
 	CameraOrbit();
 	CameraOrbit(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 upVec, float fov, float camSpeed = 5.5f);
+	CameraOrbit(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 upVec, float fov, float near, float far, float camSpeed = 5.5f);
 	~CameraOrbit();
 
 	void SetCameraView(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 camUp) override;
@@ -53,4 +55,10 @@ public:
 	void SetSpeed(float newSpeed) override;
 	void SetFov(float fov) override;
 	float GetFov() override;
+
+	void SetNear(float near) override;
+	float GetNear() override;
+
+	void SetFar(float far) override;
+	float GetFar() override;
 };

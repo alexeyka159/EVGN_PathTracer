@@ -12,7 +12,6 @@ private:
 	float m_CamSpeed;
 
 	//float m_CamUpVec;
-
 public:
 
 	virtual void SetCameraView(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 camUp) = 0;
@@ -39,4 +38,10 @@ public:
 
 	virtual void SetFov(float fov) = 0;
 	virtual float GetFov() = 0;
+
+	virtual void SetNear(float near) = 0;
+	virtual float GetNear() = 0;
+
+	virtual void SetFar(float far) = 0;
+	virtual float GetFar() = 0;
 };

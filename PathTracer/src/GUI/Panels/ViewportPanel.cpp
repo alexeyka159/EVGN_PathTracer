@@ -101,7 +101,7 @@ void ViewportPanel::Draw()
 
         float snapValue = 0.5f;
         if (m_GizmoType == ImGuizmo::OPERATION::ROTATE)
-            snapValue = 45.f;
+            snapValue = 15.f;
 
         float snapValues[3] = { snapValue, snapValue, snapValue};
 

@@ -1,6 +1,7 @@
 #include "SceneSerializer.h"
 
 #include "Entity.h"
+#include "Camera/CameraOrbit.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -105,7 +106,33 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::Key << "Scale" << YAML::Value << tc.Scale;
 
 		out << YAML::EndMap; //TransformComponent
+	}
 
+	if (entity.HasComponent<CameraComponent>())
+	{
+		out << YAML::Key << "CameraComponent";
+		out << YAML::BeginMap; //CameraComponent
+		auto& cc = entity.GetComponent<CameraComponent>();
+		auto& camera = cc.RenderCamera;
+		out << YAML::Key << "Primary" << YAML::Value << cc.Primary;
+		out << YAML::Key << "Position" << YAML::Value << camera->GetPosition(); //Временно
+		out << YAML::Key << "Fov" << YAML::Value << camera->GetFov();
+		out << YAML::Key << "Far" << YAML::Value << camera->GetFar();
+		out << YAML::Key << "Near" << YAML::Value << camera->GetNear();
+		out << YAML::Key << "Direction" << YAML::Value << camera->GetDirection();
+		out << YAML::Key << "Speed" << YAML::Value << camera->GetSpeed();
+
+		out << YAML::EndMap; //CameraComponent
+	}
+
+	if (entity.HasComponent<ModelRendererComponent>())
+	{
+		out << YAML::Key << "ModelRendererComponent";
+		out << YAML::BeginMap; //ModelRendererComponent
+		auto& modelComponent = entity.GetComponent<ModelRendererComponent>();
+		out << YAML::Key << "Path" << YAML::Value << modelComponent.ModelObj.GetPath();
+
+		out << YAML::EndMap; //ModelRendererComponent
 	}
 
 	out << YAML::EndMap; //Entity
@@ -149,7 +176,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 		return false;
 
 	std::string sceneName = data["Scene"].as<std::string>();
-	std::cout << "Deserializing scene " << sceneName << std::endl;
+	std::cout << "\nDeserializing scene \"" << sceneName << "\"" << std::endl;
 
 	auto entities = data["Entities"];
 	if (entities)
@@ -170,14 +197,40 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 			auto transformComponent = entity["TransformComponent"];
 			if (transformComponent)
 			{
-				auto& tc = deserializedEntity.GetComponent<TransformComponent>();
-				tc.Translation = transformComponent["Translation"].as<glm::vec3>();
-				tc.Rotation = transformComponent["Rotation"].as<glm::vec3>();
-				tc.Scale = transformComponent["Scale"].as<glm::vec3>();
+				auto& tc		= deserializedEntity.GetComponent<TransformComponent>();
+				tc.Translation	= transformComponent["Translation"].as<glm::vec3>();
+				tc.Rotation		= transformComponent["Rotation"].as<glm::vec3>();
+				tc.Scale		= transformComponent["Scale"].as<glm::vec3>();
 
 			}
+
+			/*auto cameraComponent = entity["CameraComponent"];
+			if (cameraComponent)
+			{
+				bool primary		= cameraComponent["Primary"].as<bool>();
+				glm::vec3 position	= cameraComponent["Position"].as<glm::vec3>();
+				float fov			= cameraComponent["Fov"].as<float>();
+				float far			= cameraComponent["Far"].as<float>();
+				float near			= cameraComponent["Near"].as<float>();
+				glm::vec3 direction = cameraComponent["Direction"].as<glm::vec3>();
+				float speed			= cameraComponent["Speed"].as<float>();
+
+				CameraOrbit camera(position, direction, glm::vec3(0.f, 1.f, 0.f), fov, near, far, speed);
+				deserializedEntity.AddComponent<CameraComponent>(camera, primary);
+			}*/
+
+			auto modelComponent = entity["ModelRendererComponent"];
+			if (modelComponent)
+			{
+				std::string path = modelComponent["Path"].as<std::string>();
+				std::cout << "  - Loading model: \"" << path << "\"\n";
+				deserializedEntity.AddComponent<ModelRendererComponent>(path.c_str());
+			}
+
+			std::cout << std::endl;
 		}
 	}
+
 	return true;
 }
 
