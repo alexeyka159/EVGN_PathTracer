@@ -8,6 +8,7 @@
 #include "Scene/SceneSerializer.h"
 
 #include "Utils/WindowsPlatformUtils.h"
+#include "SceneHierarchyPanel.h"
 
 ViewportPanel::ViewportPanel(Framebuffer& framebuffer, GLFWwindow& window, SceneHierarchyPanel& sceneHierarchyPanel, Camera& camera)
     : m_Framebuffer(&framebuffer)
@@ -28,35 +29,19 @@ void ViewportPanel::Draw()
         {
             if (ImGui::MenuItem("New", "ctrl+n"))
             {
-                Scene* newScene = new Scene;
-                m_SceneHierarchyPanel->SetContex(*newScene);
+                NewScene();
             }
             if (ImGui::MenuItem("Open...", "ctrl+o"))
             {
-                std::string filepath = FileDialogs::OpenFile("Evergreen Scene (*.evgn)\0*.evgn\0", m_Window);
-            
-                if (!filepath.empty())
-                {
-                    Scene* newScene = new Scene;
-                    m_SceneHierarchyPanel->SetContex(*newScene);
-
-                    SceneSerializer serializer(*newScene);
-                    serializer.Deserialize(filepath);
-                }
+                OpenScene();
             }
             if(ImGui::MenuItem("Save", "ctrl+s"))
             {
-
+                SaveScene();
             }
             if(ImGui::MenuItem("Save as...", "ctrl+shift+s"))
             {
-                std::string filepath = FileDialogs::SaveFile("Evergreen Scene (*.evgn)\0*.evgn\0", m_Window);
-
-                if (!filepath.empty())
-                {
-                    SceneSerializer serializer(*m_SceneHierarchyPanel->GetContex());
-                    serializer.Serialize(filepath);
-                }
+                SaveAsScene();
             }
 
             ImGui::EndMenu();
@@ -104,6 +89,15 @@ void ViewportPanel::Draw()
         snap = true;
     else
         snap = false;
+
+    //Õîòêåè Ôàéëà
+    if (glfwGetKey(m_Window, GLFW_KEY_O) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        OpenScene();
+    if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        SaveScene();
+    if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS &&
+        glfwGetKey(m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        SaveAsScene();
 
 
     m_GuiTextureID = m_Framebuffer->GetColorAttachmentRendererId();
@@ -161,9 +155,7 @@ void ViewportPanel::Draw()
 
         if (ImGuizmo::IsUsing())
         {
-            glm::vec3 translation, scale, rotation, skew;
-            glm::vec4 perspective;
-            glm::quat rotationQuaternion;
+            glm::vec3 translation, scale, rotation;
 
             Math::DecomposeTransform(transform, translation, rotation, scale);
 
@@ -173,10 +165,53 @@ void ViewportPanel::Draw()
         }
     }
 
-
-
     ImGui::End();
     ImGui::PopStyleVar();
 
     m_Framebuffer->Unbind();
+}
+
+void ViewportPanel::SaveScene()
+{
+    if (!m_LastScenePath.empty())
+    {
+        SceneSerializer serializer(m_SceneHierarchyPanel->GetContex());
+        serializer.Serialize(m_LastScenePath);
+    }
+    else
+        SaveAsScene();
+}
+
+void ViewportPanel::OpenScene()
+{
+    std::string filepath = FileDialogs::OpenFile("Evergreen Scene (*.evgn)\0*.evgn\0", m_Window);
+
+    if (!filepath.empty())
+    {
+        Ref<Scene> newScene = std::make_shared<Scene>();
+        m_SceneHierarchyPanel->SetContex(newScene);
+
+        SceneSerializer serializer(m_SceneHierarchyPanel->GetContex());
+        serializer.Deserialize(filepath);
+        m_LastScenePath = filepath;
+    }
+}
+
+void ViewportPanel::SaveAsScene()
+{
+    std::string filepath = FileDialogs::SaveFile("Evergreen Scene (*.evgn)\0*.evgn\0", m_Window);
+
+    if (!filepath.empty())
+    {
+        SceneSerializer serializer(m_SceneHierarchyPanel->GetContex());
+        serializer.Serialize(filepath);
+        m_LastScenePath = filepath;
+    }
+}
+
+void ViewportPanel::NewScene()
+{
+    Ref<Scene> newScene = std::make_shared<Scene>();
+    m_SceneHierarchyPanel->SetContex(newScene);
+    m_LastScenePath = "";
 }

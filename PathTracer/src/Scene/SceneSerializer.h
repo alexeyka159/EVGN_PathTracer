@@ -1,14 +1,15 @@
 #pragma once
 
 #include "Scene.h"
+#include "Ref.h"
 
 class SceneSerializer
 {
 private:
-	Scene* m_Scene;
+	Ref<Scene> m_Scene;
 
 public:
-	SceneSerializer(Scene& scene);
+	SceneSerializer(Ref<Scene> scene);
 
 	void Serialize(const std::string& filepath);
 	void SerializeRuntime(const std::string& filepath);

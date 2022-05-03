@@ -11,8 +11,8 @@ Entities:
     TagComponent:
       Tag: Primitives
     TransformComponent:
-      Translation: [0, 0, 0]
-      Rotation: [0, 0, 0]
+      Translation: [0, 0, -2.3917098]
+      Rotation: [0, -0, 0]
       Scale: [1, 1, 1]
     ModelRendererComponent:
       Path: res/models/sphere and cube.obj

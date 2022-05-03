@@ -13,6 +13,7 @@ private:
 	friend class SceneHierarchyPanel;
 	friend class Renderer;
 	friend class SceneSerializer;
+	friend class ViewportPanel;
 
 public:
 	Scene();

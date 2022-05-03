@@ -4,21 +4,21 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
-SceneHierarchyPanel::SceneHierarchyPanel(Scene& context)
-	: m_Context(&context)
+SceneHierarchyPanel::SceneHierarchyPanel(Ref<Scene>& context)
+	: m_Context(context)
 {
 	SetContex(context);
 }
 
-void SceneHierarchyPanel::SetContex(const Scene& context)
+void SceneHierarchyPanel::SetContex(const Ref<Scene>& context)
 {
-	*m_Context = context;
+	m_Context = context;
 	m_SelectionContext = {};
 }
 
 void SceneHierarchyPanel::SetSelection(const int& entityID)
 {
-	Entity entity = { (entt::entity)entityID, m_Context };
+	Entity entity = { (entt::entity)entityID, m_Context.get() };
 	m_SelectionContext = entity;
 }
 
@@ -26,14 +26,16 @@ void SceneHierarchyPanel::Draw()
 {
 	ImGui::Begin("Outliner");
 
-	m_Context->m_Registry.each([&](auto entityID)
-	{
-		Entity entity{ entityID, m_Context };
-		DrawEntityNode(entity);
+	if (m_Context) {
+		m_Context->m_Registry.each([&](auto entityID)
+			{
+				Entity entity{ entityID, m_Context.get() };
+				DrawEntityNode(entity);
 
-		/*auto& tc = entity.GetComponent<TagComponent>();
-		ImGui::Text("%s", tc.Tag.c_str());*/
-	});
+				/*auto& tc = entity.GetComponent<TagComponent>();
+				ImGui::Text("%s", tc.Tag.c_str());*/
+			});
+	}
 
 	if (ImGui::IsMouseDown(0) && ImGui::IsWindowHovered())
 		m_SelectionContext = {};
@@ -125,6 +127,18 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 				camComponent.RenderCamera->SetFov(fov);
 			if(ImGui::DragFloat("Speed", &speed, 0.1f))
 				camComponent.RenderCamera->SetSpeed(speed);
+
+			ImGui::TreePop();
+		}
+	}
+
+	if (entity.HasComponent<ModelRendererComponent>())
+	{
+		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Model"))
+		{
+			auto& modelComponent = entity.GetComponent<ModelRendererComponent>();
+			std::string pathStr = "Path: " + modelComponent.ModelObj.GetPath();
+			ImGui::Text(pathStr.c_str());
 
 			ImGui::TreePop();
 		}

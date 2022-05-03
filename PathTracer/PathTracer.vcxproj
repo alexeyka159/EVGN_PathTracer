@@ -226,6 +226,7 @@
     <ClInclude Include="src\Math\Math.h" />
     <ClInclude Include="src\Model\Mesh.h" />
     <ClInclude Include="src\Model\Model.h" />
+    <ClInclude Include="src\Ref.h" />
     <ClInclude Include="src\Renderer.h" />
     <ClInclude Include="src\Scene\Components.h" />
     <ClInclude Include="src\Scene\Entity.h" />

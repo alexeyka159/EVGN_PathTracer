@@ -74,8 +74,8 @@ YAML::Emitter& operator<<(YAML::Emitter& out, const glm::vec4& v)
 	return out;
 }
 
-SceneSerializer::SceneSerializer(Scene& scene)
-	: m_Scene(&scene)
+SceneSerializer::SceneSerializer(Ref<Scene> scene)
+	: m_Scene(scene)
 {
 }
 
@@ -148,7 +148,7 @@ void SceneSerializer::Serialize(const std::string& filepath)
 
 	m_Scene->m_Registry.each([&](auto entityID)
 		{
-			Entity entity = { entityID, m_Scene };
+			Entity entity = { entityID, m_Scene.get() };
 			if (!entity)
 				return;
 
@@ -225,6 +225,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 				std::string path = modelComponent["Path"].as<std::string>();
 				std::cout << "  - Loading model: \"" << path << "\"\n";
 				deserializedEntity.AddComponent<ModelRendererComponent>(path.c_str());
+
 			}
 
 			std::cout << std::endl;

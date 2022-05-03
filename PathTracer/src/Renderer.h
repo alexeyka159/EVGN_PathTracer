@@ -7,6 +7,8 @@
 #include "IndexBuffer.h"
 #include "Shader.h"
 
+#include <Ref.h>
+
 class Scene;
 class Camera;
 namespace RendererCallback {
@@ -27,5 +29,5 @@ public:
 
 	void Clear() const;
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
-	void Draw(Scene& scene, Shader& shader, Camera* camera, float ts) const;
+	void Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) const;
 };

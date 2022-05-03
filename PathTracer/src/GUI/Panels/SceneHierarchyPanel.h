@@ -5,10 +5,12 @@
 #include "Scene/Scene.h"
 #include "Scene/Entity.h"
 
+#include "Ref.h"
+
 class SceneHierarchyPanel : public GUIPanel
 {
 private:
-    Scene* m_Context;
+    Ref<Scene> m_Context;
     Entity m_SelectionContext;
 
     void DrawEntityNode(Entity entity);
@@ -16,11 +18,11 @@ private:
 
 public:
     SceneHierarchyPanel() = default;
-    SceneHierarchyPanel(Scene& context);
+    SceneHierarchyPanel(Ref<Scene>& context);
     inline ~SceneHierarchyPanel() { delete this; }
 
-    inline Scene* GetContex() { return m_Context; }
-    void SetContex(const Scene& context);
+    inline Ref<Scene> GetContex() { return m_Context; }
+    void SetContex(const Ref<Scene>& context);
     
     inline void SetSelection(const Entity& entity) { m_SelectionContext = entity; }
 

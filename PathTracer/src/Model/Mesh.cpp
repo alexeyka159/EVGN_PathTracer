@@ -91,19 +91,6 @@ void Mesh::Draw(Shader* shader)
         //glBindTexture(GL_TEXTURE_2D, m_Textures[i].m_RendererID);
     }
 
-    //!!Временно. Позже меш будет отправляться рендереру и отрисовываться там
-    // Отрисовываем меш
-
-    
-    //shader->Bind();
-    /*m_VAO.Bind();
-
-    glDrawElements(GL_TRIANGLES, m_IBO.GetCount(), GL_UNSIGNED_INT, nullptr);
-
-    m_VAO.Unbind();
-    glActiveTexture(GL_TEXTURE0);*/
-    //shader->Unbind();
-
     glBindVertexArray(m_VAO);
     glDrawElements(GL_TRIANGLES, m_Indices.size(), GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);

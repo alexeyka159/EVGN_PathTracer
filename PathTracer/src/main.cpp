@@ -37,6 +37,8 @@
 #include "Scene/Entity.h"
 #include "Scene/SceneSerializer.h"
 
+#include "Ref.h"
+
 int main() {
 
 	int WIDTH = 1280, HEIGHT = 720;
@@ -61,17 +63,9 @@ int main() {
 	inputManager.Push(camera.GetController());
 
 	bool show_debug_window = false;
-	bool isWireframe = false;
+	bool isDebug = false;
 
-	Scene activeScene;
-	/*Entity monkey = activeScene.CreateEntity("Monkey");
-	monkey.AddComponent<ModelRendererComponent>("res/models/monk_smooth.obj");
-	monkey.GetComponent<TransformComponent>().Translation = glm::vec3(-2.4, 0, 0);
-	Entity prims = activeScene.CreateEntity("Primitives");
-	prims.AddComponent<ModelRendererComponent>("res/models/sphere and cube.obj");
-	Entity cameraEntity = activeScene.CreateEntity("Camera");
-	cameraEntity.AddComponent<CameraComponent>(camera, true);
-	*/
+	Ref<Scene> activeScene = std::make_shared<Scene>();
 
 	glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
 
@@ -112,7 +106,7 @@ int main() {
 
 		camera.GetController()->SetDeltaTime(TIME.DeltaTime());
 
-		renderer.Draw(activeScene, shader, &camera, TIME.DeltaTime());
+		renderer.Draw(outliner->GetContex(), shader, &camera, TIME.DeltaTime());
 
 		{
 			shader.Bind();
@@ -126,11 +120,7 @@ int main() {
 		if (show_debug_window)
 		{
 			ImGui::Begin("Debug Window", &show_debug_window);
-			//ImGui::SliderFloat3("Primitives Translation", &translationA.x, -8.0f, 8.f, "%f");
-			//ImGui::SliderFloat3("Monkey Translation", &translationB.x, -8.0f, 8.f, "%f");
-			ImGui::SliderFloat3("Light Position", &lightPos.x, -5.0f, 5.f);
-			ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 30.f);
-			ImGui::Checkbox("Wireframe mode", &isWireframe);
+			ImGui::Checkbox("Renderer debug", &isDebug);
 			ImGui::Spacing();
 			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 			ImGui::End();

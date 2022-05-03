@@ -16,9 +16,14 @@ private:
     glm::vec2 m_ViewportSize = { 0.0f, 0.0f };
     glm::vec2 m_ViewportBounds[2];
     SceneHierarchyPanel* m_SceneHierarchyPanel;
+    std::string m_LastScenePath = "";
 
     int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
+    void SaveScene();
+    void OpenScene();
+    void SaveAsScene();
+    void NewScene();
 public:
     ViewportPanel(Framebuffer& framebuffer, GLFWwindow& window, SceneHierarchyPanel& sceneHierarchyPanel, Camera& camera);
     inline ~ViewportPanel() { delete this; };

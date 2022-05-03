@@ -62,29 +62,31 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 	
 }
 
-void Renderer::Draw(Scene& scene, Shader& shader, Camera* camera, float ts) const
+void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) const
 {
-	/*CameraOrbit* camera = nullptr;
-	auto view = scene.m_Registry.view<CameraComponent>();
-	for (auto entity : view)
+	if (scene)
 	{
-		auto& cameraComponent = scene.m_Registry.get<CameraComponent>(entity);
-
-		if (cameraComponent.Primary)
+		/*CameraOrbit* camera = nullptr;
+		auto view = scene.m_Registry.view<CameraComponent>();
+		for (auto entity : view)
 		{
-			camera = cameraComponent.RenderCamera;
-			break;
-		}
-	}*/
+			auto& cameraComponent = scene.m_Registry.get<CameraComponent>(entity);
 
-	/*if (camera)
-	{*/
+			if (cameraComponent.Primary)
+			{
+				camera = cameraComponent.RenderCamera;
+				break;
+			}
+		}*/
+
+		/*if (camera)
+		{*/
 		camera->GetController()->SetDeltaTime(ts);
 
-		auto view = scene.m_Registry.view<ModelRendererComponent>();
+		auto view = scene->m_Registry.view<ModelRendererComponent>();
 		for (auto entityID : view)
 		{
-			Entity entity{ entityID, &scene };
+			Entity entity{ entityID, scene.get() };
 			if (entity)
 			{
 				glm::mat4 model = entity.GetComponent<TransformComponent>().GetTransform();
@@ -99,7 +101,8 @@ void Renderer::Draw(Scene& scene, Shader& shader, Camera* camera, float ts) cons
 				entity.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
 			}
 		}
-	/*}*/
+		/*}*/
+	}
 }
 
 void RendererCallback::framebuffer_size_callback(GLFWwindow* window, int width, int height)
