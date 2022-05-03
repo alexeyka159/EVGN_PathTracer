@@ -1,7 +1,6 @@
 #include "SceneSerializer.h"
 
 #include "Entity.h"
-#include "Camera/CameraOrbit.h"
 
 #include <fstream>
 #include <yaml-cpp/yaml.h>
@@ -136,14 +135,14 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 	}
 
 	out << YAML::EndMap; //Entity
-
 }
 
 void SceneSerializer::Serialize(const std::string& filepath)
 {
+	std::string sceneName = "Untitled";
 	YAML::Emitter out;
 	out << YAML::BeginMap;
-	out << YAML::Key << "Scene" << YAML::Value << "Untitled";
+	out << YAML::Key << "Scene" << YAML::Value << sceneName;
 	out << YAML::Key << "Entities" << YAML::Value << YAML::BeginSeq;
 
 	m_Scene->m_Registry.each([&](auto entityID)
@@ -159,6 +158,7 @@ void SceneSerializer::Serialize(const std::string& filepath)
 
 	std::ofstream fout(filepath);
 	fout << out.c_str();
+	std::cout << "Scene \"" << sceneName << "\" saved to \"" << filepath << "\"\n";
 }
 
 void SceneSerializer::SerializeRuntime(const std::string& filepath)
@@ -176,7 +176,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 		return false;
 
 	std::string sceneName = data["Scene"].as<std::string>();
-	std::cout << "\nDeserializing scene \"" << sceneName << "\"" << std::endl;
+	std::cout << "Loading scene \"" << sceneName << "\" from \"" << filepath << "\"..." << std::endl;
 
 	auto entities = data["Entities"];
 	if (entities)
@@ -190,7 +190,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 			if (tagComponent)
 				name = tagComponent["Tag"].as<std::string>();
 
-			std::cout << "Deserialized entity with ID = " << uuid << ", name = " << name << std::endl;
+			std::cout << "Loading entity with ID = " << uuid << ", name = " << name << "..." << std::endl;
 
 			Entity deserializedEntity = m_Scene->CreateEntity(name);
 
@@ -204,7 +204,7 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 
 			}
 
-			/*auto cameraComponent = entity["CameraComponent"];
+			auto cameraComponent = entity["CameraComponent"];
 			if (cameraComponent)
 			{
 				bool primary		= cameraComponent["Primary"].as<bool>();
@@ -215,9 +215,8 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 				glm::vec3 direction = cameraComponent["Direction"].as<glm::vec3>();
 				float speed			= cameraComponent["Speed"].as<float>();
 
-				CameraOrbit camera(position, direction, glm::vec3(0.f, 1.f, 0.f), fov, near, far, speed);
-				deserializedEntity.AddComponent<CameraComponent>(camera, primary);
-			}*/
+				deserializedEntity.AddComponent<CameraComponent>(position, direction, glm::vec3(0.f, 1.f, 0.f), fov, near, far, speed, primary);
+			}
 
 			auto modelComponent = entity["ModelRendererComponent"];
 			if (modelComponent)

@@ -11,8 +11,8 @@ Entities:
     TagComponent:
       Tag: Primitives
     TransformComponent:
-      Translation: [1.29546189, -0.424814165, 0.773775339]
-      Rotation: [0.188120931, -0.559557021, 0.626016498]
+      Translation: [0.337485373, 0.73533237, 1.77231073]
+      Rotation: [0, -0, 1.14051342]
       Scale: [0.99999994, 0.99999994, 1]
     ModelRendererComponent:
       Path: res/models/sphere and cube.obj
@@ -20,8 +20,8 @@ Entities:
     TagComponent:
       Tag: Monkey
     TransformComponent:
-      Translation: [-1.86483657, -0.714672208, -0.0451229662]
-      Rotation: [-1.90007257, -0, 0]
-      Scale: [0.438554436, 1.50060058, 1.50060058]
+      Translation: [-1.89228845, 0.29114449, 1.45072711]
+      Rotation: [0, -0, -1.05013156]
+      Scale: [1, 1, 1]
     ModelRendererComponent:
       Path: res/models/monk_smooth.obj

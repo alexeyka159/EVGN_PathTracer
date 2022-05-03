@@ -61,4 +61,9 @@ struct CameraComponent
 	CameraComponent(CameraOrbit& camera, bool isPrimary = false)
 		: RenderCamera(&camera)
 		, Primary(isPrimary) {}
+	CameraComponent(glm::vec3 camPos, glm::vec3 camTarget, glm::vec3 upVec, float fov, float near, float far, float camSpeed = 5.5f, bool isPrimary = false)
+		: Primary(isPrimary)
+	{
+		RenderCamera = new CameraOrbit(camPos, camTarget, upVec, fov, near, far, camSpeed);
+	}
 };

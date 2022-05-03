@@ -111,7 +111,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		{
 			auto& camComponent = entity.GetComponent<CameraComponent>();
 			auto fov = camComponent.RenderCamera->GetFov();
-			auto speed = camComponent.RenderCamera->GetSpeed();
+			//auto speed = camComponent.RenderCamera->GetSpeed();
 			auto& primaty = camComponent.Primary;
 			auto near = camComponent.RenderCamera->GetNear();
 			auto far = camComponent.RenderCamera->GetFar();
@@ -125,8 +125,8 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			ImGui::NewLine();
 			if(ImGui::DragFloat("FOV", &fov, 0.1f))
 				camComponent.RenderCamera->SetFov(fov);
-			if(ImGui::DragFloat("Speed", &speed, 0.1f))
-				camComponent.RenderCamera->SetSpeed(speed);
+			/*if(ImGui::DragFloat("Speed", &speed, 0.1f))
+				camComponent.RenderCamera->SetSpeed(speed);*/
 
 			ImGui::TreePop();
 		}

@@ -34,6 +34,7 @@ public:
 
 	//будет обращаться к камера контроллеру и помещать его в вектор контроллеров на обработку
 	CameraController* GetController() override;
+
 	glm::mat4 GetViewMatrix() override;
 
 	glm::vec3 UpdateUp() override;

@@ -34,7 +34,7 @@ Renderer::Renderer(int w, int h, std::string wndName)
 		throw std::exception("Failed to initialize GLAD");
 	}
 
-	std::cout << glGetString(GL_VERSION) << std::endl;
+	std::cout << glGetString(GL_VERSION) << std::endl << std::endl;
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -66,22 +66,21 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 {
 	if (scene)
 	{
-		/*CameraOrbit* camera = nullptr;
-		auto view = scene.m_Registry.view<CameraComponent>();
+		/*CameraOrbit* newCamera = nullptr;
+		auto view = scene->m_Registry.view<CameraComponent>();
 		for (auto entity : view)
 		{
-			auto& cameraComponent = scene.m_Registry.get<CameraComponent>(entity);
+			auto& cameraComponent = scene->m_Registry.get<CameraComponent>(entity);
 
 			if (cameraComponent.Primary)
 			{
-				camera = cameraComponent.RenderCamera;
+				newCamera = cameraComponent.RenderCamera;
 				break;
 			}
-		}*/
+		}
 
-		/*if (camera)
+		if (newCamera)
 		{*/
-		camera->GetController()->SetDeltaTime(ts);
 
 		auto view = scene->m_Registry.view<ModelRendererComponent>();
 		for (auto entityID : view)

@@ -93,7 +93,8 @@ void ViewportPanel::Draw()
     //Õמעךוט Ôאיכא
     if (glfwGetKey(m_Window, GLFW_KEY_O) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         OpenScene();
-    if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+    if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS &&
+        glfwGetKey(m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
         SaveScene();
     if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS &&
         glfwGetKey(m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
