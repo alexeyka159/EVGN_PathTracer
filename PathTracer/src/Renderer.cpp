@@ -66,22 +66,6 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 {
 	if (scene)
 	{
-		/*CameraOrbit* newCamera = nullptr;
-		auto view = scene->m_Registry.view<CameraComponent>();
-		for (auto entity : view)
-		{
-			auto& cameraComponent = scene->m_Registry.get<CameraComponent>(entity);
-
-			if (cameraComponent.Primary)
-			{
-				newCamera = cameraComponent.RenderCamera;
-				break;
-			}
-		}
-
-		if (newCamera)
-		{*/
-
 		auto view = scene->m_Registry.view<ModelRendererComponent>();
 		for (auto entityID : view)
 		{
@@ -100,7 +84,6 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 				entity.GetComponent<ModelRendererComponent>().ModelObj.Draw(shader);
 			}
 		}
-		/*}*/
 	}
 }
 
