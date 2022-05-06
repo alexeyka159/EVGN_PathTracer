@@ -16,6 +16,7 @@ ViewportPanel::ViewportPanel(Framebuffer& framebuffer, GLFWwindow& window, Scene
     , m_Camera(&camera)
     , m_Window(&window)
     , m_SceneHierarchyPanel(&sceneHierarchyPanel)
+    , m_OutputType(0)
 {
 }
 
@@ -52,7 +53,17 @@ void ViewportPanel::Draw()
             ImGui::MenuItem("Add", "ctrl+shift+a");
             ImGui::EndMenu();
         }
+        ImGui::Separator();
+        if (ImGui::MenuItem("Color"))
+            m_OutputType = 0;
+        if (ImGui::MenuItem("Depth"))
+            m_OutputType = 2;
+        if (ImGui::MenuItem("Entity Id"))
+            m_OutputType = 1;
+
         ImGui::EndMenuBar();
+
+        
     }
 
     auto[mx, my] = ImGui::GetMousePos();
@@ -101,7 +112,7 @@ void ViewportPanel::Draw()
         SaveAsScene();
 
 
-    m_GuiTextureID = m_Framebuffer->GetColorAttachmentRendererId();
+    m_GuiTextureID = m_Framebuffer->GetColorAttachmentRendererId(m_OutputType);
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
     ImGui::Begin("Viewport");

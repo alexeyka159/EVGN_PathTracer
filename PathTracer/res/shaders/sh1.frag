@@ -2,6 +2,7 @@
 
 layout (location = 0) out vec4 FragColor;
 layout (location = 1) out int entityID;
+layout (location = 2) out vec4 FragDepth;
 
 struct Material {
 	sampler2D texture_diffuse1;
@@ -46,4 +47,6 @@ void main()
 	FragColor = vec4(result, 1.0);
 
 	entityID = u_EntityID;
+
+    FragDepth = vec4(vec3(gl_FragCoord.z), 1.0);
 }

@@ -18,6 +18,8 @@ private:
     SceneHierarchyPanel* m_SceneHierarchyPanel;
     std::string m_LastScenePath = "";
 
+    int m_OutputType = 0;
+
     int m_GizmoType = ImGuizmo::OPERATION::TRANSLATE;
 
     void SaveScene();

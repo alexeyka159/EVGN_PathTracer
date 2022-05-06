@@ -38,12 +38,20 @@ Renderer::Renderer(int w, int h, std::string wndName)
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glEnable(GL_CULL_FACE);
+	FaceCulling(true);
 }
 
 Renderer::~Renderer()
 {
 	glfwTerminate();
+}
+
+void Renderer::FaceCulling(bool state)
+{
+	if(state)
+		glEnable(GL_CULL_FACE);
+	else
+		glDisable(GL_CULL_FACE);
 }
 
 void Renderer::Clear() const
@@ -56,10 +64,10 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 {
 	shader.Bind();
 	va.Bind();
-	ib.Bind();
 
 	glDrawElements(GL_TRIANGLES, ib.GetCount(), GL_UNSIGNED_INT, nullptr);
-	
+	va.Unbind();
+	shader.Unbind();
 }
 
 void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) const

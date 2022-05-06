@@ -45,6 +45,6 @@ public:
 	std::vector<Texture>  m_Textures;
 	//Добавить класс материалов, в котором будут храниться текстуры и шейдер
 
-	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture> textures);
+	Mesh(std::vector<Vertex>& vertices, std::vector<unsigned int>& indices, std::vector<Texture>& textures);
 	void Draw(Shader* shader);
 };

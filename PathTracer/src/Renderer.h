@@ -28,6 +28,7 @@ public:
 	inline GLFWwindow* GetWindow() const { return m_Window;  }
 
 	void Clear() const;
+	void FaceCulling(bool state);
 	void Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& shader) const;
 	void Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) const;
 };

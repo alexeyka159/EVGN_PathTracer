@@ -13,7 +13,7 @@ void OrbitCameraController::BindCamera(Camera* camera)
 void OrbitCameraController::InputProcessor(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
-		m_Camera->SetCameraView(glm::vec3(0.0f, 0.0f, 3.0f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		m_Camera->SetCameraView(glm::vec3(-4.3f, 3.0f, 5.3f), glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 
 	int mouseState = glfwGetMouseButton(window, GLFW_MOUSE_BUTTON_MIDDLE);
 	if (mouseState == GLFW_PRESS && glfwGetKey(window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)

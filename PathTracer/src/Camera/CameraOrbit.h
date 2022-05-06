@@ -19,7 +19,7 @@ private:
 	float m_CamFov;
 	float m_CamSpeed;
 	glm::vec3 m_CamUpVec;
-	float m_Near = 0.1f, m_Far = 100.f;
+	float m_Near = 0.1f, m_Far = 1000.f;
 
 	CameraController* m_Controller;
 
