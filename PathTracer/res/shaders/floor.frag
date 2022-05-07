@@ -40,7 +40,7 @@ void main() {
 
     float fading = 1 - pow(length(v_Pos)*0.9, 5);
 
-    FragColor = grid(v_Pos.xyz, 100, true) + grid(v_Pos.xyz, 1000, true);
+    FragColor = grid(v_Pos.xyz, 70, true) + grid(v_Pos.xyz, 700, true);
     FragColor.a *= fading;
 
     FragDepth = vec4(vec3(pow(gl_FragCoord.z, 35)), 0.0);
