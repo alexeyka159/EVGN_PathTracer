@@ -48,5 +48,5 @@ void main()
 
 	entityID = u_EntityID;
 
-    FragDepth = vec4(vec3(gl_FragCoord.z), 1.0);
+    FragDepth = vec4(vec3(pow(gl_FragCoord.z, 35)), 1.0);
 }

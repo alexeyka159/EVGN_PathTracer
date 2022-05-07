@@ -8,6 +8,7 @@ out vec3 v_FarPoint;
 out mat4 v_FragView;
 out mat4 v_FragProj;
 
+
 out vec4 v_Pos;
 
 uniform mat4 u_View;
@@ -21,7 +22,7 @@ void main() {
 
     gl_Position = vec4(p);
     v_Pos = aPos;
+
     v_FragView = u_View;
     v_FragProj = u_Proj;
-
 }

@@ -1,7 +1,6 @@
 #version 460 core
 
 layout (location = 0) out vec4 FragColor;
-layout (location = 1) out int entityID;
 layout (location = 2) out vec4 FragDepth;
 
 in vec3 v_NearPoint;
@@ -9,12 +8,9 @@ in vec3 v_FarPoint;
 in mat4 v_FragView;
 in mat4 v_FragProj;
 in vec4 v_Pos;
-in vec2 v_TexCoord;
 
 const float near = 0.1;
 const float far = 1;
-
-uniform sampler2D u_EntityTexture;
 
 vec4 grid(vec3 pos, float scale, bool drawAxis) {
 
@@ -44,6 +40,8 @@ void main() {
 
     float fading = 1 - pow(length(v_Pos)*0.9, 5);
 
-    FragColor = grid(v_Pos.xyz, 100, true) + grid(v_Pos.xyz, 500, true);
+    FragColor = grid(v_Pos.xyz, 100, true) + grid(v_Pos.xyz, 1000, true);
     FragColor.a *= fading;
+
+    FragDepth = vec4(vec3(pow(gl_FragCoord.z, 35)), 0.0);
 }
