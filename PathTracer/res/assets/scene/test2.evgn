@@ -1,0 +1,27 @@
+Scene: Untitled
+Entities:
+  - Entity: 123123123
+    TagComponent:
+      Tag: Monkey
+    TransformComponent:
+      Translation: [-3.35067534, 0.302344948, 0.0748006552]
+      Rotation: [0, -0, -0.00767992577]
+      Scale: [1, 1, 1]
+    ModelRendererComponent:
+      Path: res/models/monk_smooth.obj
+  - Entity: 123123123
+    TagComponent:
+      Tag: Primitives
+    TransformComponent:
+      Translation: [3.18544078, 0.411429435, -1.4604286]
+      Rotation: [0, -0, 1.1405133]
+      Scale: [2.2299993, 2.2299993, 2.23000002]
+    ModelRendererComponent:
+      Path: res/models/sphere and cube.obj
+  - Entity: 123123123
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]

@@ -55,6 +55,7 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 	auto& tag = entity.GetComponent<TagComponent>().Tag;
 
 	ImGuiTreeNodeFlags flags = ((m_SelectionContext == entity) ? ImGuiTreeNodeFlags_Selected : 0) | ImGuiTreeNodeFlags_OpenOnArrow;
+	flags |= ImGuiTreeNodeFlags_SpanAvailWidth;
 	bool opened = ImGui::TreeNodeEx((void*)(uint64_t)(uint32_t)entity, flags, tag.c_str());
 	if (ImGui::IsItemClicked())
 	{
@@ -63,11 +64,50 @@ void SceneHierarchyPanel::DrawEntityNode(Entity entity)
 
 	if (opened)
 	{
-		/*ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow;
+		/*ImGuiTreeNodeFlags flags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_SpanAvailWidth;
 		bool opened = ImGui::TreeNodeEx((void*)86461, flags, tag.c_str());
 		if(opened)
 			ImGui::TreePop();*/
 		ImGui::TreePop();
+	}
+}
+template<typename T, typename UIFunction>
+static void DrawComponent(const std::string& name, Entity entity, UIFunction uiFunction)
+{
+	if (entity.HasComponent<T>())
+	{
+		ImGui::Separator();
+		const ImGuiTreeNodeFlags treenodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth;
+		auto& component = entity.GetComponent<T>();
+
+		ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 4, 4 });
+		float lineHeight = 25;
+		//ImGui::Separator(); 
+		bool open = ImGui::TreeNodeEx((void*)typeid(T).hash_code(), treenodeFlags, name.c_str());
+		ImGui::PopStyleVar();
+		ImGui::SameLine(ImGui::GetWindowWidth() - lineHeight - 4);
+		if (ImGui::Button("...", ImVec2{ lineHeight, lineHeight }))
+		{
+			ImGui::OpenPopup("ComponentSettings");
+		}
+
+		bool removeComponent = false;
+		if (ImGui::BeginPopup("ComponentSettings"))
+		{
+			if (ImGui::MenuItem("Remove Component"))
+				removeComponent = true;
+
+			ImGui::EndPopup();
+		}
+
+		if (open)
+		{
+			uiFunction(component);
+			ImGui::TreePop();
+		}
+
+		if (removeComponent)
+			entity.RemoveComponent<T>();
 	}
 }
 
@@ -80,67 +120,73 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		char buffer[256];
 		memset(buffer, 0, sizeof(buffer));
 		strcpy_s(buffer, sizeof(buffer), tag.c_str());
-		if (ImGui::InputText("Name", buffer, sizeof(buffer)))
+		if (ImGui::InputText("##Name", buffer, sizeof(buffer)))
 		{
 			tag = std::string(buffer);
 		}
 	}
 
-	if (entity.HasComponent<TransformComponent>())
+	ImGui::SameLine();
+	ImGui::PushItemWidth(-1);
+
+	if (ImGui::Button("Add Component"))
+		ImGui::OpenPopup("AddComponent");
+	
+	if (ImGui::BeginPopup("AddComponent"))
 	{
-		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Transform"))
+		if(ImGui::MenuItem("Camera"))
 		{
-			auto& translation = entity.GetComponent<TransformComponent>().Translation;
-			auto& scale = entity.GetComponent<TransformComponent>().Scale;
-			auto& rotation = entity.GetComponent<TransformComponent>().Rotation;
+			//m_SelectionContext.AddComponent<CameraComponent>();
+			ImGui::CloseCurrentPopup();
+		}
+		if (ImGui::MenuItem("Model"))
+		{
+			//m_SelectionContext.AddComponent<ModelRendererComponent>("");
+			ImGui::CloseCurrentPopup();
+		}
+		ImGui::EndPopup();
+	}
+
+	ImGui::PopItemWidth();
+
+	DrawComponent<TransformComponent>("Transform", entity, [](auto& component)
+		{
+			auto& translation = component.Translation;
+			auto& scale = component.Scale;
+			auto& rotation = component.Rotation;
 
 			rotation = glm::degrees(rotation);
 
 			ImGui::DragFloat3("Position", &translation[0], 0.1f);
 			ImGui::DragFloat3("Scale", &scale[0], 0.1f);
 			ImGui::DragFloat3("Rotation", &rotation[0], 0.1f);
-			ImGui::TreePop();
 
 			rotation = glm::radians(rotation);
-		}		
-	}
+		});
 
-	if (entity.HasComponent<CameraComponent>())
-	{
-		if (ImGui::TreeNodeEx((void*)typeid(CameraComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Camera"))
+	
+	DrawComponent<CameraComponent>("Camera", entity, [](auto& component)
 		{
-			auto& camComponent = entity.GetComponent<CameraComponent>();
-			auto fov = camComponent.RenderCamera->GetFov();
-			//auto speed = camComponent.RenderCamera->GetSpeed();
-			auto& primaty = camComponent.Primary;
-			auto near = camComponent.RenderCamera->GetNear();
-			auto far = camComponent.RenderCamera->GetFar();
+			auto fov = component.RenderCamera->GetFov();
+			//auto speed = component.RenderCamera->GetSpeed();
+			auto& primaty = component.Primary;
+			auto near = component.RenderCamera->GetNear();
+			auto far = component.RenderCamera->GetFar();
 
 			ImGui::Checkbox("Primary camera", &primaty);
 			ImGui::NewLine();
-			if(ImGui::DragFloat("Near", &near, 0.1f, 0.01f))
-				camComponent.RenderCamera->SetNear(near);
-			if(ImGui::DragFloat("Far", &far, 0.1f))
-				camComponent.RenderCamera->SetFar(far);
+			if (ImGui::DragFloat("Near", &near, 0.1f, 0.01f))
+				component.RenderCamera->SetNear(near);
+			if (ImGui::DragFloat("Far", &far, 0.1f))
+				component.RenderCamera->SetFar(far);
 			ImGui::NewLine();
-			if(ImGui::DragFloat("FOV", &fov, 0.1f))
-				camComponent.RenderCamera->SetFov(fov);
-			/*if(ImGui::DragFloat("Speed", &speed, 0.1f))
-				camComponent.RenderCamera->SetSpeed(speed);*/
+			if (ImGui::DragFloat("FOV", &fov, 0.1f))
+				component.RenderCamera->SetFov(fov);
+		});
 
-			ImGui::TreePop();
-		}
-	}
-
-	if (entity.HasComponent<ModelRendererComponent>())
-	{
-		if (ImGui::TreeNodeEx((void*)typeid(TransformComponent).hash_code(), ImGuiTreeNodeFlags_DefaultOpen, "Model"))
+	DrawComponent<ModelRendererComponent>("Model", entity, [](auto& component)
 		{
-			auto& modelComponent = entity.GetComponent<ModelRendererComponent>();
-			std::string pathStr = "Path: " + modelComponent.ModelObj.GetPath();
+			std::string pathStr = "Path: " + component.ModelObj.GetPath();
 			ImGui::Text(pathStr.c_str());
-
-			ImGui::TreePop();
-		}
-	}
+		});
 }

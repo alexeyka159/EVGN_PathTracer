@@ -28,19 +28,19 @@ void ViewportPanel::Draw()
     {
         if (ImGui::BeginMenu("File"))
         {
-            if (ImGui::MenuItem("New", "ctrl+n"))
+            if (ImGui::MenuItem("New", "Ctrl+N"))
             {
                 NewScene();
             }
-            if (ImGui::MenuItem("Open...", "ctrl+o"))
+            if (ImGui::MenuItem("Open...", "Ctrl+O"))
             {
                 OpenScene();
             }
-            if(ImGui::MenuItem("Save", "ctrl+s"))
+            if(ImGui::MenuItem("Save", "Ctrl+S"))
             {
                 SaveScene();
             }
-            if(ImGui::MenuItem("Save as...", "ctrl+shift+s"))
+            if(ImGui::MenuItem("Save as...", "Ctrl+Shift+S"))
             {
                 SaveAsScene();
             }
@@ -50,7 +50,7 @@ void ViewportPanel::Draw()
 
         if (ImGui::BeginMenu("Edit"))
         {
-            ImGui::MenuItem("Add", "ctrl+shift+a");
+            ImGui::MenuItem("Add", "Ctrl+Shift+A");
             ImGui::EndMenu();
         }
         ImGui::Separator();
@@ -58,8 +58,6 @@ void ViewportPanel::Draw()
             m_OutputType = 0;
         if (ImGui::MenuItem("Depth"))
             m_OutputType = 2;
-        if (ImGui::MenuItem("Entity Id"))
-            m_OutputType = 1;
 
         ImGui::EndMenuBar();
 
@@ -125,7 +123,7 @@ void ViewportPanel::Draw()
         m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
         m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
     }
-    ImGui::Image((void*)m_GuiTextureID, ImVec2{ viewportPanelSize.x, viewportPanelSize.y -19 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+    ImGui::Image((void*)m_GuiTextureID, ImVec2{ viewportPanelSize.x, viewportPanelSize.y -23 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
     m_Camera->OnResize(viewportPanelSize.x, viewportPanelSize.y);
     
     auto windowSize = ImGui::GetWindowSize();

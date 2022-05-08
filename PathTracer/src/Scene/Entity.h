@@ -45,7 +45,7 @@ public:
 	template<typename T>
 	void RemoveComponent()
 	{
-		if (HasComponent<T>())
+		if (!HasComponent<T>())
 		{
 			//std::cin.get();
 			throw std::exception("Entity does not have component!");

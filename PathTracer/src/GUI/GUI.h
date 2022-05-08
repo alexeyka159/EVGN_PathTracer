@@ -12,6 +12,7 @@ private:
 
 	std::vector<GUIPanel*> m_Panels;
 
+	void SetDarkThemeColors();
 public:
 	GUI(GLFWwindow* window);
 	~GUI();
