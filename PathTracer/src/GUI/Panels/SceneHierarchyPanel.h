@@ -27,7 +27,7 @@ public:
     inline void SetSelection(const Entity& entity) { m_SelectionContext = entity; }
 
     void SetSelection(const int& entityID);
-    inline Entity GetSelectedEntity() const { return m_SelectionContext; };
+    inline Entity& GetSelectedEntity() { return m_SelectionContext; };
 
     void Draw() override;
 };

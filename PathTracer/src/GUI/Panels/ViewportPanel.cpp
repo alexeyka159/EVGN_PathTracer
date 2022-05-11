@@ -29,20 +29,22 @@ void ViewportPanel::Draw()
         if (ImGui::BeginMenu("File"))
         {
             if (ImGui::MenuItem("New", "Ctrl+N"))
-            {
                 NewScene();
-            }
             if (ImGui::MenuItem("Open...", "Ctrl+O"))
-            {
                 OpenScene();
-            }
             if(ImGui::MenuItem("Save", "Ctrl+S"))
-            {
                 SaveScene();
-            }
             if(ImGui::MenuItem("Save as...", "Ctrl+Shift+S"))
-            {
                 SaveAsScene();
+            if (ImGui::BeginMenu("Import...", "Ctrl+I"))
+            {
+                if (ImGui::MenuItem("FBX (.fbx)"))
+                    ImportModel("FBX Model (*.fbx)\0*.fbx\0");
+
+                if (ImGui::MenuItem("Wavefront (.obj)"))
+                    ImportModel("Obj Model (*.obj)\0*.obj\0");
+                
+                ImGui::EndMenu();
             }
 
             ImGui::EndMenu();
@@ -102,13 +104,53 @@ void ViewportPanel::Draw()
     //Õîòêåè Ôàéëà
     if (glfwGetKey(m_Window, GLFW_KEY_O) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         OpenScene();
+
+    if (glfwGetKey(m_Window, GLFW_KEY_N) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        NewScene();
+
     if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS &&
         glfwGetKey(m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_RELEASE)
         SaveScene();
+
     if (glfwGetKey(m_Window, GLFW_KEY_S) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS &&
         glfwGetKey(m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
         SaveAsScene();
 
+    if (glfwGetKey(m_Window, GLFW_KEY_I) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
+        ImGui::OpenPopup("Import");
+
+
+    if (ImGui::BeginPopup("Import"))
+    {
+        if (ImGui::MenuItem("FBX (.fbx)"))
+            ImportModel("FBX Model (*.fbx)\0*.fbx\0");
+
+        if (ImGui::MenuItem("Wavefront (.obj)"))
+            ImportModel("Obj Model (*.obj)\0*.obj\0");
+
+        ImGui::EndPopup();
+    }
+
+    //Õîòêåè ñöåíû
+    if (glfwGetKey(m_Window, GLFW_KEY_X) == GLFW_PRESS || glfwGetKey(m_Window, GLFW_KEY_DELETE) == GLFW_PRESS)
+    {
+        Entity& selectedContext = m_SceneHierarchyPanel->GetSelectedEntity();
+        if(selectedContext)
+            ImGui::OpenPopup("DeleteEntity");
+    }
+    if (ImGui::BeginPopup("DeleteEntity"))
+    {
+        ImGui::Text("OK?");
+        ImGui::Separator();
+        if (ImGui::MenuItem("Delete"))
+        {
+            Entity& selectedContext = m_SceneHierarchyPanel->GetSelectedEntity();
+            m_SceneHierarchyPanel->GetContex()->RemoveEntity(selectedContext);
+            m_SceneHierarchyPanel->SetSelection(-1);
+        }
+
+        ImGui::EndPopup();
+    }
 
     m_GuiTextureID = m_Framebuffer->GetColorAttachmentRendererId(m_OutputType);
 
@@ -223,4 +265,16 @@ void ViewportPanel::NewScene()
     Ref<Scene> newScene = std::make_shared<Scene>();
     m_SceneHierarchyPanel->SetContex(newScene);
     m_LastScenePath = "";
+}
+
+void ViewportPanel::ImportModel(const char* filter)
+{
+    std::string filepath = FileDialogs::SaveFile(filter, m_Window);
+
+    if (!filepath.empty())
+    {
+        Entity impEntity = m_SceneHierarchyPanel->GetContex()->CreateEntity();
+        impEntity.AddComponent<ModelRendererComponent>(filepath.c_str());
+        impEntity.GetComponent<TagComponent>().Tag = impEntity.GetComponent<ModelRendererComponent>().ModelObj.GetName();
+    }
 }

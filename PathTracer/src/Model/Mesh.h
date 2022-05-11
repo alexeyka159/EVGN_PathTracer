@@ -24,6 +24,7 @@ private:
 	unsigned int m_IBO;
 
 	void SetupMesh();
+
 public:
 	
 	struct Vertex

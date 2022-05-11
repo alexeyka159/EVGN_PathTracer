@@ -1,0 +1,36 @@
+Scene: Untitled
+Entities:
+  - Entity: 123123123
+    TagComponent:
+      Tag: Bucket_low_mesh.002
+    TransformComponent:
+      Translation: [0.289935887, 0.132591367, 1.92689407]
+      Rotation: [0, -0, 0]
+      Scale: [2.67999983, 2.67999983, 2.67999983]
+    ModelRendererComponent:
+      Path: D:\Storage\ART\BLUE PERIOD\BLUE PERIOD 3\blend\bucket\Bucket.obj
+  - Entity: 123123123
+    TagComponent:
+      Tag: Camera
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+  - Entity: 123123123
+    TagComponent:
+      Tag: Primitives
+    TransformComponent:
+      Translation: [0, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    ModelRendererComponent:
+      Path: res/models/sphere and cube.obj
+  - Entity: 123123123
+    TagComponent:
+      Tag: Monkey
+    TransformComponent:
+      Translation: [-2.4000001, 0, 0]
+      Rotation: [0, 0, 0]
+      Scale: [1, 1, 1]
+    ModelRendererComponent:
+      Path: res/models/monk_smooth.obj

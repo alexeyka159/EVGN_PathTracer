@@ -26,6 +26,8 @@ private:
     void OpenScene();
     void SaveAsScene();
     void NewScene();
+    void ImportModel(const char* filter);
+
 public:
     ViewportPanel(Framebuffer& framebuffer, GLFWwindow& window, SceneHierarchyPanel& sceneHierarchyPanel, Camera& camera);
     inline ~ViewportPanel() { delete this; };

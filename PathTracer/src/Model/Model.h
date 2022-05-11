@@ -12,6 +12,7 @@ private:
 	std::vector<Mesh> m_Meshes;
 	std::string m_Directory;
 	std::string m_Path;
+	std::string m_Name = "";
 
 	std::vector<Texture> m_TexturesLoaded;
 
@@ -26,4 +27,5 @@ public:
 	void Draw(Shader &shader);
 
 	inline std::string GetPath() { return m_Path; }
+	inline std::string GetName() { return m_Name; }
 };

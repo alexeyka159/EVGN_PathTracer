@@ -3,7 +3,7 @@
 void Model::LoadModel(std::string path)
 {
 	Assimp::Importer importer;
-	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate | aiProcess_FlipUVs);
+	const aiScene* scene = importer.ReadFile(path, aiProcess_Triangulate);
 	
 	if (!scene || scene->mFlags & AI_SCENE_FLAGS_INCOMPLETE || !scene->mRootNode)
 	{
@@ -21,6 +21,7 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
 		aiMesh* mesh = scene->mMeshes[node->mMeshes[i]];
+		m_Name = mesh->mName.C_Str();
 		m_Meshes.push_back(ProcessMesh(mesh, scene));
 	}
 
@@ -120,7 +121,7 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 		if (!skip)
 		{
 			std::string filename = std::string(str.C_Str());
-			filename = m_Directory + "/" + filename;
+			filename = /*m_Directory + "/" + */filename;
 			//Texture texture(filename, typeName);
 			textures.push_back(Texture(filename, typeName));
 			m_TexturesLoaded.push_back(std::move(textures[textures.size()-1]));
