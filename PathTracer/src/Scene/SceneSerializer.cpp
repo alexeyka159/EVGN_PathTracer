@@ -134,6 +134,50 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::EndMap; //ModelRendererComponent
 	}
 
+	if (entity.HasComponent<PointLightComponent>())
+	{
+		out << YAML::Key << "PointLightComponent";
+		out << YAML::BeginMap; //PointLightComponent
+		auto& lightComponent = entity.GetComponent<PointLightComponent>();
+		out << YAML::Key << "Intensity" << YAML::Value << lightComponent.Intensity;
+		out << YAML::Key << "Color" << YAML::Value << lightComponent.Color;
+
+		out << YAML::Key << "Constant" << YAML::Value << lightComponent.Constant;
+		out << YAML::Key << "Linear" << YAML::Value << lightComponent.Linear;
+		out << YAML::Key << "Quadratic" << YAML::Value << lightComponent.Quadratic;
+
+		out << YAML::EndMap; //PointLightComponent
+	}
+
+	if (entity.HasComponent<SpotLightComponent>())
+	{
+		out << YAML::Key << "SpotLightComponent";
+		out << YAML::BeginMap; //SpotLightComponent
+		auto& lightComponent = entity.GetComponent<SpotLightComponent>();
+		out << YAML::Key << "Intensity" << YAML::Value << lightComponent.Intensity;
+		out << YAML::Key << "Color" << YAML::Value << lightComponent.Color;
+
+		out << YAML::Key << "CutOff" << YAML::Value << lightComponent.CutOff;
+		out << YAML::Key << "OuterCutOff" << YAML::Value << lightComponent.OuterCutOff;
+
+		out << YAML::Key << "Constant" << YAML::Value << lightComponent.Constant;
+		out << YAML::Key << "Linear" << YAML::Value << lightComponent.Linear;
+		out << YAML::Key << "Quadratic" << YAML::Value << lightComponent.Quadratic;
+
+		out << YAML::EndMap; //SpotLightComponent
+	}
+
+	if (entity.HasComponent<DirectionalLightComponent>())
+	{
+		out << YAML::Key << "DirectionalLightComponent";
+		out << YAML::BeginMap; //DirectionalLightComponent
+		auto& lightComponent = entity.GetComponent<DirectionalLightComponent>();
+		out << YAML::Key << "Intensity" << YAML::Value << lightComponent.Intensity;
+		out << YAML::Key << "Color" << YAML::Value << lightComponent.Color;
+
+		out << YAML::EndMap; //DirectionalLightComponent
+	}
+
 	out << YAML::EndMap; //Entity
 }
 
@@ -225,6 +269,40 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 				std::cout << "  - Loading model: \"" << path << "\"\n";
 				deserializedEntity.AddComponent<ModelRendererComponent>(path.c_str());
 
+			}
+
+			auto pointLightComponent = entity["PointLightComponent"];
+			if (pointLightComponent)
+			{
+				auto& pl = deserializedEntity.AddComponent<PointLightComponent>();
+				pl.Intensity = pointLightComponent["Intensity"].as<float>();
+				pl.Color = pointLightComponent["Color"].as<glm::vec3>();
+				pl.Constant = pointLightComponent["Constant"].as<float>();
+				pl.Linear = pointLightComponent["Linear"].as<float>();
+				pl.Quadratic = pointLightComponent["Quadratic"].as<float>();
+			}
+
+			auto spotLightComponent = entity["SpotLightComponent"];
+			if (spotLightComponent)
+			{
+				auto& sl = deserializedEntity.AddComponent<SpotLightComponent>();
+				sl.Intensity = pointLightComponent["Intensity"].as<float>();
+				sl.Color = pointLightComponent["Color"].as<glm::vec3>();
+				
+				sl.CutOff = pointLightComponent["CutOff"].as<float>();
+				sl.OuterCutOff = pointLightComponent["OuterCutOff"].as<float>();
+				
+				sl.Constant = pointLightComponent["Constant"].as<float>();
+				sl.Linear = pointLightComponent["Linear"].as<float>();
+				sl.Quadratic = pointLightComponent["Quadratic"].as<float>();
+			}
+
+			auto directionalLightComponent = entity["DirectionalLightComponent"];
+			if (spotLightComponent)
+			{
+				auto& dl = deserializedEntity.AddComponent<DirectionalLightComponent>();
+				dl.Intensity = pointLightComponent["Intensity"].as<float>();
+				dl.Color = pointLightComponent["Color"].as<glm::vec3>();
 			}
 
 			std::cout << std::endl;

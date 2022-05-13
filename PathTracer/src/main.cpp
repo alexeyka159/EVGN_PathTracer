@@ -104,7 +104,7 @@ int main() {
 
 	Ref<Scene> activeScene = std::make_shared<Scene>();
 
-	glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
+	//glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
 
 	FramebufferSpecification fbSpec;
 	fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
@@ -154,11 +154,6 @@ int main() {
 			renderer.FaceCulling(false);
 			renderer.Draw(gridVA, gridIB, gridShader);
 			renderer.FaceCulling(true);
-		}
-
-		{
-			shader.Bind();
-			shader.SetUniform3f("u_LightPos", lightPos.x, lightPos.y, lightPos.z);
 		}
 
 		frameBuffer.Unbind();

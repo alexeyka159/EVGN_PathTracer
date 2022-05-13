@@ -144,6 +144,11 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			//m_SelectionContext.AddComponent<ModelRendererComponent>("");
 			ImGui::CloseCurrentPopup();
 		}
+		if (ImGui::MenuItem("Point Light"))
+		{
+			m_SelectionContext.AddComponent<PointLightComponent>();
+			ImGui::CloseCurrentPopup();
+		}
 		ImGui::EndPopup();
 	}
 
@@ -188,5 +193,35 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		{
 			std::string pathStr = "Path: " + component.ModelObj.GetPath();
 			ImGui::Text(pathStr.c_str());
+		});
+
+	DrawComponent<PointLightComponent>("Point Light", entity, [](auto& component)
+		{
+			ImGui::DragFloat("Intensity", &component.Intensity, 0.025f, 0);
+			ImGui::ColorPicker3("Color", &component.Color[0], 0);
+			ImGui::DragFloat("Constant", &component.Constant, 0.025f, 0);
+			ImGui::DragFloat("Linear", &component.Linear, 0.025f, 0);
+			ImGui::DragFloat("Quadratic", &component.Quadratic, 0.025f, 0);
+		});
+
+	DrawComponent<SpotLightComponent>("Spot Light", entity, [](auto& component)
+		{
+			float cutOff = -component.CutOff;
+			float outerCutOff = -component.OuterCutOff;
+			ImGui::DragFloat("Intensity", &component.Intensity, 0.025f, 0);
+			ImGui::ColorPicker3("Color", &component.Color[0], 0);
+			if (ImGui::DragFloat("CutOff", &cutOff, 0.025f, 0))
+				component.CutOff = -cutOff;
+			if (ImGui::DragFloat("Outer CutOff", &outerCutOff, 0.025f, 0))
+				component.OuterCutOff = -outerCutOff;
+			ImGui::DragFloat("Constant", &component.Constant, 0.025f, 0);
+			ImGui::DragFloat("Linear", &component.Linear, 0.025f, 0);
+			ImGui::DragFloat("Quadratic", &component.Quadratic, 0.025f, 0);
+		});
+
+	DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
+		{
+			ImGui::DragFloat("Intensity", &component.Intensity, 0.025f, 0);
+			ImGui::ColorPicker3("Color", &component.Color[0], 0);
 		});
 }

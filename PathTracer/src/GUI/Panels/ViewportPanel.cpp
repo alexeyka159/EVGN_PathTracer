@@ -119,6 +119,10 @@ void ViewportPanel::Draw()
     if (glfwGetKey(m_Window, GLFW_KEY_I) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_PRESS)
         ImGui::OpenPopup("Import");
 
+    if (glfwGetKey(m_Window, GLFW_KEY_A) == GLFW_PRESS && glfwGetKey(m_Window, GLFW_KEY_LEFT_CONTROL) == GLFW_RELEASE &&
+        glfwGetKey(m_Window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+        ImGui::OpenPopup("AddMenu");
+
 
     if (ImGui::BeginPopup("Import"))
     {
@@ -127,6 +131,59 @@ void ViewportPanel::Draw()
 
         if (ImGui::MenuItem("Wavefront (.obj)"))
             ImportModel("Obj Model (*.obj)\0*.obj\0");
+
+        ImGui::EndPopup();
+    }
+
+    if (ImGui::BeginPopup("AddMenu"))
+    {
+        ImGui::Text("Add");
+        ImGui::Separator();
+
+        if (ImGui::BeginMenu("Mesh"))
+        {
+            if (ImGui::MenuItem("Plane"))
+            {
+            }
+            
+            if (ImGui::MenuItem("Cube"))
+            {
+            }
+            ImGui::Separator();
+            if (ImGui::BeginMenu("Import...", "Ctrl+I"))
+            {
+                if (ImGui::MenuItem("FBX (.fbx)"))
+                    ImportModel("FBX Model (*.fbx)\0*.fbx\0");
+
+                if (ImGui::MenuItem("Wavefront (.obj)"))
+                    ImportModel("Obj Model (*.obj)\0*.obj\0");
+                ImGui::EndMenu();
+            }
+            ImGui::EndMenu();
+        }
+
+        if (ImGui::BeginMenu("Light"))
+        {
+            if (ImGui::MenuItem("Point"))
+            {
+                Entity light = m_SceneHierarchyPanel->GetContex()->CreateEntity("Point Light");
+                light.AddComponent<PointLightComponent>();
+            }
+
+            if (ImGui::MenuItem("Spot"))
+            {
+                Entity light = m_SceneHierarchyPanel->GetContex()->CreateEntity("Spot Light");
+                light.AddComponent<SpotLightComponent>();
+            }
+
+            if (ImGui::MenuItem("Sun"))
+            {
+                Entity light = m_SceneHierarchyPanel->GetContex()->CreateEntity("Sun Light");
+                light.AddComponent<DirectionalLightComponent>();
+            }
+
+            ImGui::EndMenu();
+        }
 
         ImGui::EndPopup();
     }

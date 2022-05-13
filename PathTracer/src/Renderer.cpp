@@ -74,6 +74,81 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 {
 	if (scene)
 	{
+
+		auto pointLightView = scene->m_Registry.view<PointLightComponent>();
+		size_t pointLightCounter = 0;
+		for (auto entityID : pointLightView)
+		{
+			Entity lightEntity{ entityID, scene.get() };
+			if (lightEntity)
+			{
+				auto& tc = lightEntity.GetComponent<TransformComponent>().Translation;
+				auto& plc = lightEntity.GetComponent<PointLightComponent>();
+				glm::vec3 lightColor = plc.Color * plc.Intensity;
+				shader.Bind();
+				shader.SetUniform3f("u_PointLights[" + std::to_string(pointLightCounter) + "].position",	tc.x, tc.y, tc.z);
+				shader.SetUniform3f("u_PointLights[" + std::to_string(pointLightCounter) + "].color",		lightColor.r, lightColor.g, lightColor.b);
+				shader.SetUniform1f("u_PointLights[" + std::to_string(pointLightCounter) + "].constant" ,	plc.Constant);
+				shader.SetUniform1f("u_PointLights[" + std::to_string(pointLightCounter) + "].linear",		plc.Linear);
+				shader.SetUniform1f("u_PointLights[" + std::to_string(pointLightCounter) + "].quadratic",	plc.Quadratic);
+				shader.SetUniform1i("u_PointLightsInUse[" + std::to_string(pointLightCounter) + "]",	1);
+				pointLightCounter++;
+			}
+		}
+
+		auto spotLightView = scene->m_Registry.view<SpotLightComponent>();
+		for (auto entityID : spotLightView)
+		{
+			Entity lightEntity{ entityID, scene.get() };
+			if (lightEntity)
+			{
+				auto& tc = lightEntity.GetComponent<TransformComponent>();
+				auto& slc = lightEntity.GetComponent<SpotLightComponent>();
+
+				glm::vec3 lightColor = slc.Color * slc.Intensity;
+				glm::vec3 lightDirection;
+
+				glm::mat4 rotation = glm::toMat4(glm::quat(tc.Rotation));
+				lightDirection = rotation * glm::vec4(0, 1, 0, 1);
+
+				shader.Bind();
+				shader.SetUniform3f("u_SpotLight.position", tc.Translation.x, tc.Translation.y, tc.Translation.z);
+				shader.SetUniform3f("u_SpotLight.direction", lightDirection.x, lightDirection.y, lightDirection.z);
+				shader.SetUniform3f("u_SpotLight.color", lightColor.r, lightColor.g, lightColor.b);
+				shader.SetUniform1f("u_SpotLight.constant", slc.Constant);
+				shader.SetUniform1f("u_SpotLight.linear", slc.Linear);
+				shader.SetUniform1f("u_SpotLight.quadratic", slc.Quadratic);
+				shader.SetUniform1f("u_SpotLight.cutOff", slc.CutOff);
+				shader.SetUniform1f("u_SpotLight.outerCutOff", slc.OuterCutOff);
+				shader.SetUniform1i("u_SpotLightInUse", 1);
+			}
+		}
+
+		auto dirLightView = scene->m_Registry.view<DirectionalLightComponent>();
+		for (auto entityID : dirLightView)
+		{
+			Entity lightEntity{ entityID, scene.get() };
+			if (lightEntity)
+			{
+				auto& tc = lightEntity.GetComponent<TransformComponent>();
+				auto& dlc = lightEntity.GetComponent<DirectionalLightComponent>();
+
+				glm::vec3 lightColor = dlc.Color * dlc.Intensity;
+				glm::vec3 lightDirection;
+
+				glm::mat4 rotation = glm::toMat4(glm::quat(tc.Rotation));
+				lightDirection = rotation * glm::vec4(0, -1, 0, 1);
+
+				shader.Bind();
+				shader.SetUniform3f("u_DirLight.direction", lightDirection.x, lightDirection.y, lightDirection.z);
+				shader.SetUniform3f("u_DirLight.color", lightColor.r, lightColor.g, lightColor.b);
+				shader.SetUniform1i("u_DirLightInUse", 1);
+			}
+		}
+
+		shader.Bind();
+		shader.SetUniform3f("u_AmbientColor", 0.3f, 0.3f, 0.3f);
+
 		auto view = scene->m_Registry.view<ModelRendererComponent>();
 		for (auto entityID : view)
 		{
