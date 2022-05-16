@@ -35,13 +35,15 @@ struct SpotLight {
     float quadratic;
 };
 
-#define NR_POINT_LIGHTS 4  
+#define NR_POINT_LIGHTS 10 
+#define NR_SPOT_LIGHTS 10
+#define NR_DIR_LIGHTS 5
 uniform PointLight u_PointLights[NR_POINT_LIGHTS];
-uniform DirLight u_DirLight;
-uniform SpotLight u_SpotLight;
-uniform bool u_SpotLightInUse = false;
-uniform bool u_DirLightInUse = false;
-uniform bool u_PointLightsInUse[NR_POINT_LIGHTS] = bool[](false, false, false, false);
+uniform DirLight u_DirLights[NR_DIR_LIGHTS];
+uniform SpotLight u_SpotLights[NR_SPOT_LIGHTS];
+uniform bool u_DirLightsInUse[NR_DIR_LIGHTS];
+uniform bool u_SpotLightsInUse[NR_SPOT_LIGHTS];
+uniform bool u_PointLightsInUse[NR_POINT_LIGHTS];
 
 
 uniform vec4 u_Color;
@@ -73,8 +75,9 @@ void main()
     vec3 result = vec3(0);
  
     //Направленное освещение
-    if(u_DirLightInUse)
-    	result += CalcDirLight(u_DirLight, norm, viewDir);
+    for(int i = 0; i < NR_DIR_LIGHTS; i++)
+    	if(u_DirLightsInUse[i])
+    		result += CalcDirLight(u_DirLights[i], norm, viewDir);
   
     //Точечные источники света
     for(int i = 0; i < NR_POINT_LIGHTS; i++)
@@ -82,8 +85,9 @@ void main()
         	result += CalcPointLight(u_PointLights[i], norm, v_FragPos, viewDir); 
  
     //Прожектор
-    if(u_SpotLightInUse)
-    	result += CalcSpotLight(u_SpotLight, norm, v_FragPos, viewDir);
+    for(int i = 0; i < NR_SPOT_LIGHTS; i++)
+    	if(u_SpotLightsInUse[i])
+    		result += CalcSpotLight(u_SpotLights[i], norm, v_FragPos, viewDir);
 
     result += ambient;
 

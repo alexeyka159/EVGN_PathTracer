@@ -76,7 +76,7 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 	{
 
 		auto pointLightView = scene->m_Registry.view<PointLightComponent>();
-		size_t pointLightCounter = 0;
+		size_t lightCounter = 0;
 		for (auto entityID : pointLightView)
 		{
 			Entity lightEntity{ entityID, scene.get() };
@@ -86,17 +86,18 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 				auto& plc = lightEntity.GetComponent<PointLightComponent>();
 				glm::vec3 lightColor = plc.Color * plc.Intensity;
 				shader.Bind();
-				shader.SetUniform3f("u_PointLights[" + std::to_string(pointLightCounter) + "].position",	tc.x, tc.y, tc.z);
-				shader.SetUniform3f("u_PointLights[" + std::to_string(pointLightCounter) + "].color",		lightColor.r, lightColor.g, lightColor.b);
-				shader.SetUniform1f("u_PointLights[" + std::to_string(pointLightCounter) + "].constant" ,	plc.Constant);
-				shader.SetUniform1f("u_PointLights[" + std::to_string(pointLightCounter) + "].linear",		plc.Linear);
-				shader.SetUniform1f("u_PointLights[" + std::to_string(pointLightCounter) + "].quadratic",	plc.Quadratic);
-				shader.SetUniform1i("u_PointLightsInUse[" + std::to_string(pointLightCounter) + "]",	1);
-				pointLightCounter++;
+				shader.SetUniform3f("u_PointLights[" + std::to_string(lightCounter) + "].position",	tc.x, tc.y, tc.z);
+				shader.SetUniform3f("u_PointLights[" + std::to_string(lightCounter) + "].color",		lightColor.r, lightColor.g, lightColor.b);
+				shader.SetUniform1f("u_PointLights[" + std::to_string(lightCounter) + "].constant" ,	plc.Constant);
+				shader.SetUniform1f("u_PointLights[" + std::to_string(lightCounter) + "].linear",		plc.Linear);
+				shader.SetUniform1f("u_PointLights[" + std::to_string(lightCounter) + "].quadratic",	plc.Quadratic);
+				shader.SetUniform1i("u_PointLightsInUse[" + std::to_string(lightCounter) + "]",	1);
+				lightCounter++;
 			}
 		}
 
 		auto spotLightView = scene->m_Registry.view<SpotLightComponent>();
+		lightCounter = 0;
 		for (auto entityID : spotLightView)
 		{
 			Entity lightEntity{ entityID, scene.get() };
@@ -112,19 +113,21 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 				lightDirection = rotation * glm::vec4(0, 1, 0, 1);
 
 				shader.Bind();
-				shader.SetUniform3f("u_SpotLight.position", tc.Translation.x, tc.Translation.y, tc.Translation.z);
-				shader.SetUniform3f("u_SpotLight.direction", lightDirection.x, lightDirection.y, lightDirection.z);
-				shader.SetUniform3f("u_SpotLight.color", lightColor.r, lightColor.g, lightColor.b);
-				shader.SetUniform1f("u_SpotLight.constant", slc.Constant);
-				shader.SetUniform1f("u_SpotLight.linear", slc.Linear);
-				shader.SetUniform1f("u_SpotLight.quadratic", slc.Quadratic);
-				shader.SetUniform1f("u_SpotLight.cutOff", slc.CutOff);
-				shader.SetUniform1f("u_SpotLight.outerCutOff", slc.OuterCutOff);
-				shader.SetUniform1i("u_SpotLightInUse", 1);
+				shader.SetUniform3f("u_SpotLights[" + std::to_string(lightCounter) + "].position", tc.Translation.x, tc.Translation.y, tc.Translation.z);
+				shader.SetUniform3f("u_SpotLights[" + std::to_string(lightCounter) + "].direction", lightDirection.x, lightDirection.y, lightDirection.z);
+				shader.SetUniform3f("u_SpotLights[" + std::to_string(lightCounter) + "].color", lightColor.r, lightColor.g, lightColor.b);
+				shader.SetUniform1f("u_SpotLights[" + std::to_string(lightCounter) + "].constant", slc.Constant);
+				shader.SetUniform1f("u_SpotLights[" + std::to_string(lightCounter) + "].linear", slc.Linear);
+				shader.SetUniform1f("u_SpotLights[" + std::to_string(lightCounter) + "].quadratic", slc.Quadratic);
+				shader.SetUniform1f("u_SpotLights[" + std::to_string(lightCounter) + "].cutOff", slc.CutOff);
+				shader.SetUniform1f("u_SpotLights[" + std::to_string(lightCounter) + "].outerCutOff", slc.OuterCutOff);
+				shader.SetUniform1i("u_SpotLightsInUse[" + std::to_string(lightCounter) + "]", 1);
+				lightCounter++;
 			}
 		}
 
 		auto dirLightView = scene->m_Registry.view<DirectionalLightComponent>();
+		lightCounter = 0;
 		for (auto entityID : dirLightView)
 		{
 			Entity lightEntity{ entityID, scene.get() };
@@ -140,9 +143,10 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 				lightDirection = rotation * glm::vec4(0, -1, 0, 1);
 
 				shader.Bind();
-				shader.SetUniform3f("u_DirLight.direction", lightDirection.x, lightDirection.y, lightDirection.z);
-				shader.SetUniform3f("u_DirLight.color", lightColor.r, lightColor.g, lightColor.b);
-				shader.SetUniform1i("u_DirLightInUse", 1);
+				shader.SetUniform3f("u_DirLight[" + std::to_string(lightCounter) +"].direction", lightDirection.x, lightDirection.y, lightDirection.z);
+				shader.SetUniform3f("u_DirLight[" + std::to_string(lightCounter) +"].color", lightColor.r, lightColor.g, lightColor.b);
+				shader.SetUniform1i("u_DirLightsInUse[" + std::to_string(lightCounter) + "]", 1);
+				lightCounter++;
 			}
 		}
 
