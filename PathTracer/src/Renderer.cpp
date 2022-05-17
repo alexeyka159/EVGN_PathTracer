@@ -143,15 +143,15 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 				lightDirection = rotation * glm::vec4(0, -1, 0, 1);
 
 				shader.Bind();
-				shader.SetUniform3f("u_DirLight[" + std::to_string(lightCounter) +"].direction", lightDirection.x, lightDirection.y, lightDirection.z);
-				shader.SetUniform3f("u_DirLight[" + std::to_string(lightCounter) +"].color", lightColor.r, lightColor.g, lightColor.b);
+				shader.SetUniform3f("u_DirLights[" + std::to_string(lightCounter) +"].direction", lightDirection.x, lightDirection.y, lightDirection.z);
+				shader.SetUniform3f("u_DirLights[" + std::to_string(lightCounter) +"].color", lightColor.r, lightColor.g, lightColor.b);
 				shader.SetUniform1i("u_DirLightsInUse[" + std::to_string(lightCounter) + "]", 1);
 				lightCounter++;
 			}
 		}
 
 		shader.Bind();
-		shader.SetUniform3f("u_AmbientColor", 0.3f, 0.3f, 0.3f);
+		shader.SetUniform3f("u_AmbientColor", 0.1f, 0.1f, 0.1f);
 
 		auto view = scene->m_Registry.view<ModelRendererComponent>();
 		for (auto entityID : view)

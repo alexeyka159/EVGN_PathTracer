@@ -107,7 +107,7 @@ int main() {
 	//glm::vec3 lightPos(5.0f, 5.0f, 5.0f);
 
 	FramebufferSpecification fbSpec;
-	fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
+	fbSpec.Attachments = { FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::RED_INTEGER, FramebufferTextureFormat::RGBA8, FramebufferTextureFormat::Depth };
 	fbSpec.Width = WIDTH;
 	fbSpec.Height = HEIGHT;
 	Framebuffer frameBuffer(fbSpec);
