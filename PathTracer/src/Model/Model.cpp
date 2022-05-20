@@ -86,9 +86,9 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
 
 		std::vector<Texture> roughnessMaps =
-			LoadMaterialTextures(material, aiTextureType_SPECULAR, Texture::TextureType::SPECULAR);
+			LoadMaterialTextures(material, aiTextureType_SHININESS, Texture::TextureType::ROUGHNESS);
 		if (roughnessMaps.size() > 0)
-		textures.insert(roughnessMaps.end(), roughnessMaps.begin(), roughnessMaps.end());
+		textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
 		
 		std::vector<Texture> normalMaps =
 			LoadMaterialTextures(material, aiTextureType_HEIGHT, Texture::TextureType::NORMAL);

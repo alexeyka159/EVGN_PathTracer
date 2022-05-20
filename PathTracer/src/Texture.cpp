@@ -22,7 +22,7 @@ Texture::Texture(const std::string& path, TextureType type)
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-		glTexImage2D(GL_TEXTURE_2D, 0, (m_Type == TextureType::DIFFUSE ? GL_SRGB_ALPHA : GL_RGBA8), m_Width, m_Height, 0, (m_BPP == 4 ? GL_RGBA : GL_RGB), GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, (m_Type == TextureType::DIFFUSE ? GL_SRGB_ALPHA : GL_RGBA8), m_Width, m_Height, 0, (m_BPP == 4 ? GL_RGBA : m_BPP == 3 ? GL_RGB : GL_RED), GL_UNSIGNED_BYTE, data);
 		glBindTexture(GL_TEXTURE_2D, 0);
 		
 		stbi_image_free(data);
@@ -59,7 +59,7 @@ std::string TextureTypeConv::ConvertTypeToStr(Texture::TextureType type)
 		return "texture_diffuse";
 	case Texture::TextureType::METALIC:
 		return "texture_metalic";
-	case Texture::TextureType::SPECULAR:
+	case Texture::TextureType::ROUGHNESS:
 		return "texture_specular";
 	case Texture::TextureType::NORMAL:
 		return "texture_normal";
@@ -84,7 +84,7 @@ Texture::TextureType TextureTypeConv::ConvertStrToType(std::string type)
 	if (type == "texture_metalic")
 		return Texture::TextureType::METALIC;
 	if (type == "texture_specular")
-		return Texture::TextureType::SPECULAR;
+		return Texture::TextureType::ROUGHNESS;
 	if (type == "texture_normal")
 		return Texture::TextureType::NORMAL;
 	if (type == "texture_emission")

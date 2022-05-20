@@ -16,7 +16,7 @@ public:
 	{
 		DIFFUSE,
 		METALIC,
-		SPECULAR,
+		ROUGHNESS,
 		NORMAL,
 		EMISSION,
 		ALPHA,

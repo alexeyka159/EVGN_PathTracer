@@ -70,37 +70,38 @@ void main()
 {
 	//Эмбиент
 	//float ambientStrength = 0.3;
-    vec3 ambient = u_AmbientColor * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
+  vec3 ambient = u_AmbientColor * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
 
-    // Свойства
-    //vec3 norm = normalize(v_Normal);
-    vec3 norm = texture(u_material.texture_normal1, fs_in.TexCoords).rgb;
-    norm = norm * 2.0f - 1.0f;
-    norm = normalize(fs_in.TBN * norm); 
+  // Свойства
+  //vec3 norm = normalize(v_Normal);
+  vec3 norm = texture(u_material.texture_normal1, fs_in.TexCoords).rgb;
+  norm = norm * 2.0f - 1.0f;
+  norm = normalize(fs_in.TBN * norm); 
 
-    vec3 viewDir = normalize(u_ViewPos - fs_in.FragPos);
-    vec3 result = vec3(0);
+  vec3 viewDir = normalize(u_ViewPos - fs_in.FragPos);
+  vec3 result = vec3(0);
  
-    //Направленное освещение
-    for(int i = 0; i < NR_DIR_LIGHTS; i++)
-    	if(u_DirLightsInUse[i])
-    		result += CalcDirLight(u_DirLights[i], norm, viewDir);
+  //Направленное освещение
+  for(int i = 0; i < NR_DIR_LIGHTS; i++)
+  	if(u_DirLightsInUse[i])
+  		result += CalcDirLight(u_DirLights[i], norm, viewDir);
   
-    //Точечные источники света
-    for(int i = 0; i < NR_POINT_LIGHTS; i++)
-    	if(u_PointLightsInUse[i])
-        	result += CalcPointLight(u_PointLights[i], norm, fs_in.FragPos, viewDir); 
+  //Точечные источники света
+  for(int i = 0; i < NR_POINT_LIGHTS; i++)
+  	if(u_PointLightsInUse[i])
+      	result += CalcPointLight(u_PointLights[i], norm, fs_in.FragPos, viewDir); 
  
-    //Прожектор
-    for(int i = 0; i < NR_SPOT_LIGHTS; i++)
-    	if(u_SpotLightsInUse[i])
-    		result += CalcSpotLight(u_SpotLights[i], norm, fs_in.FragPos, viewDir);
+  //Прожектор
+  for(int i = 0; i < NR_SPOT_LIGHTS; i++)
+  	if(u_SpotLightsInUse[i])
+  		result += CalcSpotLight(u_SpotLights[i], norm, fs_in.FragPos, viewDir);
 
-    result += ambient;
+  result += ambient;
 
 
   float gamma = 2.2f;
 	FragColor = vec4(pow(result, vec3(1.0/gamma)), 1.0);
+	//FragColor = vec4(texture(u_material.texture_specular1, fs_in.TexCoords).rgb, 1.0);
 
 	entityID = u_EntityID;
 
@@ -121,7 +122,8 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     // Комбинируем результаты
     //vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.color * diff * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
-    vec3 specular = light.color * spec * vec3(texture(u_material.texture_specular1, fs_in.TexCoords));
+    float roughness = 1 - texture(u_material.texture_specular1, fs_in.TexCoords).r;
+    vec3 specular = light.color * spec * vec3(roughness);
     return (diffuse + specular);
 }
 
@@ -144,7 +146,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     // Комбинируем результаты
     //vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.color * diff * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
-    vec3 specular = light.color * spec * vec3(texture(u_material.texture_specular1, fs_in.TexCoords));
+    float roughness = 1 - texture(u_material.texture_specular1, fs_in.TexCoords).r;
+    vec3 specular = light.color * spec * vec3(roughness);
     //ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
@@ -174,7 +177,8 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     // Совмещаем результаты
     //vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.color * diff * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
-    vec3 specular = light.color * spec * vec3(texture(u_material.texture_specular1, fs_in.TexCoords));
+    float roughness = 1 - texture(u_material.texture_specular1, fs_in.TexCoords).r;
+    vec3 specular = light.color * spec * vec3(roughness);
     //ambient *= attenuation * intensity;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
