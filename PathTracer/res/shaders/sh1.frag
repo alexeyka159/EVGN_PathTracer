@@ -12,7 +12,7 @@ in VS_OUT {
 
 struct Material {
 	sampler2D texture_diffuse1;
-	sampler2D texture_specular1;
+	sampler2D texture_roughness1;
 	sampler2D texture_normal1;
 };
 
@@ -101,7 +101,6 @@ void main()
 
   float gamma = 2.2f;
 	FragColor = vec4(pow(result, vec3(1.0/gamma)), 1.0);
-	//FragColor = vec4(texture(u_material.texture_specular1, fs_in.TexCoords).rgb, 1.0);
 
 	entityID = u_EntityID;
 
@@ -122,8 +121,8 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
     // Комбинируем результаты
     //vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.color * diff * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
-    float roughness = 1 - texture(u_material.texture_specular1, fs_in.TexCoords).r;
-    vec3 specular = light.color * spec * vec3(roughness);
+    float roughness = 1 - texture(u_material.texture_roughness1, fs_in.TexCoords).r;
+    vec3 specular = light.color * spec * roughness;
     return (diffuse + specular);
 }
 
@@ -146,8 +145,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     // Комбинируем результаты
     //vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.color * diff * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
-    float roughness = 1 - texture(u_material.texture_specular1, fs_in.TexCoords).r;
-    vec3 specular = light.color * spec * vec3(roughness);
+    float roughness = 1 - texture(u_material.texture_roughness1, fs_in.TexCoords).r;
+    vec3 specular = light.color * spec * roughness;
     //ambient *= attenuation;
     diffuse *= attenuation;
     specular *= attenuation;
@@ -177,8 +176,8 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     // Совмещаем результаты
     //vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
     vec3 diffuse = light.color * diff * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
-    float roughness = 1 - texture(u_material.texture_specular1, fs_in.TexCoords).r;
-    vec3 specular = light.color * spec * vec3(roughness);
+    float roughness = 1 - texture(u_material.texture_roughness1, fs_in.TexCoords).r;
+    vec3 specular = light.color * spec * roughness;
     //ambient *= attenuation * intensity;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;

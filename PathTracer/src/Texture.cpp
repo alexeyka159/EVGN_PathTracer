@@ -60,7 +60,7 @@ std::string TextureTypeConv::ConvertTypeToStr(Texture::TextureType type)
 	case Texture::TextureType::METALIC:
 		return "texture_metalic";
 	case Texture::TextureType::ROUGHNESS:
-		return "texture_specular";
+		return "texture_roughness";
 	case Texture::TextureType::NORMAL:
 		return "texture_normal";
 	case Texture::TextureType::EMISSION:
@@ -83,7 +83,7 @@ Texture::TextureType TextureTypeConv::ConvertStrToType(std::string type)
 		return Texture::TextureType::DIFFUSE;
 	if (type == "texture_metalic")
 		return Texture::TextureType::METALIC;
-	if (type == "texture_specular")
+	if (type == "texture_roughness")
 		return Texture::TextureType::ROUGHNESS;
 	if (type == "texture_normal")
 		return Texture::TextureType::NORMAL;
