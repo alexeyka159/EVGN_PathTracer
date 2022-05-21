@@ -26,6 +26,8 @@ public:
 	inline Model(const char* path) : m_Path(path) { LoadModel(path); }
 	void Draw(Shader &shader);
 
+	inline std::vector<Texture>& GetTextures() { return m_TexturesLoaded; }
+
 	inline std::string GetPath() { return m_Path; }
 	inline std::string GetName() { return m_Name; }
 };

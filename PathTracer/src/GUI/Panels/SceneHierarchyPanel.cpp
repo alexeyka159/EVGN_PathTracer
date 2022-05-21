@@ -195,13 +195,62 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			ImGui::Text(pathStr.c_str());
 		});
 
+	DrawComponent<ModelRendererComponent>("Material", entity, [](auto& component)
+		{
+			auto& model = component.ModelObj;
+			std::vector<Texture>& textures = model.GetTextures();
+			
+			for (Texture& texture : textures)
+			{
+				std::string type;
+				switch (texture.GetType())
+				{
+				case Texture::TextureType::DIFFUSE: type = "Diffuse"; break;
+				case Texture::TextureType::ROUGHNESS: type = "Roughness"; break;
+				case Texture::TextureType::NORMAL: type = "Normal"; break;
+				default:
+					type = "UNSUPPORTED YET";
+					break;
+				}
+				type += " map:";
+
+				ImGui::Text(type.c_str());
+				ImGui::SameLine(ImGui::GetWindowWidth() - 75);
+				ImGui::Button("Browse...");
+
+				glm::vec3 col(1);
+				ImGui::ColorEdit3("Color", &col[0], 0);
+
+				bool isTexUsed = true;
+				ImGui::Checkbox("Use Texture", &isTexUsed);
+				ImGui::Image((void*)texture.GetId(), ImVec2{80, 80}, ImVec2{0, 1}, ImVec2{1, 0});
+				if (ImGui::IsItemHovered())
+				{
+					ImGui::BeginTooltip();
+					ImGui::Image((void*)texture.GetId(), ImVec2{ 350, 350 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+					ImGui::EndTooltip();
+				}
+				ImGui::SameLine();
+				
+				ImGui::TextWrapped(texture.GetPath().c_str());
+
+				float v = 1;
+				float c = 1;
+				ImGui::SliderFloat("Value", &v, -10.0f, 10.0f);
+				ImGui::SliderFloat("Contrast", &c, 0.f, 10.0f);
+
+				ImGui::Separator();
+			}
+
+		});
+
 	DrawComponent<PointLightComponent>("Point Light", entity, [](auto& component)
 		{
 			ImGui::DragFloat("Intensity", &component.Intensity, 0.025f, 0);
-			ImGui::ColorPicker3("Color", &component.Color[0], 0);
-			ImGui::DragFloat("Constant", &component.Constant, 0.025f, 0);
+			ImGui::ColorEdit3("Color", &component.Color[0], 0);
+			/*ImGui::DragFloat("Constant", &component.Constant, 0.025f, 0);
 			ImGui::DragFloat("Linear", &component.Linear, 0.025f, 0);
-			ImGui::DragFloat("Quadratic", &component.Quadratic, 0.025f, 0);
+			ImGui::DragFloat("Quadratic", &component.Quadratic, 0.025f, 0);*/
 		});
 
 	DrawComponent<SpotLightComponent>("Spot Light", entity, [](auto& component)
@@ -209,19 +258,19 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			float cutOff = -component.CutOff;
 			float outerCutOff = -component.OuterCutOff;
 			ImGui::DragFloat("Intensity", &component.Intensity, 0.025f, 0);
-			ImGui::ColorPicker3("Color", &component.Color[0], 0);
+			ImGui::ColorEdit3("Color", &component.Color[0], 0);
 			if (ImGui::DragFloat("CutOff", &cutOff, 0.025f, 0))
 				component.CutOff = -cutOff;
 			if (ImGui::DragFloat("Outer CutOff", &outerCutOff, 0.025f, 0))
 				component.OuterCutOff = -outerCutOff;
-			ImGui::DragFloat("Constant", &component.Constant, 0.025f, 0);
+			/*ImGui::DragFloat("Constant", &component.Constant, 0.025f, 0);
 			ImGui::DragFloat("Linear", &component.Linear, 0.025f, 0);
-			ImGui::DragFloat("Quadratic", &component.Quadratic, 0.025f, 0);
+			ImGui::DragFloat("Quadratic", &component.Quadratic, 0.025f, 0);*/
 		});
 
 	DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
 		{
 			ImGui::DragFloat("Intensity", &component.Intensity, 0.025f, 0);
-			ImGui::ColorPicker3("Color", &component.Color[0], 0);
+			ImGui::ColorEdit3("Color", &component.Color[0], 0);
 		});
 }

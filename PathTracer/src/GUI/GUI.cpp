@@ -110,6 +110,7 @@ void GUI::Begin()
         ImGui::DockSpace(dockspace_id, ImVec2(0.0f, 0.0f), dockspace_flags);
     }
 	style.WindowMinSize.x = minWindowSize;
+	//ImGui::ShowDemoWindow();
 }
 
 void GUI::End()
