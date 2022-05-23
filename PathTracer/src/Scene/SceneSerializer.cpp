@@ -286,23 +286,23 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 			if (spotLightComponent)
 			{
 				auto& sl = deserializedEntity.AddComponent<SpotLightComponent>();
-				sl.Intensity = pointLightComponent["Intensity"].as<float>();
-				sl.Color = pointLightComponent["Color"].as<glm::vec3>();
+				sl.Intensity = spotLightComponent["Intensity"].as<float>();
+				sl.Color = spotLightComponent["Color"].as<glm::vec3>();
 				
-				sl.CutOff = pointLightComponent["CutOff"].as<float>();
-				sl.OuterCutOff = pointLightComponent["OuterCutOff"].as<float>();
+				sl.CutOff = spotLightComponent["CutOff"].as<float>();
+				sl.OuterCutOff = spotLightComponent["OuterCutOff"].as<float>();
 				
-				sl.Constant = pointLightComponent["Constant"].as<float>();
-				sl.Linear = pointLightComponent["Linear"].as<float>();
-				sl.Quadratic = pointLightComponent["Quadratic"].as<float>();
+				sl.Constant = spotLightComponent["Constant"].as<float>();
+				sl.Linear = spotLightComponent["Linear"].as<float>();
+				sl.Quadratic = spotLightComponent["Quadratic"].as<float>();
 			}
 
 			auto directionalLightComponent = entity["DirectionalLightComponent"];
-			if (spotLightComponent)
+			if (directionalLightComponent)
 			{
 				auto& dl = deserializedEntity.AddComponent<DirectionalLightComponent>();
-				dl.Intensity = pointLightComponent["Intensity"].as<float>();
-				dl.Color = pointLightComponent["Color"].as<glm::vec3>();
+				dl.Intensity = directionalLightComponent["Intensity"].as<float>();
+				dl.Color = directionalLightComponent["Color"].as<glm::vec3>();
 			}
 
 			std::cout << std::endl;

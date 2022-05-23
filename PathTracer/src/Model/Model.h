@@ -6,6 +6,24 @@
 
 #include "Mesh.h"
 
+struct Material
+{
+	std::vector<Texture> TexturesLoaded;
+
+	glm::vec3 DiffuseColor = glm::vec3(0.9f);
+	bool IsDiffuseUsing = false;
+	float DiffuseValue = 1.f;
+	float DiffuseContrast = 1.f;
+
+	glm::vec3 RoughnessColor = glm::vec3(0.5f);
+	bool IsRoughnessUsing = false;
+	float RoughnessValue = 1.f;
+	float RoughnessContrast = 1.f;
+
+	bool IsNormalUsing = false;
+	float NormalStrength = 1.f;
+};
+
 class Model
 {
 private:
@@ -14,7 +32,8 @@ private:
 	std::string m_Path;
 	std::string m_Name = "";
 
-	std::vector<Texture> m_TexturesLoaded;
+	//std::vector<Texture> m_TexturesLoaded;
+	Material m_Materail;
 
 	void LoadModel(std::string path);
 	void ProcessNode(aiNode* node, const aiScene* scene);
@@ -26,7 +45,7 @@ public:
 	inline Model(const char* path) : m_Path(path) { LoadModel(path); }
 	void Draw(Shader &shader);
 
-	inline std::vector<Texture>& GetTextures() { return m_TexturesLoaded; }
+	inline Material& GetMaterial() { return m_Materail; }
 
 	inline std::string GetPath() { return m_Path; }
 	inline std::string GetName() { return m_Name; }

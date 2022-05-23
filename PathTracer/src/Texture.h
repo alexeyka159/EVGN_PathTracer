@@ -15,9 +15,9 @@ public:
 	enum class TextureType
 	{
 		DIFFUSE,
-		METALIC,
 		ROUGHNESS,
 		NORMAL,
+		METALIC,
 		EMISSION,
 		ALPHA,
 		HEIGHT,

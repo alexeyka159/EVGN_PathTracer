@@ -80,25 +80,35 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 	if (mesh->mMaterialIndex >= 0)
 	{
 		aiMaterial* material = scene->mMaterials[mesh->mMaterialIndex];
+
 		std::vector<Texture> diffuseMaps =
 			LoadMaterialTextures(material, aiTextureType_DIFFUSE, Texture::TextureType::DIFFUSE);
 		if(diffuseMaps.size() > 0)
+		{
 			textures.insert(textures.end(), diffuseMaps.begin(), diffuseMaps.end());
+			m_Materail.IsDiffuseUsing = true;
+		}
 
 		std::vector<Texture> roughnessMaps =
 			LoadMaterialTextures(material, aiTextureType_SHININESS, Texture::TextureType::ROUGHNESS);
 		if (roughnessMaps.size() > 0)
-		textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
+		{
+			textures.insert(textures.end(), roughnessMaps.begin(), roughnessMaps.end());
+			m_Materail.IsRoughnessUsing = true;
+		}
 		
 		std::vector<Texture> normalMaps =
 			LoadMaterialTextures(material, aiTextureType_HEIGHT, Texture::TextureType::NORMAL);
 		if (normalMaps.size() > 0)
-		textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+		{
+			textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+			m_Materail.IsNormalUsing = true;
+		}
 
-		std::vector<Texture> heightMaps =
+		/*std::vector<Texture> heightMaps =
 			LoadMaterialTextures(material, aiTextureType_AMBIENT, Texture::TextureType::HEIGHT);
 		if (heightMaps.size() > 0)
-		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());
+		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());*/
 	}
 
 	return Mesh(vertices, indices, textures);
@@ -113,11 +123,11 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 		mat->GetTexture(type, i, &str);
 
 		bool skip = false;
-		for (unsigned int j = 0; j < m_TexturesLoaded.size(); j++)
+		for (unsigned int j = 0; j < m_Materail.TexturesLoaded.size(); j++)
 		{
-			if (std::strcmp(m_TexturesLoaded[j].GetPath().data(), str.C_Str()) == 0)
+			if (std::strcmp(m_Materail.TexturesLoaded[j].GetPath().data(), str.C_Str()) == 0)
 			{
-				textures.push_back(m_TexturesLoaded[j]);
+				textures.push_back(m_Materail.TexturesLoaded[j]);
 				skip = true;
 				break;
 			}
@@ -129,7 +139,7 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 			filename = /*m_Directory + "/" + */filename;
 			//Texture texture(filename, typeName);
 			textures.push_back(Texture(filename, typeName));
-			m_TexturesLoaded.push_back(std::move(textures[textures.size()-1]));
+			m_Materail.TexturesLoaded.push_back(std::move(textures[textures.size()-1]));
 		}
 	}
 

@@ -111,6 +111,53 @@ static void DrawComponent(const std::string& name, Entity entity, UIFunction uiF
 	}
 }
 
+static void DrawMaterialTexture(const char* name, bool& isSet, bool& isUsing, const char* path,
+								glm::vec3& col,  float& value, float& contrast, unsigned int texId)
+{
+	ImGui::Text(name);
+	ImGui::SameLine(ImGui::GetWindowWidth() - 75);
+	if (ImGui::Button("Browse..."))
+	{
+
+	}
+	
+	if (name != "Normal map:") {
+		std::string title = std::string("Color##") + std::to_string(texId);
+		ImGui::ColorEdit3(title.c_str(), glm::value_ptr(col), 0);
+	}
+
+	if (isSet)
+	{
+		std::string title = std::string("Use Texture##") + std::to_string(texId);
+		ImGui::Checkbox(title.c_str(), &isUsing);
+		ImGui::Image((void*)texId, ImVec2{ 80, 80 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+		if (ImGui::IsItemHovered())
+		{
+			ImGui::BeginTooltip();
+			ImGui::Image((void*)texId, ImVec2{ 350, 350 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+			ImGui::EndTooltip();
+		}
+		ImGui::SameLine();
+
+		ImGui::TextWrapped(path);
+	}
+
+	if (name != "Normal map:")
+	{
+		std::string title = std::string("Value##") + std::to_string(texId);
+		ImGui::SliderFloat(title.c_str(), &value, -10.0f, 10.0f);
+		title = std::string("Contrast##") + std::to_string(texId);
+		ImGui::SliderFloat(title.c_str(), &contrast, 0.f, 10.0f);
+	}
+	else
+	{
+		std::string title = std::string("Strength##") + std::to_string(texId);
+		ImGui::SliderFloat(title.c_str(), &value, 0.f, 10.0f);
+	}
+
+	ImGui::Separator();
+}
+
 void SceneHierarchyPanel::DrawComponents(Entity entity)
 {
 	if (entity.HasComponent<TagComponent>())
@@ -193,56 +240,49 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		{
 			std::string pathStr = "Path: " + component.ModelObj.GetPath();
 			ImGui::Text(pathStr.c_str());
-		});
+			ImGui::Spacing();
 
-	DrawComponent<ModelRendererComponent>("Material", entity, [](auto& component)
-		{
-			auto& model = component.ModelObj;
-			std::vector<Texture>& textures = model.GetTextures();
-			
-			for (Texture& texture : textures)
+
+			const ImGuiTreeNodeFlags innerTreenodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth;
+			if (ImGui::TreeNodeEx((void*)typeid(ModelRendererComponent).hash_code(), innerTreenodeFlags, "Material"))
 			{
-				std::string type;
-				switch (texture.GetType())
-				{
-				case Texture::TextureType::DIFFUSE: type = "Diffuse"; break;
-				case Texture::TextureType::ROUGHNESS: type = "Roughness"; break;
-				case Texture::TextureType::NORMAL: type = "Normal"; break;
-				default:
-					type = "UNSUPPORTED YET";
-					break;
-				}
-				type += " map:";
-
-				ImGui::Text(type.c_str());
-				ImGui::SameLine(ImGui::GetWindowWidth() - 75);
-				ImGui::Button("Browse...");
-
-				glm::vec3 col(1);
-				ImGui::ColorEdit3("Color", &col[0], 0);
-
-				bool isTexUsed = true;
-				ImGui::Checkbox("Use Texture", &isTexUsed);
-				ImGui::Image((void*)texture.GetId(), ImVec2{80, 80}, ImVec2{0, 1}, ImVec2{1, 0});
-				if (ImGui::IsItemHovered())
-				{
-					ImGui::BeginTooltip();
-					ImGui::Image((void*)texture.GetId(), ImVec2{ 350, 350 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-					ImGui::EndTooltip();
-				}
-				ImGui::SameLine();
+				Material& mat = component.ModelObj.GetMaterial();
+				std::vector<Texture>& textures = mat.TexturesLoaded;
 				
-				ImGui::TextWrapped(texture.GetPath().c_str());
+				bool diffSet = false;
+				std::string diffPath = "";
+				unsigned int diffId = 0;
 
-				float v = 1;
-				float c = 1;
-				ImGui::SliderFloat("Value", &v, -10.0f, 10.0f);
-				ImGui::SliderFloat("Contrast", &c, 0.f, 10.0f);
+				bool roughSet = false;
+				std::string roughPath = "";
+				unsigned int roughId = 0;
 
-				ImGui::Separator();
+				bool normSet = false;
+				std::string normPath = "";
+				unsigned int normId = 0;
+
+				for (Texture& tex : textures)
+				{
+					switch (tex.GetType())
+					{
+						case Texture::TextureType::DIFFUSE:		diffSet = true;	 diffPath = tex.GetPath(); diffId = tex.GetId(); break;
+						case Texture::TextureType::ROUGHNESS:	roughSet = true; roughPath = tex.GetPath(); roughId = tex.GetId(); break;
+						case Texture::TextureType::NORMAL:		normSet = true;  normPath  = tex.GetPath(); normId = tex.GetId(); break;
+					}
+				}
+				
+				DrawMaterialTexture("Diffuse map:", diffSet, mat.IsDiffuseUsing, diffPath.c_str(), mat.DiffuseColor,
+					mat.DiffuseValue, mat.DiffuseContrast, diffId);
+				DrawMaterialTexture("Roughness map:", roughSet, mat.IsRoughnessUsing, roughPath.c_str(), mat.RoughnessColor,
+					mat.RoughnessValue, mat.RoughnessContrast, roughId);
+				DrawMaterialTexture("Normal map:", normSet, mat.IsNormalUsing, normPath.c_str(), mat.DiffuseColor,
+					mat.NormalStrength, mat.DiffuseContrast, normId);
+
+				ImGui::TreePop();
 			}
 
 		});
+
 
 	DrawComponent<PointLightComponent>("Point Light", entity, [](auto& component)
 		{
