@@ -112,7 +112,7 @@ static void DrawComponent(const std::string& name, Entity entity, UIFunction uiF
 }
 
 static void DrawMaterialTexture(const char* name, bool& isSet, bool& isUsing, const char* path,
-								glm::vec3& col,  float& value, float& contrast, unsigned int texId)
+								glm::vec3& col,  float& value, float& contrast, unsigned int texId, bool* inverted = nullptr)
 {
 	ImGui::Text(name);
 	ImGui::SameLine(ImGui::GetWindowWidth() - 75);
@@ -130,6 +130,11 @@ static void DrawMaterialTexture(const char* name, bool& isSet, bool& isUsing, co
 	{
 		std::string title = std::string("Use Texture##") + std::to_string(texId);
 		ImGui::Checkbox(title.c_str(), &isUsing);
+		if (name == "Roughness map:" && isUsing)
+		{
+			title = std::string("Invert##") + std::to_string(texId);
+			ImGui::Checkbox(title.c_str(), inverted);
+		}
 		ImGui::Image((void*)texId, ImVec2{ 80, 80 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
 		if (ImGui::IsItemHovered())
 		{
@@ -145,9 +150,9 @@ static void DrawMaterialTexture(const char* name, bool& isSet, bool& isUsing, co
 	if (name != "Normal map:")
 	{
 		std::string title = std::string("Value##") + std::to_string(texId);
-		ImGui::SliderFloat(title.c_str(), &value, -10.0f, 10.0f);
+		ImGui::SliderFloat(title.c_str(), &value, -1.0f, 1.f);
 		title = std::string("Contrast##") + std::to_string(texId);
-		ImGui::SliderFloat(title.c_str(), &contrast, 0.f, 10.0f);
+		ImGui::SliderFloat(title.c_str(), &contrast, 0.f, 2.0f);
 	}
 	else
 	{
@@ -274,7 +279,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 				DrawMaterialTexture("Diffuse map:", diffSet, mat.IsDiffuseUsing, diffPath.c_str(), mat.DiffuseColor,
 					mat.DiffuseValue, mat.DiffuseContrast, diffId);
 				DrawMaterialTexture("Roughness map:", roughSet, mat.IsRoughnessUsing, roughPath.c_str(), mat.RoughnessColor,
-					mat.RoughnessValue, mat.RoughnessContrast, roughId);
+					mat.RoughnessValue, mat.RoughnessContrast, roughId, &mat.IsRoughnessInvert);
 				DrawMaterialTexture("Normal map:", normSet, mat.IsNormalUsing, normPath.c_str(), mat.DiffuseColor,
 					mat.NormalStrength, mat.DiffuseContrast, normId);
 

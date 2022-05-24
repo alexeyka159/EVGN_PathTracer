@@ -130,6 +130,19 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::BeginMap; //ModelRendererComponent
 		auto& modelComponent = entity.GetComponent<ModelRendererComponent>();
 		out << YAML::Key << "Path" << YAML::Value << modelComponent.ModelObj.GetPath();
+		
+		auto& mat = modelComponent.ModelObj.GetMaterial();
+		out << YAML::Key << "DiffuseColor"		<< YAML::Value << mat.DiffuseColor;
+		out << YAML::Key << "IsDiffuseUsing"	<< YAML::Value << mat.IsDiffuseUsing;
+		out << YAML::Key << "DiffuseValue"		<< YAML::Value << mat.DiffuseValue;
+		out << YAML::Key << "DiffuseContrast"	<< YAML::Value << mat.DiffuseContrast;
+		out << YAML::Key << "RoughnessColor"	<< YAML::Value << mat.RoughnessColor;
+		out << YAML::Key << "IsRoughnessUsing"	<< YAML::Value << mat.IsRoughnessUsing;
+		out << YAML::Key << "IsRoughnessInvert" << YAML::Value << mat.IsRoughnessInvert;
+		out << YAML::Key << "RoughnessValue"	<< YAML::Value << mat.RoughnessValue;
+		out << YAML::Key << "RoughnessContrast" << YAML::Value << mat.RoughnessContrast;
+		out << YAML::Key << "IsNormalUsing"		<< YAML::Value << mat.IsNormalUsing;
+		out << YAML::Key << "NormalStrength"	<< YAML::Value << mat.NormalStrength;
 
 		out << YAML::EndMap; //ModelRendererComponent
 	}
@@ -269,40 +282,52 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 				std::cout << "  - Loading model: \"" << path << "\"\n";
 				deserializedEntity.AddComponent<ModelRendererComponent>(path.c_str());
 
+				auto& mat = deserializedEntity.GetComponent<ModelRendererComponent>().ModelObj.GetMaterial();
+				mat.IsDiffuseUsing		= modelComponent["IsDiffuseUsing"].as<bool>();
+				mat.DiffuseColor		= modelComponent["DiffuseColor"].as<glm::vec3>();
+				mat.DiffuseValue		= modelComponent["DiffuseValue"].as<float>();
+				mat.DiffuseContrast		= modelComponent["DiffuseContrast"].as<float>();
+				mat.IsRoughnessUsing	= modelComponent["IsRoughnessUsing"].as<bool>();
+				mat.IsRoughnessInvert	= modelComponent["IsRoughnessInvert"].as<bool>();
+				mat.RoughnessColor		= modelComponent["RoughnessColor"].as<glm::vec3>();
+				mat.RoughnessValue		= modelComponent["RoughnessValue"].as<float>();
+				mat.RoughnessContrast	= modelComponent["RoughnessContrast"].as<float>();
+				mat.IsNormalUsing		= modelComponent["IsNormalUsing"].as<bool>();
+				mat.NormalStrength		= modelComponent["NormalStrength"].as<float>();
 			}
 
 			auto pointLightComponent = entity["PointLightComponent"];
 			if (pointLightComponent)
 			{
 				auto& pl = deserializedEntity.AddComponent<PointLightComponent>();
-				pl.Intensity = pointLightComponent["Intensity"].as<float>();
-				pl.Color = pointLightComponent["Color"].as<glm::vec3>();
-				pl.Constant = pointLightComponent["Constant"].as<float>();
-				pl.Linear = pointLightComponent["Linear"].as<float>();
-				pl.Quadratic = pointLightComponent["Quadratic"].as<float>();
+				pl.Intensity	= pointLightComponent["Intensity"].as<float>();
+				pl.Color		= pointLightComponent["Color"].as<glm::vec3>();
+				pl.Constant		= pointLightComponent["Constant"].as<float>();
+				pl.Linear		= pointLightComponent["Linear"].as<float>();
+				pl.Quadratic	= pointLightComponent["Quadratic"].as<float>();
 			}
 
 			auto spotLightComponent = entity["SpotLightComponent"];
 			if (spotLightComponent)
 			{
 				auto& sl = deserializedEntity.AddComponent<SpotLightComponent>();
-				sl.Intensity = spotLightComponent["Intensity"].as<float>();
-				sl.Color = spotLightComponent["Color"].as<glm::vec3>();
+				sl.Intensity	= spotLightComponent["Intensity"].as<float>();
+				sl.Color		= spotLightComponent["Color"].as<glm::vec3>();
 				
-				sl.CutOff = spotLightComponent["CutOff"].as<float>();
-				sl.OuterCutOff = spotLightComponent["OuterCutOff"].as<float>();
+				sl.CutOff		= spotLightComponent["CutOff"].as<float>();
+				sl.OuterCutOff	= spotLightComponent["OuterCutOff"].as<float>();
 				
-				sl.Constant = spotLightComponent["Constant"].as<float>();
-				sl.Linear = spotLightComponent["Linear"].as<float>();
-				sl.Quadratic = spotLightComponent["Quadratic"].as<float>();
+				sl.Constant		= spotLightComponent["Constant"].as<float>();
+				sl.Linear		= spotLightComponent["Linear"].as<float>();
+				sl.Quadratic	= spotLightComponent["Quadratic"].as<float>();
 			}
 
 			auto directionalLightComponent = entity["DirectionalLightComponent"];
 			if (directionalLightComponent)
 			{
 				auto& dl = deserializedEntity.AddComponent<DirectionalLightComponent>();
-				dl.Intensity = directionalLightComponent["Intensity"].as<float>();
-				dl.Color = directionalLightComponent["Color"].as<glm::vec3>();
+				dl.Intensity	= directionalLightComponent["Intensity"].as<float>();
+				dl.Color		= directionalLightComponent["Color"].as<glm::vec3>();
 			}
 
 			std::cout << std::endl;

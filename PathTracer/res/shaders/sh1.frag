@@ -14,6 +14,20 @@ struct Material {
 	sampler2D texture_diffuse1;
 	sampler2D texture_roughness1;
 	sampler2D texture_normal1;
+
+	vec3 diffuseColor;
+	bool isDiffuseUsing;
+	float diffuseValue;
+	float diffuseContrast;
+
+	float roughnessColor;
+	bool isRoughnessUsing;
+	bool isRoughnessInvert;
+	float roughnessValue;
+	float roughnessContrast;
+
+	bool isNormalUsing;
+	float normalStrength;
 };
 
 struct DirLight {
@@ -62,21 +76,44 @@ uniform vec3 u_AmbientColor;
 
 in vec3 v_Normal;
 
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir);
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
-vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir);
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffCol, float roughCol);
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDirCol, vec3 diffCol, float rough);
+vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDirCol, vec3 diffCol, float rough);
 
 void main()
 {
+	vec3 diffuseColor = u_material.diffuseColor;
+	float roughnessColor = u_material.roughnessColor;
+	vec3 normalColor = v_Normal;
+
+	if(u_material.isDiffuseUsing)
+	{
+		diffuseColor = texture(u_material.texture_diffuse1, fs_in.TexCoords).rgb;
+		diffuseColor = ((diffuseColor - 0.5f) * max(u_material.diffuseContrast, 0)) + 0.5f;
+		diffuseColor += u_material.diffuseValue;
+	}
+	if(u_material.isRoughnessUsing)
+	{
+		roughnessColor = texture(u_material.texture_roughness1, fs_in.TexCoords).r;
+		roughnessColor = ((roughnessColor - 0.5f) * max(u_material.roughnessContrast, 0)) + 0.5f;
+		if(u_material.isRoughnessInvert)
+			roughnessColor = 1 - roughnessColor;
+		roughnessColor += u_material.roughnessValue;
+	}
+	if(u_material.isNormalUsing)
+	{
+		normalColor = texture(u_material.texture_normal1, fs_in.TexCoords).rgb;
+  	normalColor = normalColor * 2.0f - 1.0f;
+  	normalColor.xy *= u_material.normalStrength;
+  	normalColor = normalize(normalColor);
+  	normalColor = normalize(fs_in.TBN * normalColor);
+	}
+
+
+
 	//Эмбиент
 	//float ambientStrength = 0.3;
-  vec3 ambient = u_AmbientColor * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
-
-  // Свойства
-  //vec3 norm = normalize(v_Normal);
-  vec3 norm = texture(u_material.texture_normal1, fs_in.TexCoords).rgb;
-  norm = norm * 2.0f - 1.0f;
-  norm = normalize(fs_in.TBN * norm); 
+  vec3 ambient = u_AmbientColor * diffuseColor;
 
   vec3 viewDir = normalize(u_ViewPos - fs_in.FragPos);
   vec3 result = vec3(0);
@@ -84,17 +121,17 @@ void main()
   //Направленное освещение
   for(int i = 0; i < NR_DIR_LIGHTS; i++)
   	if(u_DirLightsInUse[i])
-  		result += CalcDirLight(u_DirLights[i], norm, viewDir);
+  		result += CalcDirLight(u_DirLights[i], normalColor, viewDir, diffuseColor, roughnessColor);
   
   //Точечные источники света
   for(int i = 0; i < NR_POINT_LIGHTS; i++)
   	if(u_PointLightsInUse[i])
-      	result += CalcPointLight(u_PointLights[i], norm, fs_in.FragPos, viewDir); 
+      	result += CalcPointLight(u_PointLights[i], normalColor, fs_in.FragPos, viewDir, diffuseColor, roughnessColor); 
  
   //Прожектор
   for(int i = 0; i < NR_SPOT_LIGHTS; i++)
   	if(u_SpotLightsInUse[i])
-  		result += CalcSpotLight(u_SpotLights[i], norm, fs_in.FragPos, viewDir);
+  		result += CalcSpotLight(u_SpotLights[i], normalColor, fs_in.FragPos, viewDir, diffuseColor, roughnessColor);
 
   result += ambient;
 
@@ -107,7 +144,7 @@ void main()
  	FragDepth = vec4(vec3(pow(gl_FragCoord.z, 35)), 1.0);
 }
 
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffCol, float roughCol)
 {
     vec3 lightDir = normalize(-light.direction);
  
@@ -120,13 +157,13 @@ vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir)
  
     // Комбинируем результаты
     //vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
-    vec3 diffuse = light.color * diff * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
-    float roughness = 1 - texture(u_material.texture_roughness1, fs_in.TexCoords).r;
+    vec3 diffuse = light.color * diff * diffCol;
+    float roughness = 1 - roughCol;
     vec3 specular = light.color * spec * roughness;
     return (diffuse + specular);
 }
 
-vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffCol, float roughCol)
 {
     vec3 lightDir = normalize(light.position - fragPos);
  
@@ -144,8 +181,8 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
  
     // Комбинируем результаты
     //vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
-    vec3 diffuse = light.color * diff * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
-    float roughness = 1 - texture(u_material.texture_roughness1, fs_in.TexCoords).r;
+    vec3 diffuse = light.color * diff * diffCol;
+    float roughness = 1 - roughCol;
     vec3 specular = light.color * spec * roughness;
     //ambient *= attenuation;
     diffuse *= attenuation;
@@ -153,7 +190,7 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
     return vec3(diffuse + specular);
 }
 
-vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
+vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffCol, float roughCol)
 {
     vec3 lightDir = normalize(light.position - fragPos);
 	
@@ -175,10 +212,9 @@ vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir)
 	
     // Совмещаем результаты
     //vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
-    vec3 diffuse = light.color * diff * vec3(texture(u_material.texture_diffuse1, fs_in.TexCoords));
-    float roughness = 1 - texture(u_material.texture_roughness1, fs_in.TexCoords).r;
+    vec3 diffuse = light.color * diff * diffCol;
+    float roughness = 1 - roughCol;
     vec3 specular = light.color * spec * roughness;
-    //ambient *= attenuation * intensity;
     diffuse *= attenuation * intensity;
     specular *= attenuation * intensity;
     return vec3(diffuse + specular);

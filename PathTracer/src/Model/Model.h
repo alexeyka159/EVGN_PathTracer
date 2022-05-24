@@ -12,12 +12,13 @@ struct Material
 
 	glm::vec3 DiffuseColor = glm::vec3(0.9f);
 	bool IsDiffuseUsing = false;
-	float DiffuseValue = 1.f;
+	float DiffuseValue = 0.f;
 	float DiffuseContrast = 1.f;
 
 	glm::vec3 RoughnessColor = glm::vec3(0.5f);
 	bool IsRoughnessUsing = false;
-	float RoughnessValue = 1.f;
+	bool IsRoughnessInvert = false;
+	float RoughnessValue = 0.f;
 	float RoughnessContrast = 1.f;
 
 	bool IsNormalUsing = false;

@@ -150,6 +150,20 @@ void Model::Draw(Shader& shader)
 {
 	for (Mesh& mesh : m_Meshes)
 	{
+		shader.SetUniformVec3f("u_material.diffuseColor",	m_Materail.DiffuseColor);
+		shader.SetUniform1i("u_material.isDiffuseUsing",	m_Materail.IsDiffuseUsing);
+		shader.SetUniform1f("u_material.diffuseValue",		m_Materail.DiffuseValue);
+		shader.SetUniform1f("u_material.diffuseContrast",	m_Materail.DiffuseContrast);
+
+		shader.SetUniform1f("u_material.roughnessColor",    m_Materail.RoughnessColor.r);
+		shader.SetUniform1i("u_material.isRoughnessUsing",	m_Materail.IsRoughnessUsing);
+		shader.SetUniform1f("u_material.roughnessValue",	m_Materail.RoughnessValue);
+		shader.SetUniform1f("u_material.isRoughnessInvert", m_Materail.IsRoughnessInvert);
+		shader.SetUniform1f("u_material.roughnessContrast", m_Materail.RoughnessContrast);
+
+		shader.SetUniform1i("u_material.isNormalUsing",		m_Materail.IsNormalUsing);
+		shader.SetUniform1f("u_material.normalStrength",	m_Materail.NormalStrength);
+
 		mesh.Draw(&shader);
 	}
 }
