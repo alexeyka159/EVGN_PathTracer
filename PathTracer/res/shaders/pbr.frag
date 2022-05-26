@@ -17,6 +17,8 @@ struct Material {
 	sampler2D texture_normal1;
 	// sampler2D texture_ao1;
 
+	float ior;
+
 	vec3 diffuseColor;
 	bool isDiffuseUsing;
 	float diffuseValue;
@@ -83,34 +85,19 @@ in vec3 v_Normal;
 
 const float PI = 3.14159265359;
 
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffCol, float roughCol);
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffCol, float roughCol, float metalCol, vec3 IOR);
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffCol, float roughCol, float metalCol, vec3 IOR);
-vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffCol, float roughCol);
+vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffCol, float roughCol, float metalCol, vec3 IOR);
 
+vec3 CalcLo(vec3 lightPosDir, vec3 lightColor, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffCol, float roughCol, float metalCol, vec3 IOR, bool calcAttenuation);
 float DistributionGGX(vec3 N, vec3 H, float roughness);
 float GeometrySchlickGGX(float NdotV, float roughness);
 float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 fresnelSchlick(float cosTheta, vec3 F0);
 
-vec3 getNormalFromMap()
-{
-	vec3 tangentNormal = texture(u_material.texture_normal1, fs_in.TexCoords).xyz * 2.0 - 1.0;
-
-	vec3 Q1  = dFdx(fs_in.FragPos);
-	vec3 Q2  = dFdy(fs_in.FragPos);
-	vec2 st1 = dFdx(fs_in.TexCoords);
-	vec2 st2 = dFdy(fs_in.TexCoords);
-
-	vec3 N   = normalize(v_Normal);
-	vec3 T  = normalize(Q1*st2.t - Q2*st1.t);
-	vec3 B  = -normalize(cross(N, T));
-	mat3 TBN = mat3(T, B, N);
-
-	return normalize(TBN * tangentNormal);
-}
-
 void main()
 {
+	//Выборка цветов из текстур, если необходимо
 	vec3 diffuseColor = u_material.diffuseColor;
 	float metallicColor = u_material.metallicColor;
 	float roughnessColor = u_material.roughnessColor;
@@ -120,7 +107,7 @@ void main()
 	{
 		diffuseColor = texture(u_material.texture_diffuse1, fs_in.TexCoords).rgb;
 		diffuseColor = ((diffuseColor - 0.5f) * max(u_material.diffuseContrast, 0)) + 0.5f;
-		diffuseColor += u_material.diffuseValue;
+		diffuseColor *= u_material.diffuseValue;
 	}
 	if(u_material.isMetallicUsing)
 	{
@@ -132,7 +119,7 @@ void main()
 		roughnessColor = ((roughnessColor - 0.5f) * max(u_material.roughnessContrast, 0)) + 0.5f;
 		if(u_material.isRoughnessInvert)
 			roughnessColor = 1 - roughnessColor;
-		roughnessColor += u_material.roughnessValue;
+		roughnessColor *= u_material.roughnessValue;
 	}
 	if(u_material.isNormalUsing)
 	{
@@ -148,23 +135,23 @@ void main()
 	vec3 viewDir = normalize(u_ViewPos - fs_in.FragPos);
 	vec3 result = vec3(0);
 
-	vec3 IOR = vec3(0.04);
+	vec3 IOR = vec3(u_material.ior);
 	IOR = mix(IOR, diffuseColor, metallicColor);
  
-/* 	//Направленное освещение
+	//Направленное освещение
 	for(int i = 0; i < NR_DIR_LIGHTS; i++)
 		if(u_DirLightsInUse[i])
-			result += CalcDirLight(u_DirLights[i], normalColor, viewDir, diffuseColor, roughnessColor); */
+			result += CalcDirLight(u_DirLights[i], normalColor, viewDir, diffuseColor, roughnessColor, metallicColor, IOR);
 	
 	//Точечные источники света
 	for(int i = 0; i < NR_POINT_LIGHTS; i++)
 		if(u_PointLightsInUse[i])
 			result += CalcPointLight(u_PointLights[i], normalColor, fs_in.FragPos, viewDir, diffuseColor, roughnessColor, metallicColor, IOR); 
   
-/* 	//Прожектор
+	//Прожектор
 	for(int i = 0; i < NR_SPOT_LIGHTS; i++)
 		if(u_SpotLightsInUse[i])
-			result += CalcSpotLight(u_SpotLights[i], normalColor, fs_in.FragPos, viewDir, diffuseColor, roughnessColor); */
+			result += CalcSpotLight(u_SpotLights[i], normalColor, fs_in.FragPos, viewDir, diffuseColor, roughnessColor, metallicColor, IOR);
 
 	vec3 ambient = u_AmbientColor * diffuseColor;
 	result += ambient;
@@ -180,37 +167,59 @@ void main()
 	FragDepth = vec4(vec3(pow(gl_FragCoord.z, 35)), 1.0);
 }
 
-vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffCol, float roughCol)
+
+//Пресеты источников света
+vec3 CalcDirLight(DirLight light, vec3 normal, vec3 viewDir, vec3 diffCol, float roughCol, float metalCol, vec3 IOR)
 {
-	vec3 lightDir = normalize(-light.direction);
- 
-	// Рассеянное затенение
-	float diff = max(dot(normal, lightDir), 0.0);
- 
-	// Отраженное затенение
-	vec3 halfwayDir = normalize(lightDir + viewDir);
-	float spec = pow(max(dot(normal, halfwayDir), 0.0), 32); //TODO: Добавить в марериал спекулар
- 
-	// Комбинируем результаты
-	//vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
-	vec3 diffuse = light.color * diff * diffCol;
-	float roughness = 1 - roughCol;
-	vec3 specular = light.color * spec * roughness;
-	return (diffuse + specular);
+	return CalcLo(light.direction, light.color, normal, vec3(0), viewDir, diffCol, roughCol, metalCol, IOR, false);
 }
 
 vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffCol, float roughCol, float metalCol, vec3 IOR)
 {
+  return CalcLo(light.position, light.color, normal, fragPos, viewDir, diffCol, roughCol, metalCol, IOR, true);
+}
+
+vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffCol, float roughCol, float metalCol, vec3 IOR)
+{
+	vec3 lightDir = normalize(light.position - fragPos);
+	
+	// Интенсивность прожектора
+	float theta = dot(lightDir, normalize(-light.direction)); 
+	float epsilon = light.cutOff - light.outerCutOff;
+	float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
+	
+	vec3 Lo = CalcLo(light.position, light.color, normal, fragPos, viewDir, diffCol, roughCol, metalCol, IOR, true);
+	return Lo * intensity;
+}
+
+
+//PBR
+vec3 CalcLo(vec3 lightPosDir, vec3 lightColor, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffCol, float roughCol, float metalCol, vec3 IOR, bool calcAttenuation)
+{
 	vec3 Lo = vec3(0);
-	vec3 L = normalize(light.position - fragPos);
 
-	// Отраженное затенение
-	vec3 H = normalize(viewDir + L);
+	vec3 L;
+	vec3 H;
+	vec3 radiance;
 
-	// Затухание
-	float distance = length(light.position - fragPos);
-  float attenuation = 1.0 / (distance * distance);
-  vec3 radiance = light.color * attenuation; 
+	if(calcAttenuation)
+	{
+		L = normalize(lightPosDir - fragPos);
+	
+		// Отраженное затенение
+		H = normalize(viewDir + L);
+	
+		// Затухание
+		float distance = length(lightPosDir - fragPos);
+  	float attenuation = 1.0 / (distance * distance);
+  	radiance = lightColor * attenuation; 
+	}
+	else
+	{
+		L = normalize(-lightPosDir);
+		H = normalize(viewDir + (-lightPosDir));
+		radiance = lightColor;
+	}
 
 	// BRDF Кука-Торренса 
 	float NDF = DistributionGGX(normal, H, roughCol);   
@@ -231,46 +240,15 @@ vec3 CalcPointLight(PointLight light, vec3 normal, vec3 fragPos, vec3 viewDir, v
 
 	// Умножаем kD на значение "1 - металличность", чтобы только неметаллы имели диффузное освещение, 
 	// или линейную композицию в случае полуметаллического материала (чисто металлические материалы не имеют диффузного освещения)
-  kD *= 1.0 - metalCol;	  
+  kD *= 1.0 - metalCol;
 
   // Масштабируем освещенность при помощи NdotL
   float NdotL = max(dot(normal, L), 0.0);        
 
   // Добавляем к исходящей энергитической яркости Lo
-  Lo += (kD * diffCol / PI + specular) * radiance * NdotL; // обратите внимание, что мы уже умножали BRDF на коэффициент Френеля(kS), поэтому нам не нужно снова умножать на kS
+  Lo += (kD * diffCol / PI + specular) * radiance * NdotL;
 
   return Lo;
-}
-
-
-vec3 CalcSpotLight(SpotLight light, vec3 normal, vec3 fragPos, vec3 viewDir, vec3 diffCol, float roughCol)
-{
-	vec3 lightDir = normalize(light.position - fragPos);
-	
-	// Диффузное затенение
-	float diff = max(dot(normal, lightDir), 0.0);
-	
-	// Отраженное затенение
-		vec3 halfwayDir = normalize(lightDir + viewDir);
-	float spec = pow(max(dot(normal, halfwayDir), 0.0), 32); //TODO: Добавить в марериал спекулар
-	
-	// Затухание
-	float distance = length(light.position - fragPos);
-	float attenuation = 1.0 / (/* light.constant + light.linear * distance + light.quadratic *  */(distance * distance)); 
-	
-	// Интенсивность прожектора
-	float theta = dot(lightDir, normalize(-light.direction)); 
-	float epsilon = light.cutOff - light.outerCutOff;
-	float intensity = clamp((theta - light.outerCutOff) / epsilon, 0.0, 1.0);
-	
-	// Совмещаем результаты
-	//vec3 ambient = light.ambient * vec3(texture(material.diffuse, TexCoords));
-	vec3 diffuse = light.color * diff * diffCol;
-	float roughness = 1 - roughCol;
-	vec3 specular = light.color * spec * roughness;
-	diffuse *= attenuation * intensity;
-	specular *= attenuation * intensity;
-	return vec3(diffuse + specular);
 }
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)

@@ -121,7 +121,7 @@ static void DrawMaterialTexture(const char* name, bool& isSet, bool& isUsing, co
 
 	}
 	
-	if (name != "Normal map:"/* && name != "Metal map:"*/) {
+	if (name != "Normal map:" && name != "Metallic map:") {
 		std::string title = std::string("Color##") + std::to_string(texId);
 		ImGui::ColorEdit3(title.c_str(), glm::value_ptr(col), 0);
 	}
@@ -150,17 +150,17 @@ static void DrawMaterialTexture(const char* name, bool& isSet, bool& isUsing, co
 	if (name != "Normal map:")
 	{
 		std::string title = std::string("Value##") + std::to_string(texId);
-		ImGui::SliderFloat(title.c_str(), &value, -1.0f, 1.f);
+		ImGui::SliderFloat(title.c_str(), &value, .0f, name == "Metallic map:" ? 1.0f : 5.f, "%.03f");
 		if (name != "Metallic map:")
 		{
 			title = std::string("Contrast##") + std::to_string(texId);
-			ImGui::SliderFloat(title.c_str(), &contrast, 0.f, 2.0f);
+			ImGui::SliderFloat(title.c_str(), &contrast, 0.f, 2.0f, "%.03f");
 		}
 	}
 	else
 	{
 		std::string title = std::string("Strength##") + std::to_string(texId);
-		ImGui::SliderFloat(title.c_str(), &value, 0.f, 10.0f);
+		ImGui::SliderFloat(title.c_str(), &value, 0.f, 10.0f, "%.03f");
 	}
 
 	ImGui::Separator();
@@ -283,7 +283,10 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 						case Texture::TextureType::NORMAL:		normSet = true;  normPath  = tex.GetPath(); normId = tex.GetId(); break;
 					}
 				}
-				
+
+				ImGui::SliderFloat("IOR", &mat.IOR, 0, 1, "%.03f");
+				ImGui::Separator();
+
 				DrawMaterialTexture("Diffuse map:", diffSet, mat.IsDiffuseUsing, diffPath.c_str(), mat.DiffuseColor,
 					mat.DiffuseValue, mat.DiffuseContrast, diffId);
 				DrawMaterialTexture("Metallic map:", metalSet, mat.IsMetallicUsing, metalPath.c_str(), mat.RoughnessColor,

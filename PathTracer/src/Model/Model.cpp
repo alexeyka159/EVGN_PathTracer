@@ -163,6 +163,8 @@ void Model::Draw(Shader& shader)
 {
 	for (Mesh& mesh : m_Meshes)
 	{
+		shader.SetUniform1f("u_material.ior",				m_Materail.IOR);
+
 		shader.SetUniformVec3f("u_material.diffuseColor",	m_Materail.DiffuseColor);
 		shader.SetUniform1i("u_material.isDiffuseUsing",	m_Materail.IsDiffuseUsing);
 		shader.SetUniform1f("u_material.diffuseValue",		m_Materail.DiffuseValue);

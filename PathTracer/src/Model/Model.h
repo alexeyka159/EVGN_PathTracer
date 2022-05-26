@@ -10,9 +10,11 @@ struct Material
 {
 	std::vector<Texture> TexturesLoaded;
 
+	float IOR = 0.04f;
+
 	glm::vec3 DiffuseColor = glm::vec3(0.9f);
 	bool IsDiffuseUsing = false;
-	float DiffuseValue = 0.f;
+	float DiffuseValue = 1.f;
 	float DiffuseContrast = 1.f;
 
 	float MetallicColor = 0.f;
@@ -21,7 +23,7 @@ struct Material
 	glm::vec3 RoughnessColor = glm::vec3(0.5f);
 	bool IsRoughnessUsing = false;
 	bool IsRoughnessInvert = false;
-	float RoughnessValue = 0.f;
+	float RoughnessValue = 1.f;
 	float RoughnessContrast = 1.f;
 
 	bool IsNormalUsing = false;
