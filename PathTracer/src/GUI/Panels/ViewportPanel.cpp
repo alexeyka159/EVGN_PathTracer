@@ -244,7 +244,6 @@ void ViewportPanel::Draw()
         float windowHeight = (float)ImGui::GetWindowHeight();
         ImGuizmo::SetRect(ImGui::GetWindowPos().x, ImGui::GetWindowPos().y, windowWidth, windowHeight);
 
-
         glm::mat4 cameraProjection = m_Camera->GetProjection();
         glm::mat4 cameraView = m_Camera->GetViewMatrix();
 

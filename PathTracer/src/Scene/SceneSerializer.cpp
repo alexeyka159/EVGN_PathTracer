@@ -136,6 +136,8 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::Key << "IsDiffuseUsing"	<< YAML::Value << mat.IsDiffuseUsing;
 		out << YAML::Key << "DiffuseValue"		<< YAML::Value << mat.DiffuseValue;
 		out << YAML::Key << "DiffuseContrast"	<< YAML::Value << mat.DiffuseContrast;
+		out << YAML::Key << "IsMetallicUsing"	<< YAML::Value << mat.IsMetallicUsing;
+		out << YAML::Key << "MetallicColor"		<< YAML::Value << mat.MetallicColor;
 		out << YAML::Key << "RoughnessColor"	<< YAML::Value << mat.RoughnessColor;
 		out << YAML::Key << "IsRoughnessUsing"	<< YAML::Value << mat.IsRoughnessUsing;
 		out << YAML::Key << "IsRoughnessInvert" << YAML::Value << mat.IsRoughnessInvert;
@@ -287,6 +289,8 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 				mat.DiffuseColor		= modelComponent["DiffuseColor"].as<glm::vec3>();
 				mat.DiffuseValue		= modelComponent["DiffuseValue"].as<float>();
 				mat.DiffuseContrast		= modelComponent["DiffuseContrast"].as<float>();
+				mat.IsMetallicUsing		= modelComponent["IsMetallicUsing"].as<bool>();
+				mat.MetallicColor		= modelComponent["MetallicColor"].as<float>();
 				mat.IsRoughnessUsing	= modelComponent["IsRoughnessUsing"].as<bool>();
 				mat.IsRoughnessInvert	= modelComponent["IsRoughnessInvert"].as<bool>();
 				mat.RoughnessColor		= modelComponent["RoughnessColor"].as<glm::vec3>();

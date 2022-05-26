@@ -72,6 +72,7 @@ void Mesh::SetupMesh()
 void Mesh::Draw(Shader* shader)
 {
     unsigned int diffuseNr = 1;
+    unsigned int metallicNr = 1;
     unsigned int roughnessNr = 1;
     unsigned int normalNr = 1;
     unsigned int heightNr = 1;
@@ -86,6 +87,7 @@ void Mesh::Draw(Shader* shader)
         switch (type)
         {
             case Texture::TextureType::DIFFUSE:  number = std::to_string(diffuseNr++);  break;
+            case Texture::TextureType::METALLIC:  number = std::to_string(metallicNr++);  break;
             case Texture::TextureType::ROUGHNESS: number = std::to_string(roughnessNr++); break;
             case Texture::TextureType::NORMAL:   number = std::to_string(normalNr++);   break;
             case Texture::TextureType::HEIGHT:   number = std::to_string(heightNr++);   break;

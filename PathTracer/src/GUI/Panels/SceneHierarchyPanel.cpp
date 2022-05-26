@@ -121,7 +121,7 @@ static void DrawMaterialTexture(const char* name, bool& isSet, bool& isUsing, co
 
 	}
 	
-	if (name != "Normal map:") {
+	if (name != "Normal map:"/* && name != "Metal map:"*/) {
 		std::string title = std::string("Color##") + std::to_string(texId);
 		ImGui::ColorEdit3(title.c_str(), glm::value_ptr(col), 0);
 	}
@@ -151,8 +151,11 @@ static void DrawMaterialTexture(const char* name, bool& isSet, bool& isUsing, co
 	{
 		std::string title = std::string("Value##") + std::to_string(texId);
 		ImGui::SliderFloat(title.c_str(), &value, -1.0f, 1.f);
-		title = std::string("Contrast##") + std::to_string(texId);
-		ImGui::SliderFloat(title.c_str(), &contrast, 0.f, 2.0f);
+		if (name != "Metallic map:")
+		{
+			title = std::string("Contrast##") + std::to_string(texId);
+			ImGui::SliderFloat(title.c_str(), &contrast, 0.f, 2.0f);
+		}
 	}
 	else
 	{
@@ -258,6 +261,10 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 				std::string diffPath = "";
 				unsigned int diffId = 0;
 
+				bool metalSet = false;
+				std::string metalPath = "";
+				unsigned int metalhId = 0;
+
 				bool roughSet = false;
 				std::string roughPath = "";
 				unsigned int roughId = 0;
@@ -271,6 +278,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 					switch (tex.GetType())
 					{
 						case Texture::TextureType::DIFFUSE:		diffSet = true;	 diffPath = tex.GetPath(); diffId = tex.GetId(); break;
+						case Texture::TextureType::METALLIC:		metalSet = true; metalPath = tex.GetPath(); metalhId = tex.GetId(); break;
 						case Texture::TextureType::ROUGHNESS:	roughSet = true; roughPath = tex.GetPath(); roughId = tex.GetId(); break;
 						case Texture::TextureType::NORMAL:		normSet = true;  normPath  = tex.GetPath(); normId = tex.GetId(); break;
 					}
@@ -278,6 +286,8 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 				
 				DrawMaterialTexture("Diffuse map:", diffSet, mat.IsDiffuseUsing, diffPath.c_str(), mat.DiffuseColor,
 					mat.DiffuseValue, mat.DiffuseContrast, diffId);
+				DrawMaterialTexture("Metallic map:", metalSet, mat.IsMetallicUsing, metalPath.c_str(), mat.RoughnessColor,
+					mat.MetallicColor, mat.RoughnessContrast, metalhId);
 				DrawMaterialTexture("Roughness map:", roughSet, mat.IsRoughnessUsing, roughPath.c_str(), mat.RoughnessColor,
 					mat.RoughnessValue, mat.RoughnessContrast, roughId, &mat.IsRoughnessInvert);
 				DrawMaterialTexture("Normal map:", normSet, mat.IsNormalUsing, normPath.c_str(), mat.DiffuseColor,

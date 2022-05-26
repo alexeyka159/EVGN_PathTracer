@@ -97,18 +97,31 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 			m_Materail.IsRoughnessUsing = true;
 		}
 		
+		std::string modelType = GetPath().substr(GetPath().find_last_of(".") + 1);
+		if (modelType == "obj")
+		{
+
+		}
+		else if(modelType == "fbx")
+		{
+
+		}
+
 		std::vector<Texture> normalMaps =
-			LoadMaterialTextures(material, aiTextureType_HEIGHT, Texture::TextureType::NORMAL);
+			LoadMaterialTextures(material, aiTextureType_NORMALS, Texture::TextureType::NORMAL);
 		if (normalMaps.size() > 0)
 		{
 			textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
 			m_Materail.IsNormalUsing = true;
 		}
 
-		/*std::vector<Texture> heightMaps =
-			LoadMaterialTextures(material, aiTextureType_AMBIENT, Texture::TextureType::HEIGHT);
-		if (heightMaps.size() > 0)
-		textures.insert(textures.end(), heightMaps.begin(), heightMaps.end());*/
+		std::vector<Texture> metallicMaps =
+			LoadMaterialTextures(material, aiTextureType_METALNESS, Texture::TextureType::METALLIC);
+		if (metallicMaps.size() > 0)
+		{
+			textures.insert(textures.end(), metallicMaps.begin(), metallicMaps.end());
+			m_Materail.IsMetallicUsing = true;
+		}
 	}
 
 	return Mesh(vertices, indices, textures);
@@ -154,6 +167,9 @@ void Model::Draw(Shader& shader)
 		shader.SetUniform1i("u_material.isDiffuseUsing",	m_Materail.IsDiffuseUsing);
 		shader.SetUniform1f("u_material.diffuseValue",		m_Materail.DiffuseValue);
 		shader.SetUniform1f("u_material.diffuseContrast",	m_Materail.DiffuseContrast);
+
+		shader.SetUniform1f("u_material.metallicColor",		m_Materail.MetallicColor);
+		shader.SetUniform1i("u_material.isMetallicUsing",	m_Materail.IsMetallicUsing);
 
 		shader.SetUniform1f("u_material.roughnessColor",    m_Materail.RoughnessColor.r);
 		shader.SetUniform1i("u_material.isRoughnessUsing",	m_Materail.IsRoughnessUsing);

@@ -86,8 +86,9 @@ int main() {
 
 
 	Shader shader("res/shaders/sh1.vert", "res/shaders/sh1.frag");
+	Shader pbrShader("res/shaders/pbr.vert", "res/shaders/pbr.frag");
 	Shader gridShader("res/shaders/floor.vert", "res/shaders/floor.frag");
-	shader.Bind();
+	//pbrShader.Bind();
 
 	float cameraSpeed = 5;
 	glm::vec3 cameraPos = glm::vec3(-4.3f, 3.0f, 5.3f);
@@ -143,7 +144,7 @@ int main() {
 
 		camera.GetController()->SetDeltaTime(TIME.DeltaTime());
 
-		renderer.Draw(outliner->GetContex(), shader, &camera, TIME.DeltaTime());
+		renderer.Draw(outliner->GetContex(), pbrShader, &camera, TIME.DeltaTime());
 		
 		{
 			gridShader.Bind();

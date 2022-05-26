@@ -15,6 +15,9 @@ struct Material
 	float DiffuseValue = 0.f;
 	float DiffuseContrast = 1.f;
 
+	float MetallicColor = 0.f;
+	bool IsMetallicUsing = false;
+
 	glm::vec3 RoughnessColor = glm::vec3(0.5f);
 	bool IsRoughnessUsing = false;
 	bool IsRoughnessInvert = false;
