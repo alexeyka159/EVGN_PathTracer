@@ -1,4 +1,5 @@
 #include "Model.h"
+#include <fstream>
 
 void Model::LoadModel(std::string path)
 {
@@ -29,6 +30,56 @@ void Model::ProcessNode(aiNode* node, const aiScene* scene)
 	{
 		ProcessNode(node->mChildren[i], scene);
 	}
+}
+
+static std::string ReplaceAll(std::string str, const std::string& from, const std::string& to) {
+	size_t start_pos = 0;
+	while ((start_pos = str.find(from, start_pos)) != std::string::npos) {
+		str.replace(start_pos, from.length(), to);
+		start_pos += to.length(); // Handles case where 'to' is a substring of 'from'
+	}
+	return str;
+}
+
+static std::string GetPathFromMTL(std::string objPath, std::string mtlTexType)
+{
+	std::string mtlName = "";
+	std::string texPath = "";
+
+	{
+		std::string directory;
+		const size_t last_slash_idx = objPath.rfind('\\');
+		if (std::string::npos != last_slash_idx)
+		{
+			directory = objPath.substr(0, last_slash_idx);
+		}
+		// get filename
+		std::string base_filename = objPath.substr(objPath.find_last_of("/\\") + 1);
+
+		// remove extension from filename
+		std::string::size_type const p(base_filename.find_last_of('.'));
+		std::string fileName = base_filename.substr(0, p);
+		mtlName = directory + "\\" + fileName + ".mtl";
+
+		mtlName = ReplaceAll(mtlName, "\\", "\\\\");
+	}
+	
+	if (mtlName != "")
+	{
+		std::ifstream ifs(mtlName);
+
+		while (std::getline(ifs, texPath))
+		{
+			size_t pos = texPath.find(mtlTexType);
+			if (pos != std::string::npos)
+			{
+				texPath.erase(pos, mtlTexType.length() + 1);
+				break;
+			}
+		}
+		ifs.close();
+	}
+	return texPath;
 }
 
 Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
@@ -100,27 +151,40 @@ Mesh Model::ProcessMesh(aiMesh* mesh, const aiScene* scene)
 		std::string modelType = GetPath().substr(GetPath().find_last_of(".") + 1);
 		if (modelType == "obj")
 		{
+			std::vector<Texture> normalMaps =
+				LoadMaterialTextures(material, aiTextureType_HEIGHT, Texture::TextureType::NORMAL);
+			if (normalMaps.size() > 0)
+			{
+				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+				m_Materail.IsNormalUsing = true;
+			}
 
+			std::vector<Texture> metallicMaps;
+			std::string metallicPath = GetPathFromMTL(m_Path, "refl");
+			if (metallicPath != "")
+			{
+				metallicMaps.push_back(Texture(metallicPath, Texture::TextureType::METALLIC));
+				m_Materail.TexturesLoaded.push_back(std::move(metallicMaps[metallicMaps.size() - 1]));
+				m_Materail.IsMetallicUsing = true;
+			}
 		}
-		else if(modelType == "fbx")
+		else
 		{
+			std::vector<Texture> normalMaps =
+				LoadMaterialTextures(material, aiTextureType_NORMALS, Texture::TextureType::NORMAL);
+			if (normalMaps.size() > 0)
+			{
+				textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
+				m_Materail.IsNormalUsing = true;
+			}
 
-		}
-
-		std::vector<Texture> normalMaps =
-			LoadMaterialTextures(material, aiTextureType_NORMALS, Texture::TextureType::NORMAL);
-		if (normalMaps.size() > 0)
-		{
-			textures.insert(textures.end(), normalMaps.begin(), normalMaps.end());
-			m_Materail.IsNormalUsing = true;
-		}
-
-		std::vector<Texture> metallicMaps =
-			LoadMaterialTextures(material, aiTextureType_METALNESS, Texture::TextureType::METALLIC);
-		if (metallicMaps.size() > 0)
-		{
-			textures.insert(textures.end(), metallicMaps.begin(), metallicMaps.end());
-			m_Materail.IsMetallicUsing = true;
+			std::vector<Texture> metallicMaps =
+				LoadMaterialTextures(material, aiTextureType_METALNESS, Texture::TextureType::METALLIC);
+			if (metallicMaps.size() > 0)
+			{
+				textures.insert(textures.end(), metallicMaps.begin(), metallicMaps.end());
+				m_Materail.IsMetallicUsing = true;
+			}
 		}
 	}
 
