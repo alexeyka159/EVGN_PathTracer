@@ -4,7 +4,7 @@ layout (location = 0) out vec4 FragColor;
 
 in vec3 v_LocalPos;
  
-uniform sampler2D u_EquirectangularMap;
+uniform sampler2D u_EnvironmentMap;
  
 const vec2 invAtan = vec2(0.1591, 0.3183);
 vec2 SampleSphericalMap(vec3 v)
@@ -18,7 +18,7 @@ vec2 SampleSphericalMap(vec3 v)
 void main()
 {
     vec2 uv = SampleSphericalMap(normalize(v_LocalPos));
-    vec3 color = texture(u_EquirectangularMap, uv).rgb;
+    vec3 color = texture(u_EnvironmentMap, uv).rgb;
     
     FragColor = vec4(color, 1.0);
 }

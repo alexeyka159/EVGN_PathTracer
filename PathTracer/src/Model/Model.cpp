@@ -227,24 +227,24 @@ void Model::Draw(Shader& shader)
 {
 	for (Mesh& mesh : m_Meshes)
 	{
-		shader.SetUniform1f("u_material.ior",				m_Materail.IOR);
+		shader.SetUniform1f("u_Material.ior",				m_Materail.IOR);
 
-		shader.SetUniformVec3f("u_material.diffuseColor",	m_Materail.DiffuseColor);
-		shader.SetUniform1i("u_material.isDiffuseUsing",	m_Materail.IsDiffuseUsing);
-		shader.SetUniform1f("u_material.diffuseValue",		m_Materail.DiffuseValue);
-		shader.SetUniform1f("u_material.diffuseContrast",	m_Materail.DiffuseContrast);
+		shader.SetUniformVec3f("u_Material.diffuseColor",	m_Materail.DiffuseColor);
+		shader.SetUniform1i("u_Material.isDiffuseUsing",	m_Materail.IsDiffuseUsing);
+		shader.SetUniform1f("u_Material.diffuseValue",		m_Materail.DiffuseValue);
+		shader.SetUniform1f("u_Material.diffuseContrast",	m_Materail.DiffuseContrast);
 
-		shader.SetUniform1f("u_material.metallicColor",		m_Materail.MetallicColor);
-		shader.SetUniform1i("u_material.isMetallicUsing",	m_Materail.IsMetallicUsing);
+		shader.SetUniform1f("u_Material.metallicColor",		m_Materail.MetallicColor);
+		shader.SetUniform1i("u_Material.isMetallicUsing",	m_Materail.IsMetallicUsing);
 
-		shader.SetUniform1f("u_material.roughnessColor",    m_Materail.RoughnessColor.r);
-		shader.SetUniform1i("u_material.isRoughnessUsing",	m_Materail.IsRoughnessUsing);
-		shader.SetUniform1f("u_material.roughnessValue",	m_Materail.RoughnessValue);
-		shader.SetUniform1f("u_material.isRoughnessInvert", m_Materail.IsRoughnessInvert);
-		shader.SetUniform1f("u_material.roughnessContrast", m_Materail.RoughnessContrast);
+		shader.SetUniform1f("u_Material.roughnessColor",	m_Materail.RoughnessColor.r);
+		shader.SetUniform1i("u_Material.isRoughnessUsing",	m_Materail.IsRoughnessUsing);
+		shader.SetUniform1f("u_Material.roughnessValue",	m_Materail.RoughnessValue);
+		shader.SetUniform1f("u_Material.isRoughnessInvert", m_Materail.IsRoughnessInvert);
+		shader.SetUniform1f("u_Material.roughnessContrast", m_Materail.RoughnessContrast);
 
-		shader.SetUniform1i("u_material.isNormalUsing",		m_Materail.IsNormalUsing);
-		shader.SetUniform1f("u_material.normalStrength",	m_Materail.NormalStrength);
+		shader.SetUniform1i("u_Material.isNormalUsing",		m_Materail.IsNormalUsing);
+		shader.SetUniform1f("u_Material.normalStrength",	m_Materail.NormalStrength);
 
 		mesh.Draw(&shader);
 	}

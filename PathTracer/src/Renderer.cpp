@@ -167,7 +167,7 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 		}
 
 		shader.Bind();
-		shader.SetUniform3f("u_AmbientColor", 0.1f, 0.1f, 0.1f);
+		shader.SetUniform3f("u_Environment.color", 0.1f, 0.1f, 0.1f);
 
 		auto view = scene->m_Registry.view<ModelRendererComponent>();
 		for (auto entityID : view)

@@ -93,7 +93,7 @@ void Mesh::Draw(Shader* shader)
             case Texture::TextureType::HEIGHT:   number = std::to_string(heightNr++);   break;
         }
 
-        shader->SetUniform1i(("u_material." + (TextureTypeConv::ConvertTypeToStr(type) + number)).c_str(), i);
+        shader->SetUniform1i(("u_Material." + (TextureTypeConv::ConvertTypeToStr(type) + number)).c_str(), i);
         //glBindTexture(GL_TEXTURE_2D, m_Textures[i].m_RendererID);
     }
 

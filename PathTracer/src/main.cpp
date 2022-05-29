@@ -149,19 +149,11 @@ int main() {
 
 		camera.GetController()->SetDeltaTime(TIME.DeltaTime());
 
-		/*{
-			Shader& envShader = environment.GetShader();
-			envShader.Bind();
-			envShader.SetUniformMat4f("u_View", camera.GetViewMatrix());
-			envShader.SetUniformMat4f("u_Projection", camera.GetProjection());
-			envShader.SetUniform1i("u_EquirectangularMap", 0);
-			environment.Bind();
-			renderer.FaceCulling(false);
-			renderer.Draw(environment.GetVA(), environment.CubeVerticesCount, envShader);
-			renderer.FaceCulling(true);
-		}*/
 		renderer.Draw(environment, &camera);
 
+		pbrShader.Bind();
+		environment.BindIrradianceMap(12);
+		pbrShader.SetUniform1i("u_Environment.irradianceMap", 12);
 		renderer.Draw(outliner->GetContex(), pbrShader, &camera, TIME.DeltaTime());
 		
 		{

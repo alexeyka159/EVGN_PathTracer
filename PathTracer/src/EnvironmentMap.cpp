@@ -7,9 +7,10 @@ EnvironmentMap::EnvironmentMap(const char* path, int outputSize)
     : m_Path(path)
     , m_GenCubemapShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/generateCubemap.frag")
     , m_BackgroundShader("res/shaders/hdri/background.vert", "res/shaders/hdri/background.frag")
+    , m_IrradianceShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/irradiance.frag")
     , m_OutputSize(outputSize)
 {
-    float m_CubeVertices[108] {
+    float cubeVertices[108] {
        -1.0f, -1.0f, -1.0f,
          1.0f,  1.0f, -1.0f,
          1.0f, -1.0f, -1.0f,
@@ -58,7 +59,7 @@ EnvironmentMap::EnvironmentMap(const char* path, int outputSize)
         -1.0f,  1.0f,  1.0f
     };
 
-    VertexBuffer cubeVB(m_CubeVertices, 3 * 36 * sizeof(float));
+    VertexBuffer cubeVB(cubeVertices, 3 * 36 * sizeof(float));
     VertexBufferLayout cubeLayout;
 
     cubeLayout.Push<float>(3);
@@ -67,11 +68,20 @@ EnvironmentMap::EnvironmentMap(const char* path, int outputSize)
     m_VA.Unbind();
     cubeVB.Unbind();
 
+    glGenFramebuffers(1, &m_CaptureFBO);
+    glGenRenderbuffers(1, &m_CaptureRBO);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_CaptureFBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_CaptureRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_OutputSize, m_OutputSize);
+    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_CaptureRBO);
+
     LoadEnvironmentMap(path);
 }
 
 void EnvironmentMap::LoadEnvironmentMap(const char* path, int outputSize)
 {
+    //Загрузка хдрки
     stbi_set_flip_vertically_on_load(true);
     float* data = stbi_loadf(path, &m_Width, &m_Height, &m_BPP, 0);
 
@@ -93,22 +103,10 @@ void EnvironmentMap::LoadEnvironmentMap(const char* path, int outputSize)
 
         stbi_image_free(data);
 
+        CreateCubemap(m_RendererID, m_OutputSize);
 
-        glGenTextures(1, &m_RendererID);
-        glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
-        
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        for (unsigned int i = 0; i < 6; ++i)
-        {
-            glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, m_OutputSize, m_OutputSize, 0, GL_RGB, GL_FLOAT, nullptr);
-        }
-
-        BakeToFramebuffer();
+        ConvertHDRIToCubemap();
+        BakeIrradianceMap();
 
         std::cout << "    - Loaded enviroment map: \"" << path << "\"" << std::endl;
     }
@@ -118,22 +116,30 @@ void EnvironmentMap::LoadEnvironmentMap(const char* path, int outputSize)
     }
 }
 
-void EnvironmentMap::BindTexture()
+void EnvironmentMap::CreateCubemap(unsigned int& textureId, unsigned int size)
 {
-    glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_RendererID);
+    glGenTextures(1, &textureId);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
+
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    for (unsigned int i = 0; i < 6; ++i)
+    {
+        glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, size, size, 0, GL_RGB, GL_FLOAT, nullptr);
+    }
 }
 
-void EnvironmentMap::BakeToFramebuffer()
+void EnvironmentMap::RenderToCubemap(Shader& shader, GLint sourceType, unsigned int& source, unsigned int& target, int& size)
 {
-    glGenFramebuffers(1, &m_CaptureFBO);
-    glGenRenderbuffers(1, &m_CaptureRBO);
+    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_CaptureFBO);
     glBindRenderbuffer(GL_RENDERBUFFER, m_CaptureRBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_OutputSize, m_OutputSize);
-    glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_CaptureRBO);
-
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size, size);
 
     glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
     glm::mat4 captureViews[] =
@@ -146,26 +152,37 @@ void EnvironmentMap::BakeToFramebuffer()
        glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
     };
 
-    // Конвертирование равнопромежуточной HDR-карты окружения в кубическую карту
-
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_HDRITextureID);
+    glBindTexture(sourceType, source);
 
-    
-    glViewport(0, 0, m_OutputSize, m_OutputSize);
+    glViewport(0, 0, size, size);
     glBindFramebuffer(GL_FRAMEBUFFER, m_CaptureFBO);
     for (unsigned int i = 0; i < 6; ++i)
     {
-        m_GenCubemapShader.Bind();
-        m_GenCubemapShader.SetUniform1i("u_EquirectangularMap", 0);
-        m_GenCubemapShader.SetUniformMat4f("u_Projection", captureProjection);
-        m_GenCubemapShader.SetUniformMat4f("u_View", captureViews[i]);
-        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_RendererID, 0);
+        shader.Bind();
+        shader.SetUniform1i("u_EnvironmentMap", 0);
+        shader.SetUniformMat4f("u_Projection", captureProjection);
+        shader.SetUniformMat4f("u_View", captureViews[i]);
+        glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, target, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        RenderCube(m_VA, m_GenCubemapShader);
+        RenderCube(m_VA, shader);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
+    glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+}
+
+void EnvironmentMap::ConvertHDRIToCubemap()
+{
+    RenderToCubemap(m_GenCubemapShader, GL_TEXTURE_2D, m_HDRITextureID, m_RendererID, m_OutputSize);
+}
+
+void EnvironmentMap::BakeIrradianceMap()
+{
+    int irradianceMapSize = 32;
+    CreateCubemap(m_IrradianceMap, irradianceMapSize);
+
+    RenderToCubemap(m_IrradianceShader, GL_TEXTURE_CUBE_MAP, m_RendererID, m_IrradianceMap, irradianceMapSize);
 }
 
 void EnvironmentMap::RenderCube(const VertexArray& va, const Shader& shader)
@@ -183,6 +200,12 @@ void EnvironmentMap::RenderCube(const VertexArray& va, const Shader& shader)
     shader.Unbind();
 }
 
+void EnvironmentMap::BindIrradianceMap(unsigned int slot)
+{
+    glActiveTexture(GL_TEXTURE0 + slot);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_IrradianceMap);
+}
+
 void EnvironmentMap::Draw(glm::mat4 view, glm::mat4 projection)
 {
     glActiveTexture(GL_TEXTURE0);
@@ -193,16 +216,4 @@ void EnvironmentMap::Draw(glm::mat4 view, glm::mat4 projection)
     m_BackgroundShader.SetUniform1i("u_EnvironmentMap", 0);
 
     RenderCube(m_VA, m_BackgroundShader);
-
-
-
-    /*glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_2D, m_HDRITextureID);
-
-    m_GenCubemapShader.Bind();
-    m_GenCubemapShader.SetUniform1i("u_EquirectangularMap", 0);
-    m_GenCubemapShader.SetUniformMat4f("u_Projection", projection);
-    m_BackgroundShader.SetUniformMat4f("u_View", view);
-    RenderCube(m_VA, m_GenCubemapShader);*/
-
 }
