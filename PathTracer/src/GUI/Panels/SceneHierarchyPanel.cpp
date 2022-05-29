@@ -1,11 +1,14 @@
 #include "SceneHierarchyPanel.h"
 
+#include "Utils/WindowsPlatformUtils.h"
 #include "Scene/Components.h"
 
 #include <glm/gtc/type_ptr.hpp>
 
-SceneHierarchyPanel::SceneHierarchyPanel(Ref<Scene>& context)
+SceneHierarchyPanel::SceneHierarchyPanel(Ref<Scene>& context, GLFWwindow& window)
 	: m_Context(context)
+	, m_Window(&window)
+	, m_Environment(std::make_shared<EnvironmentMap>())
 {
 	SetContex(context);
 }
@@ -43,10 +46,17 @@ void SceneHierarchyPanel::Draw()
 	ImGui::End();
 
 
-	ImGui::Begin("Properties");
+	ImGui::Begin("Render output");
+	DrawOutputProperties();
+	ImGui::End();
+
+	ImGui::Begin("Object");
 	if (m_SelectionContext)
 		DrawComponents(m_SelectionContext);
+	ImGui::End();
 
+	ImGui::Begin("World");
+	DrawWorldProperties();
 	ImGui::End();
 }
 
@@ -278,7 +288,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 					switch (tex.GetType())
 					{
 						case Texture::TextureType::DIFFUSE:		diffSet = true;	 diffPath = tex.GetPath(); diffId = tex.GetId(); break;
-						case Texture::TextureType::METALLIC:		metalSet = true; metalPath = tex.GetPath(); metalhId = tex.GetId(); break;
+						case Texture::TextureType::METALLIC:	metalSet = true; metalPath = tex.GetPath(); metalhId = tex.GetId(); break;
 						case Texture::TextureType::ROUGHNESS:	roughSet = true; roughPath = tex.GetPath(); roughId = tex.GetId(); break;
 						case Texture::TextureType::NORMAL:		normSet = true;  normPath  = tex.GetPath(); normId = tex.GetId(); break;
 					}
@@ -306,9 +316,6 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 		{
 			ImGui::DragFloat("Intensity", &component.Intensity, 0.025f, 0);
 			ImGui::ColorEdit3("Color", &component.Color[0], 0);
-			/*ImGui::DragFloat("Constant", &component.Constant, 0.025f, 0);
-			ImGui::DragFloat("Linear", &component.Linear, 0.025f, 0);
-			ImGui::DragFloat("Quadratic", &component.Quadratic, 0.025f, 0);*/
 		});
 
 	DrawComponent<SpotLightComponent>("Spot Light", entity, [](auto& component)
@@ -321,9 +328,6 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 				component.CutOff = -cutOff;
 			if (ImGui::DragFloat("Outer CutOff", &outerCutOff, 0.025f, 0))
 				component.OuterCutOff = -outerCutOff;
-			/*ImGui::DragFloat("Constant", &component.Constant, 0.025f, 0);
-			ImGui::DragFloat("Linear", &component.Linear, 0.025f, 0);
-			ImGui::DragFloat("Quadratic", &component.Quadratic, 0.025f, 0);*/
 		});
 
 	DrawComponent<DirectionalLightComponent>("Directional Light", entity, [](auto& component)
@@ -331,4 +335,62 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 			ImGui::DragFloat("Intensity", &component.Intensity, 0.025f, 0);
 			ImGui::ColorEdit3("Color", &component.Color[0], 0);
 		});
+}
+
+void SceneHierarchyPanel::DrawWorldProperties()
+{
+	const ImGuiTreeNodeFlags innerTreenodeFlags = ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_Framed | ImGuiTreeNodeFlags_AllowItemOverlap | ImGuiTreeNodeFlags_FramePadding | ImGuiTreeNodeFlags_SpanAvailWidth;
+	if (ImGui::TreeNodeEx((void*)typeid(EnvironmentMap).hash_code(), innerTreenodeFlags, "Environment map"))
+	{
+		EnvironmentProperties& envirProperties = m_Environment->GetProperties();
+
+		ImGui::SameLine(ImGui::GetWindowWidth() - 66);
+		if (ImGui::Button("Browse..."))
+		{
+			std::string filepath = FileDialogs::SaveFile("Environment (*.hdri, *.hdr)\0*.hdri;*.hdr\0", m_Window);
+
+			if (!filepath.empty())
+			{
+				m_Environment->LoadEnvironmentMap(filepath.c_str());
+				envirProperties.IsEnvironmentMapUsing = true;
+			}
+		}
+
+		ImGui::ColorEdit3("Color", glm::value_ptr(envirProperties.Color));
+		
+
+		if (envirProperties.IsSet)
+		{
+			ImGui::Checkbox("Draw background", &envirProperties.IsDrawingBackground);
+			ImGui::Checkbox("IBL", &envirProperties.IsEnvironmentMapUsing);
+
+			if (envirProperties.IsDrawingBackground || envirProperties.IsEnvironmentMapUsing)
+			{
+				ImGui::SliderFloat("Rotation", &envirProperties.Rotation, 0, 360);
+			}
+
+			ImGui::SliderFloat("Intensity", &envirProperties.Intensity, 0, 5);
+
+			glm::vec2 imgSize = m_Environment->GetSize();
+			float imgMaxWidth = ImGui::GetContentRegionAvail().x - 10;
+			if (imgMaxWidth >= 450)
+				imgMaxWidth = 450;
+			int aspect = imgSize.x / imgMaxWidth;
+			ImGui::Image((void*)m_Environment->GetHDRI(), ImVec2{imgSize.x / aspect, imgSize.y / aspect}, ImVec2{0, 1}, ImVec2{1, 0});
+			if (ImGui::IsItemHovered())
+			{
+				imgMaxWidth = 700;
+				ImGui::BeginTooltip();
+				aspect = imgSize.x / imgMaxWidth;
+				ImGui::Image((void*)m_Environment->GetHDRI(), ImVec2{ imgSize.x / aspect, imgSize.y / aspect }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
+				ImGui::EndTooltip();
+			}
+		}
+		ImGui::TreePop();
+	}
+}
+
+void SceneHierarchyPanel::DrawOutputProperties()
+{
+
 }

@@ -73,18 +73,8 @@ struct PointLightComponent
 	glm::vec3 Color = { 1, 1, 1 };
 	float Intensity = 1.f;
 
-	float Constant = 1.f;
-	float Linear = 0.35f;
-	float Quadratic = 0.44f;
-
 	PointLightComponent() = default;
 	PointLightComponent(const PointLightComponent&) = default;
-	PointLightComponent(glm::vec3& color, float& intensity, float constant, float linear, float quadratic)
-		: Color(color)
-		, Intensity(intensity)
-		, Constant(constant)
-		, Linear(linear)
-		, Quadratic(quadratic) {}
 	PointLightComponent(glm::vec3& color, float& intensity)
 		: Color(color)
 		, Intensity(intensity) {}
@@ -94,7 +84,6 @@ struct DirectionalLightComponent
 {
 	glm::vec3 Color = { 1, 1, 1 };
 	float Intensity = 1.f;
-
 
 	DirectionalLightComponent() = default;
 	DirectionalLightComponent(const DirectionalLightComponent&) = default;
@@ -110,20 +99,8 @@ struct SpotLightComponent
 	float CutOff = -0.7f;
 	float OuterCutOff = -0.6f;
 
-	float Constant = 1.f;
-	float Linear = 0.35f;
-	float Quadratic = 0.44f;
-
 	SpotLightComponent() = default;
 	SpotLightComponent(const SpotLightComponent&) = default;
-	SpotLightComponent(glm::vec3& color, float& intensity, float cutOff, float outerCutOff, float constant, float linear, float quadratic)
-		: Color(color)
-		, Intensity(intensity)
-		, CutOff(cutOff)
-		, OuterCutOff(outerCutOff)
-		, Constant(constant)
-		, Linear(linear)
-		, Quadratic(quadratic) {}
 	SpotLightComponent(glm::vec3& color, float& intensity, float cutOff, float outerCutOff)
 		: Color(color)
 		, Intensity(intensity)

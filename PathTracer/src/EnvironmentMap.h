@@ -9,11 +9,26 @@
 #include <glad/glad.h>
 #include <iostream>
 
+struct EnvironmentProperties
+{
+	bool IsSet = false;
+	bool IsDrawingBackground = true;
+	bool IsEnvironmentMapUsing = false;
+
+	float Intensity = 1.f;
+	float Rotation = 0.0f;
+
+	unsigned int CubemapTexture;
+	unsigned int IrradianceMapTexture;
+
+	glm::vec3 Color = glm::vec3(0.1f);
+};
+
 class EnvironmentMap
 {
 private:
-	unsigned int m_RendererID; //Cubemap
-	unsigned int m_IrradianceMap; //Карта облученности, свернутая кубмапа
+	EnvironmentProperties m_Properties;
+	
 	unsigned int m_HDRITextureID; //Hdri texture
 
 	unsigned int m_CaptureFBO, m_CaptureRBO;
@@ -28,6 +43,7 @@ private:
 	Shader m_BackgroundShader;
 	Shader m_IrradianceShader;
 
+	void Initialize(unsigned int size);
 	void CreateCubemap(unsigned int& textureId, unsigned int size);
 	void ConvertHDRIToCubemap();
 	void BakeIrradianceMap();
@@ -36,6 +52,8 @@ private:
 
 public:
 
+	EnvironmentMap();
+	EnvironmentMap(EnvironmentMap&) = default;
 	EnvironmentMap(const char* path, int outputSize = 512);
 
 	void LoadEnvironmentMap(const char* path, int outputSize = 512);
@@ -43,8 +61,10 @@ public:
 	void Draw(glm::mat4 view, glm::mat4 projection);
 
 	void BindIrradianceMap(unsigned int slot);
-	inline const unsigned int& GetEnvironmentMap() { return m_RendererID; }
-	inline const unsigned int& GetIrradianceMap() { return m_IrradianceMap; }
+	inline const unsigned int& GetEnvironmentMap() { return m_Properties.CubemapTexture; }
+	inline const unsigned int& GetIrradianceMap() { return m_Properties.IrradianceMapTexture; }
+	inline const unsigned int& GetHDRI() { return m_HDRITextureID; }
+	inline EnvironmentProperties& GetProperties() { return m_Properties; }
 	inline std::string& GetPath() { return m_Path; }
 	inline glm::vec2 GetSize() { return glm::vec2(m_Width, m_Height); }
 };

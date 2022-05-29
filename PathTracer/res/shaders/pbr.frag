@@ -39,8 +39,9 @@ struct Material {
 
 struct Environment {
 	samplerCube irradianceMap;
-	bool isIrradianceMapUsing;
+	bool isEnvironmentMapUsing;
 	vec3 color;
+	float intensity;
 };
 
 struct DirLight {
@@ -51,10 +52,6 @@ struct DirLight {
 struct PointLight {
 	vec3 position;
 	vec3 color;
-
-	float constant;
-	float linear;
-	float quadratic;
 };
 
 struct SpotLight {
@@ -63,10 +60,6 @@ struct SpotLight {
 	vec3 direction;
 	float cutOff;
 	float outerCutOff;
-	
-	float constant;
-	float linear;
-	float quadratic;
 };
 
 #define NR_POINT_LIGHTS 10 
@@ -140,9 +133,9 @@ void main()
 		normalColor = normalize(normalColor);
 		normalColor = normalize(fs_in.TBN * normalColor);
 	}
-	if(/* u_Environment.isIrradianceMapUsing */ true)
+	if(u_Environment.isEnvironmentMapUsing)
 	{
-		irradianceColor = texture(u_Environment.irradianceMap, normalColor).rgb;
+		irradianceColor = texture(u_Environment.irradianceMap, normalColor).rgb * u_Environment.intensity;
 	}
 
 

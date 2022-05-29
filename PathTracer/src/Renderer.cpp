@@ -104,9 +104,7 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 				shader.Bind();
 				shader.SetUniform3f("u_PointLights[" + std::to_string(lightCounter) + "].position",	tc.x, tc.y, tc.z);
 				shader.SetUniform3f("u_PointLights[" + std::to_string(lightCounter) + "].color",		lightColor.r, lightColor.g, lightColor.b);
-				shader.SetUniform1f("u_PointLights[" + std::to_string(lightCounter) + "].constant" ,	plc.Constant);
-				shader.SetUniform1f("u_PointLights[" + std::to_string(lightCounter) + "].linear",		plc.Linear);
-				shader.SetUniform1f("u_PointLights[" + std::to_string(lightCounter) + "].quadratic",	plc.Quadratic);
+
 				shader.SetUniform1i("u_PointLightsInUse[" + std::to_string(lightCounter) + "]",	1);
 				lightCounter++;
 			}
@@ -132,9 +130,7 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 				shader.SetUniform3f("u_SpotLights[" + std::to_string(lightCounter) + "].position", tc.Translation.x, tc.Translation.y, tc.Translation.z);
 				shader.SetUniform3f("u_SpotLights[" + std::to_string(lightCounter) + "].direction", lightDirection.x, lightDirection.y, lightDirection.z);
 				shader.SetUniform3f("u_SpotLights[" + std::to_string(lightCounter) + "].color", lightColor.r, lightColor.g, lightColor.b);
-				shader.SetUniform1f("u_SpotLights[" + std::to_string(lightCounter) + "].constant", slc.Constant);
-				shader.SetUniform1f("u_SpotLights[" + std::to_string(lightCounter) + "].linear", slc.Linear);
-				shader.SetUniform1f("u_SpotLights[" + std::to_string(lightCounter) + "].quadratic", slc.Quadratic);
+
 				shader.SetUniform1f("u_SpotLights[" + std::to_string(lightCounter) + "].cutOff", slc.CutOff);
 				shader.SetUniform1f("u_SpotLights[" + std::to_string(lightCounter) + "].outerCutOff", slc.OuterCutOff);
 				shader.SetUniform1i("u_SpotLightsInUse[" + std::to_string(lightCounter) + "]", 1);

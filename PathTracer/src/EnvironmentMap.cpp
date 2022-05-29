@@ -3,6 +3,14 @@
 
 #include <glm/gtc/matrix_transform.hpp>
 
+EnvironmentMap::EnvironmentMap()
+    : m_GenCubemapShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/generateCubemap.frag")
+    , m_BackgroundShader("res/shaders/hdri/background.vert", "res/shaders/hdri/background.frag")
+    , m_IrradianceShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/irradiance.frag")
+{
+    Initialize(8);
+}
+
 EnvironmentMap::EnvironmentMap(const char* path, int outputSize)
     : m_Path(path)
     , m_GenCubemapShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/generateCubemap.frag")
@@ -10,7 +18,13 @@ EnvironmentMap::EnvironmentMap(const char* path, int outputSize)
     , m_IrradianceShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/irradiance.frag")
     , m_OutputSize(outputSize)
 {
-    float cubeVertices[108] {
+    Initialize(outputSize);
+    LoadEnvironmentMap(path);
+}
+
+void EnvironmentMap::Initialize(unsigned int size)
+{
+    float cubeVertices[108]{
        -1.0f, -1.0f, -1.0f,
          1.0f,  1.0f, -1.0f,
          1.0f, -1.0f, -1.0f,
@@ -73,10 +87,8 @@ EnvironmentMap::EnvironmentMap(const char* path, int outputSize)
 
     glBindFramebuffer(GL_FRAMEBUFFER, m_CaptureFBO);
     glBindRenderbuffer(GL_RENDERBUFFER, m_CaptureRBO);
-    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, m_OutputSize, m_OutputSize);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size, size);
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_CaptureRBO);
-
-    LoadEnvironmentMap(path);
 }
 
 void EnvironmentMap::LoadEnvironmentMap(const char* path, int outputSize)
@@ -103,10 +115,12 @@ void EnvironmentMap::LoadEnvironmentMap(const char* path, int outputSize)
 
         stbi_image_free(data);
 
-        CreateCubemap(m_RendererID, m_OutputSize);
+        CreateCubemap(m_Properties.CubemapTexture, m_OutputSize);
 
         ConvertHDRIToCubemap();
         BakeIrradianceMap();
+
+        m_Properties.IsSet = true;
 
         std::cout << "    - Loaded enviroment map: \"" << path << "\"" << std::endl;
     }
@@ -174,15 +188,15 @@ void EnvironmentMap::RenderToCubemap(Shader& shader, GLint sourceType, unsigned 
 
 void EnvironmentMap::ConvertHDRIToCubemap()
 {
-    RenderToCubemap(m_GenCubemapShader, GL_TEXTURE_2D, m_HDRITextureID, m_RendererID, m_OutputSize);
+    RenderToCubemap(m_GenCubemapShader, GL_TEXTURE_2D, m_HDRITextureID, m_Properties.CubemapTexture, m_OutputSize);
 }
 
 void EnvironmentMap::BakeIrradianceMap()
 {
     int irradianceMapSize = 32;
-    CreateCubemap(m_IrradianceMap, irradianceMapSize);
+    CreateCubemap(m_Properties.IrradianceMapTexture, irradianceMapSize);
 
-    RenderToCubemap(m_IrradianceShader, GL_TEXTURE_CUBE_MAP, m_RendererID, m_IrradianceMap, irradianceMapSize);
+    RenderToCubemap(m_IrradianceShader, GL_TEXTURE_CUBE_MAP, m_Properties.CubemapTexture, m_Properties.IrradianceMapTexture, irradianceMapSize);
 }
 
 void EnvironmentMap::RenderCube(const VertexArray& va, const Shader& shader)
@@ -203,17 +217,29 @@ void EnvironmentMap::RenderCube(const VertexArray& va, const Shader& shader)
 void EnvironmentMap::BindIrradianceMap(unsigned int slot)
 {
     glActiveTexture(GL_TEXTURE0 + slot);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_IrradianceMap);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_Properties.IrradianceMapTexture);
 }
 
 void EnvironmentMap::Draw(glm::mat4 view, glm::mat4 projection)
 {
     glActiveTexture(GL_TEXTURE0);
-    glBindTexture(GL_TEXTURE_CUBE_MAP, m_RendererID);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_Properties.CubemapTexture);
     m_BackgroundShader.Bind();
     m_BackgroundShader.SetUniformMat4f("u_View", view);
     m_BackgroundShader.SetUniformMat4f("u_Projection", projection);
-    m_BackgroundShader.SetUniform1i("u_EnvironmentMap", 0);
+
+    if (m_Properties.IsDrawingBackground && m_Properties.IsSet)
+    {
+        m_BackgroundShader.SetUniform1i("u_EnvironmentMap", 0);
+        m_BackgroundShader.SetUniform1i("u_IsMapUsing", true);
+        m_BackgroundShader.SetUniform1f("u_Intisity", m_Properties.Intensity);
+    }
+    else
+    {
+        m_BackgroundShader.SetUniform1i("u_IsMapUsing", false);
+        m_BackgroundShader.SetUniformVec3f("u_EnvironmentColor", m_Properties.Color);
+    }
+
 
     RenderCube(m_VA, m_BackgroundShader);
 }

@@ -116,12 +116,9 @@ int main() {
 	Framebuffer frameBuffer(fbSpec);
 
 
-	EnvironmentMap environment("res/hdri/venice_sunset_4k.hdr");
-
-
 	GUI gui(renderer.GetWindow());
 
-	SceneHierarchyPanel* outliner = new SceneHierarchyPanel(activeScene);
+	SceneHierarchyPanel* outliner = new SceneHierarchyPanel(activeScene, *renderer.GetWindow());
 	gui.Push(outliner);
 
 	ViewportPanel* viewport = new ViewportPanel(frameBuffer, *renderer.GetWindow(), *outliner, camera);
@@ -149,13 +146,35 @@ int main() {
 
 		camera.GetController()->SetDeltaTime(TIME.DeltaTime());
 
-		renderer.Draw(environment, &camera);
+		//Если энвайренмент карта загружена
+		if (outliner->GetEnvironment()->GetProperties().IsSet) { 
+			Ref<EnvironmentMap> environment = outliner->GetEnvironment();
 
-		pbrShader.Bind();
-		environment.BindIrradianceMap(12);
-		pbrShader.SetUniform1i("u_Environment.irradianceMap", 12);
+			//Если карта влияет на освещение
+			pbrShader.Bind();
+			pbrShader.SetUniform1i("u_Environment.isEnvironmentMapUsing", environment->GetProperties().IsEnvironmentMapUsing);
+			if (environment->GetProperties().IsEnvironmentMapUsing)
+			{
+				environment->BindIrradianceMap(12);
+				pbrShader.SetUniform1f("u_Environment.intensity", environment->GetProperties().Intensity);
+				pbrShader.SetUniform1i("u_Environment.irradianceMap", 12);
+			}
+			else
+			{
+				pbrShader.SetUniformVec3f("u_Environment.color", outliner->GetEnvironment()->GetProperties().Color);
+			}
+		}
+		else if(!outliner->GetEnvironment()->GetProperties().IsEnvironmentMapUsing)
+		{
+			pbrShader.Bind();
+			pbrShader.SetUniform1i("u_Environment.isEnvironmentMapUsing", false);
+			//pbrShader.SetUniformVec3f("u_Environment.color", outliner->GetEnvironment()->GetProperties().Color);
+		}
+		renderer.Draw(*outliner->GetEnvironment().get(), &camera);
+		
 		renderer.Draw(outliner->GetContex(), pbrShader, &camera, TIME.DeltaTime());
 		
+
 		{
 			gridShader.Bind();
 			gridShader.SetUniformMat4f("u_View", camera.GetViewMatrix());
@@ -170,20 +189,6 @@ int main() {
 		frameBuffer.Unbind();
 
 		gui.Begin();
-
-		if (show_debug_window)
-		{
-			ImGui::Begin("Debug Window", &show_debug_window);
-			ImGui::Checkbox("Renderer debug", &isDebug);
-			if (ImGui::Button("Add Camera")) {
-				Entity cam = outliner->GetContex()->CreateEntity("Camera");
-				cam.AddComponent<CameraComponent>(camera, true);
-			}
-			ImGui::Spacing();
-			ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
-			ImGui::End();
-		}
-
 		gui.Render();
 		gui.End();
 

@@ -157,10 +157,6 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 		out << YAML::Key << "Intensity" << YAML::Value << lightComponent.Intensity;
 		out << YAML::Key << "Color" << YAML::Value << lightComponent.Color;
 
-		out << YAML::Key << "Constant" << YAML::Value << lightComponent.Constant;
-		out << YAML::Key << "Linear" << YAML::Value << lightComponent.Linear;
-		out << YAML::Key << "Quadratic" << YAML::Value << lightComponent.Quadratic;
-
 		out << YAML::EndMap; //PointLightComponent
 	}
 
@@ -174,10 +170,6 @@ static void SerializeEntity(YAML::Emitter& out, Entity entity)
 
 		out << YAML::Key << "CutOff" << YAML::Value << lightComponent.CutOff;
 		out << YAML::Key << "OuterCutOff" << YAML::Value << lightComponent.OuterCutOff;
-
-		out << YAML::Key << "Constant" << YAML::Value << lightComponent.Constant;
-		out << YAML::Key << "Linear" << YAML::Value << lightComponent.Linear;
-		out << YAML::Key << "Quadratic" << YAML::Value << lightComponent.Quadratic;
 
 		out << YAML::EndMap; //SpotLightComponent
 	}
@@ -306,9 +298,6 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 				auto& pl = deserializedEntity.AddComponent<PointLightComponent>();
 				pl.Intensity	= pointLightComponent["Intensity"].as<float>();
 				pl.Color		= pointLightComponent["Color"].as<glm::vec3>();
-				pl.Constant		= pointLightComponent["Constant"].as<float>();
-				pl.Linear		= pointLightComponent["Linear"].as<float>();
-				pl.Quadratic	= pointLightComponent["Quadratic"].as<float>();
 			}
 
 			auto spotLightComponent = entity["SpotLightComponent"];
@@ -320,10 +309,6 @@ bool SceneSerializer::Deserialize(const std::string& filepath)
 				
 				sl.CutOff		= spotLightComponent["CutOff"].as<float>();
 				sl.OuterCutOff	= spotLightComponent["OuterCutOff"].as<float>();
-				
-				sl.Constant		= spotLightComponent["Constant"].as<float>();
-				sl.Linear		= spotLightComponent["Linear"].as<float>();
-				sl.Quadratic	= spotLightComponent["Quadratic"].as<float>();
 			}
 
 			auto directionalLightComponent = entity["DirectionalLightComponent"];

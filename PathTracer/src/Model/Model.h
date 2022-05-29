@@ -38,7 +38,6 @@ private:
 	std::string m_Path;
 	std::string m_Name = "";
 
-	//std::vector<Texture> m_TexturesLoaded;
 	Material m_Materail;
 
 	void LoadModel(std::string path);
