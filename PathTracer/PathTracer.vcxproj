@@ -164,6 +164,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\Application.cpp" />
+    <ClCompile Include="src\EnvironmentMap.cpp" />
     <ClCompile Include="src\GUI\Controllers\ViewportController.cpp" />
     <ClCompile Include="src\GUI\Panels\SceneHierarchyPanel.cpp" />
     <ClCompile Include="src\Camera\CameraController.cpp" />
@@ -208,6 +209,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\Application.h" />
+    <ClInclude Include="src\EnvironmentMap.h" />
     <ClInclude Include="src\GUI\Controllers\ViewportController.h" />
     <ClInclude Include="src\GUI\Panels\SceneHierarchyPanel.h" />
     <ClInclude Include="src\Camera\Camera.h" />

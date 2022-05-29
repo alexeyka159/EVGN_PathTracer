@@ -37,6 +37,8 @@
 #include "Scene/Entity.h"
 #include "Scene/SceneSerializer.h"
 
+#include "EnvironmentMap.h"
+
 #include "Ref.h"
 
 int main() {
@@ -114,6 +116,9 @@ int main() {
 	Framebuffer frameBuffer(fbSpec);
 
 
+	EnvironmentMap environment("res/hdri/venice_sunset_4k.hdr");
+
+
 	GUI gui(renderer.GetWindow());
 
 	SceneHierarchyPanel* outliner = new SceneHierarchyPanel(activeScene);
@@ -143,6 +148,19 @@ int main() {
 		inputManager.ProcessInput();
 
 		camera.GetController()->SetDeltaTime(TIME.DeltaTime());
+
+		/*{
+			Shader& envShader = environment.GetShader();
+			envShader.Bind();
+			envShader.SetUniformMat4f("u_View", camera.GetViewMatrix());
+			envShader.SetUniformMat4f("u_Projection", camera.GetProjection());
+			envShader.SetUniform1i("u_EquirectangularMap", 0);
+			environment.Bind();
+			renderer.FaceCulling(false);
+			renderer.Draw(environment.GetVA(), environment.CubeVerticesCount, envShader);
+			renderer.FaceCulling(true);
+		}*/
+		renderer.Draw(environment, &camera);
 
 		renderer.Draw(outliner->GetContex(), pbrShader, &camera, TIME.DeltaTime());
 		

@@ -70,6 +70,22 @@ void Renderer::Draw(const VertexArray& va, const IndexBuffer& ib, const Shader& 
 	shader.Unbind();
 }
 
+void Renderer::Draw(const VertexArray& va, const unsigned int& verticesCount, const Shader& shader) const
+{
+	shader.Bind();
+	va.Bind();
+
+	glDrawArrays(GL_TRIANGLES, 0, verticesCount);
+
+	va.Unbind();
+	shader.Unbind();
+}
+
+void Renderer::Draw(EnvironmentMap& envir, Camera* camera)
+{
+	envir.Draw(camera->GetViewMatrix(), camera->GetProjection());
+}
+
 void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) const
 {
 	if (scene)
