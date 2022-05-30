@@ -366,10 +366,10 @@ void SceneHierarchyPanel::DrawWorldProperties()
 
 			if (envirProperties.IsDrawingBackground || envirProperties.IsEnvironmentMapUsing)
 			{
+				ImGui::SliderFloat("Blur", &envirProperties.Blur, 0, 5);
 				ImGui::SliderFloat("Rotation", &envirProperties.Rotation, 0, 360);
+				ImGui::SliderFloat("Intensity", &envirProperties.Intensity, 0, 5);
 			}
-
-			ImGui::SliderFloat("Intensity", &envirProperties.Intensity, 0, 5);
 
 			glm::vec2 imgSize = m_Environment->GetSize();
 			float imgMaxWidth = ImGui::GetContentRegionAvail().x - 10;

@@ -254,6 +254,7 @@
     <ClInclude Include="src\vendor\imgui\imstb_textedit.h" />
     <ClInclude Include="src\vendor\imgui\imstb_truetype.h" />
     <ClInclude Include="src\vendor\stb_image\stb_image.h" />
+    <ClInclude Include="src\vendor\stb_image\stb_image_write.h" />
     <ClInclude Include="src\vendor\yaml-cpp\include\yaml-cpp\anchor.h" />
     <ClInclude Include="src\vendor\yaml-cpp\include\yaml-cpp\binary.h" />
     <ClInclude Include="src\vendor\yaml-cpp\include\yaml-cpp\contrib\anchordict.h" />

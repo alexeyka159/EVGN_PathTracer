@@ -4,6 +4,7 @@
 #include "Camera/CameraOrbit.h"
 #include "Camera/CameraController.h"
 
+
 Renderer::Renderer(int w, int h, std::string wndName)
 	: m_Width(w)
 	, m_Height(h)
@@ -38,6 +39,7 @@ Renderer::Renderer(int w, int h, std::string wndName)
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
 	FaceCulling(true);
 }
 
@@ -185,6 +187,22 @@ void Renderer::Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) 
 		}
 	}
 }
+
+//void Renderer::RenderToFile(const char* path)
+//{
+//		int width, height;
+//		glfwGetFramebufferSize(m_Window, &width, &height);
+//		GLsizei nrChannels = 3;
+//		GLsizei stride = nrChannels * width;
+//		stride += (stride % 4) ? (4 - stride % 4) : 0;
+//		GLsizei bufferSize = stride * height;
+//		std::vector<char> buffer(bufferSize);
+//		glPixelStorei(GL_PACK_ALIGNMENT, 4);
+//		glReadBuffer(GL_FRONT);
+//		glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, buffer.data());
+//		stbi_flip_vertically_on_write(true);
+//		stbi_write_png(path, width, height, nrChannels, buffer.data(), stride);
+//}
 
 void RendererCallback::framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {

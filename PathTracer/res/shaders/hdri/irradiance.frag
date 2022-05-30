@@ -31,7 +31,8 @@ void main()
 			// Переход от касательного пространства к мировому
 			vec3 sampleVec = tangentSample.x * right + tangentSample.y * up + tangentSample.z * normal; 
 			
-			irradiance += texture(u_EnvironmentMap, sampleVec).rgb * cos(theta) * sin(theta);
+			//irradiance += texture(u_EnvironmentMap, sampleVec).rgb * cos(theta) * sin(theta);
+			irradiance += textureLod(u_EnvironmentMap, sampleVec, 0).rgb * cos(theta) * sin(theta);
 			nrSamples++;
 		}
 	}

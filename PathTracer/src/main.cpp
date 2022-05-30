@@ -149,15 +149,20 @@ int main() {
 		//Если энвайренмент карта загружена
 		if (outliner->GetEnvironment()->GetProperties().IsSet) { 
 			Ref<EnvironmentMap> environment = outliner->GetEnvironment();
-
+			
 			//Если карта влияет на освещение
 			pbrShader.Bind();
 			pbrShader.SetUniform1i("u_Environment.isEnvironmentMapUsing", environment->GetProperties().IsEnvironmentMapUsing);
 			if (environment->GetProperties().IsEnvironmentMapUsing)
 			{
-				environment->BindIrradianceMap(12);
 				pbrShader.SetUniform1f("u_Environment.intensity", environment->GetProperties().Intensity);
-				pbrShader.SetUniform1i("u_Environment.irradianceMap", 12);
+				environment->BindIBL(10, 11, 12);
+				pbrShader.SetUniform1i("u_Environment.irradianceMap", 10);
+				pbrShader.SetUniform1i("u_Environment.prefilterMap", 11);
+				pbrShader.SetUniform1i("u_Environment.brdfLUT", 12);
+				glm::mat4 rotation = glm::mat4(1);
+				rotation = glm::rotate(rotation, glm::radians(environment->GetProperties().Rotation), glm::vec3(0, 1, 0));
+				pbrShader.SetUniformMat4f("u_Environment.rotation", rotation);
 			}
 			else
 			{

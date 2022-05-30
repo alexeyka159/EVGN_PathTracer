@@ -11,6 +11,8 @@
 
 #include <Ref.h>
 
+//#include "vendor/stb_image/stb_image_write.h"
+
 class Scene;
 class Camera;
 
@@ -36,4 +38,5 @@ public:
 	void Draw(const VertexArray& va, const unsigned int& verticesCount, const Shader& shader) const;
 	void Draw(EnvironmentMap& envir, Camera* camera);
 	void Draw(Ref<Scene> scene, Shader& shader, Camera* camera, float ts) const;
+	//void RenderToFile(const char* path);
 };

@@ -39,9 +39,13 @@ struct Material {
 
 struct Environment {
 	samplerCube irradianceMap;
+	samplerCube prefilterMap;
+	sampler2D brdfLUT;
+
 	bool isEnvironmentMapUsing;
 	vec3 color;
 	float intensity;
+	mat4 rotation;
 };
 
 struct DirLight {
@@ -96,7 +100,7 @@ float GeometrySmith(vec3 N, vec3 V, vec3 L, float roughness);
 vec3 fresnelSchlick(float cosTheta, vec3 IOR);
 vec3 fresnelSchlickRoughness(float cosTheta, vec3 IOR, float roughness);
 
-vec3 CalcAmbient(vec3 irradianceCol, vec3 normal, vec3 viewDir, vec3 diffCol, float roughCol, float IOR);
+vec3 CalcAmbient(vec3 irradianceCol, vec3 prefilteredColor, vec2 envBRDF, vec3 normal, vec3 viewDir, vec3 diffCol, float roughCol, float metalCol, vec3 IOR);
 
 void main()
 {
@@ -105,6 +109,7 @@ void main()
 	float metallicColor = u_Material.metallicColor;
 	float roughnessColor = u_Material.roughnessColor;
 	vec3 normalColor = v_Normal;
+
 	vec3 irradianceColor = u_Environment.color;
 
 	if(u_Material.isDiffuseUsing)
@@ -133,17 +138,31 @@ void main()
 		normalColor = normalize(normalColor);
 		normalColor = normalize(fs_in.TBN * normalColor);
 	}
-	if(u_Environment.isEnvironmentMapUsing)
-	{
-		irradianceColor = texture(u_Environment.irradianceMap, normalColor).rgb * u_Environment.intensity;
-	}
 
 
 	vec3 viewDir = normalize(u_ViewPos - fs_in.FragPos);
 	vec3 result = vec3(0);
 
+
 	vec3 IOR = vec3(u_Material.ior);
 	IOR = mix(IOR, diffuseColor, metallicColor);
+
+	//IBL
+	if(u_Environment.isEnvironmentMapUsing)
+	{
+		irradianceColor = textureLod(u_Environment.irradianceMap, vec3(u_Environment.rotation * vec4(normalColor, 1.0f)), 0).rgb * u_Environment.intensity;
+
+		vec3 R = reflect(-viewDir, normalColor);
+ 
+    const float MAX_REFLECTION_LOD = 4.0;
+    vec3 prefilterColor = textureLod(u_Environment.prefilterMap, vec3(u_Environment.rotation * vec4(R, 1.0f)),  roughnessColor * MAX_REFLECTION_LOD).rgb;	
+		vec2 brdfLUTColor = texture(u_Environment.brdfLUT, vec2(max(dot(normalColor, viewDir), 0.0), roughnessColor)).rg;
+
+		result += CalcAmbient(irradianceColor, prefilterColor, brdfLUTColor, normalColor, viewDir, diffuseColor, roughnessColor, metallicColor, IOR);
+	}
+	else
+		result += u_Environment.color * diffuseColor;
+
  
 	//Направленное освещение
 	for(int i = 0; i < NR_DIR_LIGHTS; i++)
@@ -160,7 +179,7 @@ void main()
 		if(u_SpotLightsInUse[i])
 			result += CalcSpotLight(u_SpotLights[i], normalColor, fs_in.FragPos, viewDir, diffuseColor, roughnessColor, metallicColor, IOR);
 	
-	result += CalcAmbient(irradianceColor, normalColor, viewDir, diffuseColor, roughnessColor, IOR.r);
+
 
 	//Тональная компрессия HDR 
 	result = result / (result + vec3(1.0f));
@@ -257,13 +276,20 @@ vec3 CalcLo(vec3 lightPosDir, vec3 lightColor, vec3 normal, vec3 fragPos, vec3 v
   return Lo;
 }
 
-vec3 CalcAmbient(vec3 irradianceCol, vec3 normal, vec3 viewDir, vec3 diffCol, float roughCol, float IOR)
+vec3 CalcAmbient(vec3 irradianceCol, vec3 prefilteredColor, vec2 envBRDF, vec3 normal, vec3 viewDir, vec3 diffCol, float roughCol, float metalCol, vec3 IOR)
 {
-	vec3 kS = fresnelSchlickRoughness(max(dot(normal, viewDir), 0.0), vec3(IOR), roughCol);
+	vec3 F = fresnelSchlickRoughness(max(dot(normal, viewDir), 0.0), IOR, roughCol);
+
+	vec3 kS = F;
 	vec3 kD = 1.0 - kS;
+	kD *= 1.0 - metalCol;
+
 	vec3 diffuse = irradianceCol * diffCol;
-	vec3 ao = vec3(1); //AO
-	return (kD * diffuse) * ao;
+
+	vec3 specular = prefilteredColor * (F * envBRDF.x + envBRDF.y);
+	specular *= u_Environment.intensity;
+
+	return (kD * diffuse + specular);
 }
 
 float DistributionGGX(vec3 N, vec3 H, float roughness)

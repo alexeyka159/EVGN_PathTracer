@@ -7,16 +7,21 @@ EnvironmentMap::EnvironmentMap()
     : m_GenCubemapShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/generateCubemap.frag")
     , m_BackgroundShader("res/shaders/hdri/background.vert", "res/shaders/hdri/background.frag")
     , m_IrradianceShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/irradiance.frag")
+    , m_PrefilterShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/prefilter.frag")
+    , m_BRDFShader("res/shaders/hdri/brdf.vert", "res/shaders/hdri/brdf.frag")
 {
     Initialize(8);
 }
 
-EnvironmentMap::EnvironmentMap(const char* path, int outputSize)
+EnvironmentMap::EnvironmentMap(const char* path, int outputSize, int prefilterSize)
     : m_Path(path)
+    , m_PrefilterSize(prefilterSize)
+    , m_OutputSize(outputSize)
     , m_GenCubemapShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/generateCubemap.frag")
     , m_BackgroundShader("res/shaders/hdri/background.vert", "res/shaders/hdri/background.frag")
     , m_IrradianceShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/irradiance.frag")
-    , m_OutputSize(outputSize)
+    , m_PrefilterShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/prefilter.frag")
+    , m_BRDFShader("res/shaders/hdri/brdf.vert", "res/shaders/hdri/brdf.frag")
 {
     Initialize(outputSize);
     LoadEnvironmentMap(path);
@@ -77,10 +82,30 @@ void EnvironmentMap::Initialize(unsigned int size)
     VertexBufferLayout cubeLayout;
 
     cubeLayout.Push<float>(3);
-    m_VA.AddBuffer(cubeVB, cubeLayout);
+    m_CubeVA.AddBuffer(cubeVB, cubeLayout);
 
-    m_VA.Unbind();
+    m_CubeVA.Unbind();
     cubeVB.Unbind();
+
+    
+    float quadVertices[20]{
+        // координаты      // текстурные координаты
+        -1.0f,  1.0f, 0.0f, 0.0f, 1.0f,
+        -1.0f, -1.0f, 0.0f, 0.0f, 0.0f,
+         1.0f,  1.0f, 0.0f, 1.0f, 1.0f,
+         1.0f, -1.0f, 0.0f, 1.0f, 0.0f,
+    };
+
+    VertexBuffer quadVB(quadVertices, 5 * 4 * sizeof(float));
+    VertexBufferLayout quadLayout;
+
+    quadLayout.Push<float>(3);
+    quadLayout.Push<float>(2);
+    m_QuadVA.AddBuffer(quadVB, quadLayout);
+
+    m_QuadVA.Unbind();
+    quadVB.Unbind();
+
 
     glGenFramebuffers(1, &m_CaptureFBO);
     glGenRenderbuffers(1, &m_CaptureRBO);
@@ -91,7 +116,7 @@ void EnvironmentMap::Initialize(unsigned int size)
     glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, m_CaptureRBO);
 }
 
-void EnvironmentMap::LoadEnvironmentMap(const char* path, int outputSize)
+void EnvironmentMap::LoadEnvironmentMap(const char* path, int outputSize, int prefilterSize)
 {
     //Загрузка хдрки
     stbi_set_flip_vertically_on_load(true);
@@ -101,6 +126,7 @@ void EnvironmentMap::LoadEnvironmentMap(const char* path, int outputSize)
     {
         m_Path = path;
         m_OutputSize = outputSize;
+        m_PrefilterSize = prefilterSize;
 
         glGenTextures(1, &m_HDRITextureID);
         glBindTexture(GL_TEXTURE_2D, m_HDRITextureID);
@@ -115,10 +141,19 @@ void EnvironmentMap::LoadEnvironmentMap(const char* path, int outputSize)
 
         stbi_image_free(data);
 
-        CreateCubemap(m_Properties.CubemapTexture, m_OutputSize);
-
+        //Карта облученности и бэкграунд
+        CreateCubemap(m_Properties.CubemapTexture, m_OutputSize, false);
         ConvertHDRIToCubemap();
+        glBindTexture(GL_TEXTURE_CUBE_MAP, m_Properties.CubemapTexture);
+        glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
         BakeIrradianceMap();
+
+        //Карта отражений
+        CreateCubemap(m_Properties.PrefilterMapTexture, m_PrefilterSize, true);
+        Prefiltering();
+        BakeBRDF();
+
 
         m_Properties.IsSet = true;
 
@@ -130,7 +165,7 @@ void EnvironmentMap::LoadEnvironmentMap(const char* path, int outputSize)
     }
 }
 
-void EnvironmentMap::CreateCubemap(unsigned int& textureId, unsigned int size)
+void EnvironmentMap::CreateCubemap(unsigned int& textureId, unsigned int size, bool createMipMap)
 {
     glGenTextures(1, &textureId);
     glBindTexture(GL_TEXTURE_CUBE_MAP, textureId);
@@ -138,19 +173,20 @@ void EnvironmentMap::CreateCubemap(unsigned int& textureId, unsigned int size)
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_EDGE);
-    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, createMipMap ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
     glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
     for (unsigned int i = 0; i < 6; ++i)
     {
         glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, 0, GL_RGB16F, size, size, 0, GL_RGB, GL_FLOAT, nullptr);
     }
+
+    if (createMipMap)
+        glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 }
 
 void EnvironmentMap::RenderToCubemap(Shader& shader, GLint sourceType, unsigned int& source, unsigned int& target, int& size)
 {
-    glEnable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
-
     glBindFramebuffer(GL_FRAMEBUFFER, m_CaptureFBO);
     glBindRenderbuffer(GL_RENDERBUFFER, m_CaptureRBO);
     glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, size, size);
@@ -180,10 +216,20 @@ void EnvironmentMap::RenderToCubemap(Shader& shader, GLint sourceType, unsigned 
         glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, target, 0);
         glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-        RenderCube(m_VA, shader);
+        RenderCube(shader);
     }
     glBindFramebuffer(GL_FRAMEBUFFER, 0);
-    glDisable(GL_TEXTURE_CUBE_MAP_SEAMLESS);
+}
+
+void EnvironmentMap::RenderQuad()
+{
+    m_BRDFShader.Bind();
+    m_QuadVA.Bind();
+
+    glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+    m_QuadVA.Unbind();
+    m_BRDFShader.Unbind();
 }
 
 void EnvironmentMap::ConvertHDRIToCubemap()
@@ -197,12 +243,39 @@ void EnvironmentMap::BakeIrradianceMap()
     CreateCubemap(m_Properties.IrradianceMapTexture, irradianceMapSize);
 
     RenderToCubemap(m_IrradianceShader, GL_TEXTURE_CUBE_MAP, m_Properties.CubemapTexture, m_Properties.IrradianceMapTexture, irradianceMapSize);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_Properties.IrradianceMapTexture);
+    glTexParameteri(GL_TEXTURE_CUBE_MAP, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+    glGenerateMipmap(GL_TEXTURE_CUBE_MAP);
 }
 
-void EnvironmentMap::RenderCube(const VertexArray& va, const Shader& shader)
+void EnvironmentMap::BakeBRDF()
+{
+    glGenTextures(1, &m_Properties.BRDFLUTTexture);
+
+    // Выделяем необходимое количество памяти для LUT-текстуры
+    glBindTexture(GL_TEXTURE_2D, m_Properties.BRDFLUTTexture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RG16F, 512, 512, 0, GL_RG, GL_FLOAT, 0);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_CaptureFBO);
+    glBindRenderbuffer(GL_RENDERBUFFER, m_CaptureRBO);
+    glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, 512, 512);
+    glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, m_Properties.BRDFLUTTexture, 0);
+
+    glViewport(0, 0, 512, 512);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+    RenderQuad();
+
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void EnvironmentMap::RenderCube(const Shader& shader)
 {
     shader.Bind();
-    va.Bind();
+    m_CubeVA.Bind();
     glDepthFunc(GL_LEQUAL);
     glDisable(GL_CULL_FACE);
 
@@ -210,15 +283,71 @@ void EnvironmentMap::RenderCube(const VertexArray& va, const Shader& shader)
     
     glEnable(GL_CULL_FACE);
     glDepthFunc(GL_LESS);
-    va.Unbind();
+    m_CubeVA.Unbind();
     shader.Unbind();
 }
 
-void EnvironmentMap::BindIrradianceMap(unsigned int slot)
+void EnvironmentMap::BindIBL(unsigned int irradianceSlot, unsigned int prefilterSlot, unsigned int brdfSlot)
 {
-    glActiveTexture(GL_TEXTURE0 + slot);
+    glActiveTexture(GL_TEXTURE0 + irradianceSlot);
     glBindTexture(GL_TEXTURE_CUBE_MAP, m_Properties.IrradianceMapTexture);
+
+    glActiveTexture(GL_TEXTURE0 + prefilterSlot);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_Properties.PrefilterMapTexture);
+
+    glActiveTexture(GL_TEXTURE0 + brdfSlot);
+    glBindTexture(GL_TEXTURE_2D, m_Properties.BRDFLUTTexture);
 }
+
+void EnvironmentMap::Prefiltering()
+{
+    glm::mat4 captureProjection = glm::perspective(glm::radians(90.0f), 1.0f, 0.1f, 10.0f);
+    glm::mat4 captureViews[] =
+    {
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(1.0f,  0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(-1.0f, 0.0f,  0.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  1.0f,  0.0f), glm::vec3(0.0f,  0.0f,  1.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, -1.0f,  0.0f), glm::vec3(0.0f,  0.0f, -1.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f,  1.0f), glm::vec3(0.0f, -1.0f,  0.0f)),
+       glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f,  0.0f, -1.0f), glm::vec3(0.0f, -1.0f,  0.0f))
+    };
+
+    
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_CUBE_MAP, m_Properties.CubemapTexture);
+
+    glBindFramebuffer(GL_FRAMEBUFFER, m_CaptureFBO);
+    unsigned int maxMipLevels = 5;
+    for (unsigned int mip = 0; mip < maxMipLevels; ++mip)
+    {
+        // Изменение размера фреймбуфера в соответствии с размерами мипмап-уровня
+        unsigned int mipWidth = m_PrefilterSize * std::pow(0.5, mip);
+        unsigned int mipHeight = m_PrefilterSize * std::pow(0.5, mip);
+        glBindRenderbuffer(GL_RENDERBUFFER, m_CaptureRBO);
+        glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH_COMPONENT24, mipWidth, mipHeight);
+        glViewport(0, 0, mipWidth, mipHeight);
+
+        float roughness = (float)mip / (float)(maxMipLevels - 1);
+
+        m_PrefilterShader.Bind();
+        m_PrefilterShader.SetUniform1i("u_EnvironmentMap", 0);
+        m_PrefilterShader.SetUniformMat4f("u_Projection", captureProjection);
+        m_PrefilterShader.SetUniform1f("u_Roughness", roughness);
+
+        for (unsigned int i = 0; i < 6; ++i)
+        {
+            m_PrefilterShader.Bind();
+            m_PrefilterShader.SetUniformMat4f("u_View", captureViews[i]);
+            glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0,
+                GL_TEXTURE_CUBE_MAP_POSITIVE_X + i, m_Properties.PrefilterMapTexture, mip);
+
+            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+            RenderCube(m_PrefilterShader);
+        }
+    }
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
 
 void EnvironmentMap::Draw(glm::mat4 view, glm::mat4 projection)
 {
@@ -233,6 +362,9 @@ void EnvironmentMap::Draw(glm::mat4 view, glm::mat4 projection)
         m_BackgroundShader.SetUniform1i("u_EnvironmentMap", 0);
         m_BackgroundShader.SetUniform1i("u_IsMapUsing", true);
         m_BackgroundShader.SetUniform1f("u_Intisity", m_Properties.Intensity);
+        glm::mat4 rotation = glm::mat4(1);
+        rotation = glm::rotate(rotation, glm::radians(m_Properties.Rotation), glm::vec3(0, 1, 0));
+        m_BackgroundShader.SetUniformMat4f("u_Rotation", rotation);
     }
     else
     {
@@ -240,6 +372,7 @@ void EnvironmentMap::Draw(glm::mat4 view, glm::mat4 projection)
         m_BackgroundShader.SetUniformVec3f("u_EnvironmentColor", m_Properties.Color);
     }
 
+    RenderCube(m_BackgroundShader);
 
-    RenderCube(m_VA, m_BackgroundShader);
+   
 }
