@@ -87,9 +87,9 @@ int main() {
 
 
 
-	Shader shader("res/shaders/sh1.vert", "res/shaders/sh1.frag");
-	Shader pbrShader("res/shaders/pbr.vert", "res/shaders/pbr.frag");
-	Shader gridShader("res/shaders/floor.vert", "res/shaders/floor.frag");
+	Shader shader("datafiles/shaders/sh1.vert", "datafiles/shaders/sh1.frag");
+	Shader pbrShader("datafiles/shaders/pbr.vert", "datafiles/shaders/pbr.frag");
+	Shader gridShader("datafiles/shaders/floor.vert", "datafiles/shaders/floor.frag");
 	//pbrShader.Bind();
 
 	float cameraSpeed = 5;

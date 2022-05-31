@@ -19,7 +19,7 @@ GUI::GUI(GLFWwindow* window)
 	//io.ConfigViewportsNoAutoMerge = true;
 	//io.ConfigViewportsNoTaskBarIcon = true;
 
-    io.FontDefault = io.Fonts->AddFontFromFileTTF("res/assets/fonts/OpenSans/OpenSans-Regular.ttf", 17);
+    io.FontDefault = io.Fonts->AddFontFromFileTTF("datafiles/assets/fonts/OpenSans/OpenSans-Regular.ttf", 17);
 
 	// Setup Dear ImGui style
 	ImGui::StyleColorsDark();

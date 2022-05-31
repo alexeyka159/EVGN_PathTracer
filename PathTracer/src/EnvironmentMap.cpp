@@ -4,11 +4,11 @@
 #include <glm/gtc/matrix_transform.hpp>
 
 EnvironmentMap::EnvironmentMap()
-    : m_GenCubemapShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/generateCubemap.frag")
-    , m_BackgroundShader("res/shaders/hdri/background.vert", "res/shaders/hdri/background.frag")
-    , m_IrradianceShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/irradiance.frag")
-    , m_PrefilterShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/prefilter.frag")
-    , m_BRDFShader("res/shaders/hdri/brdf.vert", "res/shaders/hdri/brdf.frag")
+    : m_GenCubemapShader("datafiles/shaders/hdri/generateCubemap.vert", "datafiles/shaders/hdri/generateCubemap.frag")
+    , m_BackgroundShader("datafiles/shaders/hdri/background.vert", "datafiles/shaders/hdri/background.frag")
+    , m_IrradianceShader("datafiles/shaders/hdri/generateCubemap.vert", "datafiles/shaders/hdri/irradiance.frag")
+    , m_PrefilterShader("datafiles/shaders/hdri/generateCubemap.vert", "datafiles/shaders/hdri/prefilter.frag")
+    , m_BRDFShader("datafiles/shaders/hdri/brdf.vert", "datafiles/shaders/hdri/brdf.frag")
 {
     Initialize(8);
 }
@@ -17,11 +17,11 @@ EnvironmentMap::EnvironmentMap(const char* path, int outputSize, int prefilterSi
     : m_Path(path)
     , m_PrefilterSize(prefilterSize)
     , m_OutputSize(outputSize)
-    , m_GenCubemapShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/generateCubemap.frag")
-    , m_BackgroundShader("res/shaders/hdri/background.vert", "res/shaders/hdri/background.frag")
-    , m_IrradianceShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/irradiance.frag")
-    , m_PrefilterShader("res/shaders/hdri/generateCubemap.vert", "res/shaders/hdri/prefilter.frag")
-    , m_BRDFShader("res/shaders/hdri/brdf.vert", "res/shaders/hdri/brdf.frag")
+    , m_GenCubemapShader("datafiles/shaders/hdri/generateCubemap.vert", "datafiles/shaders/hdri/generateCubemap.frag")
+    , m_BackgroundShader("datafiles/shaders/hdri/background.vert", "datafiles/shaders/hdri/background.frag")
+    , m_IrradianceShader("datafiles/shaders/hdri/generateCubemap.vert", "datafiles/shaders/hdri/irradiance.frag")
+    , m_PrefilterShader("datafiles/shaders/hdri/generateCubemap.vert", "datafiles/shaders/hdri/prefilter.frag")
+    , m_BRDFShader("datafiles/shaders/hdri/brdf.vert", "datafiles/shaders/hdri/brdf.frag")
 {
     Initialize(outputSize);
     LoadEnvironmentMap(path);
