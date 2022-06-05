@@ -413,6 +413,117 @@
     <ClInclude Include="src\vendor\stb_image\stb_image_write.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\contrib\anchordict.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\contrib\graphbuilder.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\detail\impl.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\detail\iterator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\detail\iterator_fwd.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\detail\memory.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\detail\node.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\detail\node_data.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\detail\node_iterator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\detail\node_ref.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\convert.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\emit.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\impl.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\iterator.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\node.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\parse.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\ptr.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\node\type.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\anchor.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\binary.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\depthguard.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\dll.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\emitfromevents.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\emitter.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\emitterdef.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\emittermanip.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\emitterstyle.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\eventhandler.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\exceptions.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\mark.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\noexcept.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\null.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\ostream_wrapper.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\parser.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\stlemitter.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\traits.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\yaml.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\bananacover.jpg">
@@ -424,6 +535,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="src\vendor\ImGuizmo\.editorconfig" />
+    <None Include="src\vendor\yaml-cpp\release\gmock.pdb" />
+    <None Include="src\vendor\yaml-cpp\release\gmock_main.pdb" />
+    <None Include="src\vendor\yaml-cpp\release\gtest.pdb" />
+    <None Include="src\vendor\yaml-cpp\release\gtest_main.pdb" />
   </ItemGroup>
   <ItemGroup>
     <Library Include="src\vendor\yaml-cpp\gmock_maind.lib" />
@@ -431,5 +546,10 @@
     <Library Include="src\vendor\yaml-cpp\gtest_maind.lib" />
     <Library Include="src\vendor\yaml-cpp\gtestd.lib" />
     <Library Include="src\vendor\yaml-cpp\yaml-cppd.lib" />
+    <Library Include="src\vendor\yaml-cpp\release\gmock.lib" />
+    <Library Include="src\vendor\yaml-cpp\release\gmock_main.lib" />
+    <Library Include="src\vendor\yaml-cpp\release\gtest.lib" />
+    <Library Include="src\vendor\yaml-cpp\release\gtest_main.lib" />
+    <Library Include="src\vendor\yaml-cpp\release\yaml-cpp.lib" />
   </ItemGroup>
 </Project>

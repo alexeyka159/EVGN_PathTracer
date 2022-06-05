@@ -347,7 +347,7 @@ void SceneHierarchyPanel::DrawWorldProperties()
 		ImGui::SameLine(ImGui::GetWindowWidth() - 66);
 		if (ImGui::Button("Browse..."))
 		{
-			std::string filepath = FileDialogs::SaveFile("Environment (*.hdri, *.hdr)\0*.hdri;*.hdr\0", m_Window);
+			std::string filepath = FileDialogs::OpenFile("Environment (*.hdri, *.hdr)\0*.hdri;*.hdr\0", m_Window);
 
 			if (!filepath.empty())
 			{
