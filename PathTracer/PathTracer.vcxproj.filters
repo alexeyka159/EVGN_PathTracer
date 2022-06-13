@@ -524,12 +524,18 @@
     <ClInclude Include="src\vendor\yaml-cpp\release\include\yaml-cpp\yaml.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Image Include="res\textures\bananacover.jpg">
       <Filter>Файлы ресурсов</Filter>
     </Image>
     <Image Include="res\textures\bananacover.png">
+      <Filter>Файлы ресурсов</Filter>
+    </Image>
+    <Image Include="datafiles\icons\logo.ico">
       <Filter>Файлы ресурсов</Filter>
     </Image>
   </ItemGroup>
@@ -551,5 +557,10 @@
     <Library Include="src\vendor\yaml-cpp\release\gtest.lib" />
     <Library Include="src\vendor\yaml-cpp\release\gtest_main.lib" />
     <Library Include="src\vendor\yaml-cpp\release\yaml-cpp.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PathTracer.rc">
+      <Filter>Файлы ресурсов</Filter>
+    </ResourceCompile>
   </ItemGroup>
 </Project>

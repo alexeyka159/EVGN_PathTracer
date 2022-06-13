@@ -225,6 +225,7 @@ std::vector<Texture> Model::LoadMaterialTextures(aiMaterial* mat, aiTextureType 
 
 void Model::Draw(Shader& shader)
 {
+	//TODO: Переместить отправку юниформ до цикла
 	for (Mesh& mesh : m_Meshes)
 	{
 		shader.SetUniform1f("u_Material.ior",				m_Materail.IOR);

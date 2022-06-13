@@ -132,17 +132,17 @@ static void DrawMaterialTexture(const char* name, bool& isSet, bool& isUsing, co
 	}
 	
 	if (name != "Normal map:" && name != "Metallic map:") {
-		std::string title = std::string("Color##") + std::to_string(texId);
+		std::string title = std::string("Color##") + name;
 		ImGui::ColorEdit3(title.c_str(), glm::value_ptr(col), 0);
 	}
 
 	if (isSet)
 	{
-		std::string title = std::string("Use Texture##") + std::to_string(texId);
+		std::string title = std::string("Use Texture##") + name;
 		ImGui::Checkbox(title.c_str(), &isUsing);
 		if (name == "Roughness map:" && isUsing)
 		{
-			title = std::string("Invert##") + std::to_string(texId);
+			title = std::string("Invert##") + name;
 			ImGui::Checkbox(title.c_str(), inverted);
 		}
 		ImGui::Image((void*)texId, ImVec2{ 80, 80 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
@@ -159,17 +159,17 @@ static void DrawMaterialTexture(const char* name, bool& isSet, bool& isUsing, co
 
 	if (name != "Normal map:")
 	{
-		std::string title = std::string("Value##") + std::to_string(texId);
+		std::string title = std::string("Value##") + name;
 		ImGui::SliderFloat(title.c_str(), &value, .0f, name == "Metallic map:" ? 1.0f : 5.f, "%.03f");
 		if (name != "Metallic map:")
 		{
-			title = std::string("Contrast##") + std::to_string(texId);
+			title = std::string("Contrast##") + name;
 			ImGui::SliderFloat(title.c_str(), &contrast, 0.f, 2.0f, "%.03f");
 		}
 	}
 	else
 	{
-		std::string title = std::string("Strength##") + std::to_string(texId);
+		std::string title = std::string("Strength##") + name;
 		ImGui::SliderFloat(title.c_str(), &value, 0.f, 10.0f, "%.03f");
 	}
 
@@ -254,7 +254,7 @@ void SceneHierarchyPanel::DrawComponents(Entity entity)
 				component.RenderCamera->SetFov(fov);
 		});
 
-	DrawComponent<ModelRendererComponent>("Model", entity, [](auto& component)
+	DrawComponent<ModelRendererComponent>("Model", entity, [&entity](auto& component)
 		{
 			std::string pathStr = "Path: " + component.ModelObj.GetPath();
 			ImGui::Text(pathStr.c_str());

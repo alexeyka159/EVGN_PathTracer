@@ -11,6 +11,7 @@ private:
 	Scene* m_Scene;
 
 	friend Scene;
+	friend SceneHierarchyPanel;
 
 public:
 	Entity() = default;

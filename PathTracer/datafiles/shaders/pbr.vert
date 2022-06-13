@@ -44,7 +44,7 @@ void main()
     vec3 B = cross(N, T); */
 
     vs_out.TBN = mat3(T, B, N);
-	v_Normal = normalMatrix * aNorm;
+	v_Normal = normalize(normalMatrix * aNorm);
 
 	gl_Position = u_MVP * aPos;
 }

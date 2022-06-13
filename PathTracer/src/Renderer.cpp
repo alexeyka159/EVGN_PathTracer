@@ -4,6 +4,7 @@
 #include "Camera/CameraOrbit.h"
 #include "Camera/CameraController.h"
 
+#include <vendor/stb_image/stb_image.h>
 
 Renderer::Renderer(int w, int h, std::string wndName)
 	: m_Width(w)
@@ -36,6 +37,16 @@ Renderer::Renderer(int w, int h, std::string wndName)
 	}
 
 	std::cout << glGetString(GL_VERSION) << std::endl << std::endl;
+
+	int logoW, logoH, logoBPP;
+	stbi_uc* logo = stbi_load("datafiles/icons/logo.png", &logoW, &logoH, &logoBPP, 0);
+	
+	GLFWimage images[1];
+	images[0].width = logoW;
+	images[0].height = logoH;
+	images[0].pixels = logo;
+
+	glfwSetWindowIcon(m_Window, 1, images);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);

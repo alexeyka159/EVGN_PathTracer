@@ -221,10 +221,10 @@ void ViewportPanel::Draw()
     {
         m_Framebuffer->Resize((uint32_t)viewportPanelSize.x, (uint32_t)viewportPanelSize.y);
         m_ViewportSize = { viewportPanelSize.x, viewportPanelSize.y };
+        m_Camera->OnResize(viewportPanelSize.x, viewportPanelSize.y);
     }
     ImGui::Image((void*)m_GuiTextureID, ImVec2{ viewportPanelSize.x, viewportPanelSize.y -23 }, ImVec2{ 0, 1 }, ImVec2{ 1, 0 });
-    m_Camera->OnResize(viewportPanelSize.x, viewportPanelSize.y);
-    
+
     auto windowSize = ImGui::GetWindowSize();
     ImVec2 minBound = ImGui::GetWindowPos();
     minBound.x += viewportOffset.x;
@@ -325,7 +325,7 @@ void ViewportPanel::NewScene()
 
 void ViewportPanel::ImportModel(const char* filter)
 {
-    std::string filepath = FileDialogs::SaveFile(filter, m_Window);
+    std::string filepath = FileDialogs::OpenFile(filter, m_Window);
 
     if (!filepath.empty())
     {

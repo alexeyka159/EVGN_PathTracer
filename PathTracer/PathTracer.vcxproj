@@ -208,6 +208,7 @@
     <ClCompile Include="src\VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="resource.h" />
     <ClInclude Include="src\Application.h" />
     <ClInclude Include="src\EnvironmentMap.h" />
     <ClInclude Include="src\GUI\Controllers\ViewportController.h" />
@@ -334,6 +335,7 @@
     <ClInclude Include="src\VertexBufferLayout.h" />
   </ItemGroup>
   <ItemGroup>
+    <Image Include="datafiles\icons\logo.ico" />
     <Image Include="res\textures\bananacover.jpg" />
     <Image Include="res\textures\bananacover.png" />
   </ItemGroup>
@@ -355,6 +357,9 @@
     <Library Include="src\vendor\yaml-cpp\release\gtest_main.lib" />
     <Library Include="src\vendor\yaml-cpp\release\yaml-cpp.lib" />
     <Library Include="src\vendor\yaml-cpp\yaml-cppd.lib" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="PathTracer.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
